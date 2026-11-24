@@ -1,0 +1,3701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a09">
+  <meta name="color-scheme" content="dark">
+  <meta name="author" content="Sounak Poddar">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+
+  <title>Sounak Poddar</title>
+  <meta name="description" content="Portfolio of Sounak Poddar, a B.Tech AI/ML student building applied AI systems, interfaces, and tools.">
+  <link rel="canonical" href="https://sounakpoddar.com/">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a0a09'/%3E%3Cpath d='M17 44V20h15.2c7.2 0 11.8 3.6 11.8 9.5 0 6-4.6 9.7-11.8 9.7h-8.4V44H17Zm6.8-10.4h7.7c3.8 0 5.8-1.4 5.8-4.1 0-2.6-2-4-5.8-4h-7.7v8.1Z' fill='%23f2f0e9'/%3E%3Ccircle cx='48' cy='46' r='4' fill='%239da779'/%3E%3C/svg%3E">
+
+  <meta property="og:site_name" content="Sounak Poddar">
+  <meta property="og:locale" content="en_IN">
+  <meta property="og:title" content="Sounak Poddar — AI Systems & Engineering">
+  <meta property="og:description" content="Engineering student pursuing B.Tech in Artificial Intelligence and Machine Learning, building applied AI systems and interfaces.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://sounakpoddar.com/">
+  <meta property="og:image" content="https://i.ibb.co/gyC0wyD/heylogojpg.jpg">
+  <meta property="og:image:alt" content="Sounak Poddar portfolio identity">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Sounak Poddar — AI Systems & Engineering">
+  <meta name="twitter:description" content="Engineering student building applied AI systems, interfaces, and tools.">
+  <meta name="twitter:image" content="https://i.ibb.co/gyC0wyD/heylogojpg.jpg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0a0a09;
+      --bg-soft: #10100f;
+      --surface: #151513;
+      --surface-strong: #1b1b18;
+      --text: #f2f0e9;
+      --soft: #b3b0a8;
+      --muted: #7f7d76;
+      --line: rgba(242, 240, 233, 0.12);
+      --line-strong: rgba(242, 240, 233, 0.24);
+      --accent: #9da779;
+      --accent-strong: #c4ce99;
+      --accent-ink: #17190f;
+      --sans: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+      --page: min(100% - 40px, 1380px);
+      --reading: 710px;
+      --s1: 0.5rem;
+      --s2: 0.75rem;
+      --s3: 1rem;
+      --s4: 1.5rem;
+      --s5: 2rem;
+      --s6: 3rem;
+      --s7: 4.5rem;
+      --s8: 7rem;
+      --s9: 10rem;
+      --radius-sm: 0.35rem;
+      --radius: 0.65rem;
+      --radius-lg: 1rem;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --fast: 180ms;
+      --base: 480ms;
+      --motion-micro: 180ms;
+      --motion-short: 320ms;
+      --motion-medium: 560ms;
+      --motion-long: 820ms;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 92px;
+      background: var(--bg);
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      overflow-x: hidden;
+      background:
+        linear-gradient(rgba(242, 240, 233, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(242, 240, 233, 0.025) 1px, transparent 1px),
+        var(--bg);
+      background-size: 72px 72px;
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body.nav-open { overflow: hidden; }
+    img { display: block; max-width: 100%; }
+    button, a { color: inherit; font: inherit; }
+    button { border: 0; }
+    a { text-underline-offset: 0.25em; }
+
+    a:focus-visible,
+    button:focus-visible,
+    summary:focus-visible {
+      outline: 2px solid var(--accent-strong);
+      outline-offset: 4px;
+    }
+
+    ::selection { background: var(--accent); color: var(--accent-ink); }
+
+    .skip-link {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 9999;
+      transform: translateY(-160%);
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      background: var(--text);
+      color: var(--bg);
+      transition: transform var(--fast) ease;
+    }
+
+    .skip-link:focus { transform: none; }
+
+    .site-header {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 1000;
+      border-bottom: 1px solid transparent;
+      background: linear-gradient(to bottom, rgba(10, 10, 9, 0.96), rgba(10, 10, 9, 0.76));
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      transform: translateY(0);
+      transition:
+        transform 360ms var(--ease),
+        border-color var(--fast) ease,
+        background-color var(--fast) ease;
+      will-change: transform;
+    }
+
+    .site-header.is-scrolled { border-color: var(--line); }
+    .site-header.is-hidden { transform: translateY(calc(-100% - 1px)); }
+    .site-header:focus-within { transform: translateY(0); }
+
+    .nav-shell {
+      width: var(--page);
+      min-height: 76px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: var(--s4);
+    }
+
+    .brand {
+      width: max-content;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      text-decoration: none;
+    }
+
+    .brand span {
+      margin-left: 0.55rem;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+    }
+
+    .nav-links { display: flex; align-items: center; gap: clamp(1.2rem, 3vw, 2.5rem); }
+
+    .nav-links a {
+      position: relative;
+      color: var(--soft);
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color var(--fast) ease;
+    }
+
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      bottom: -0.5rem;
+      left: 0;
+      height: 1px;
+      transform: scaleX(0);
+      transform-origin: left;
+      background: var(--accent);
+      transition: transform 220ms var(--ease);
+    }
+
+    .nav-links a:hover,
+    .nav-links a[aria-current="true"] { color: var(--text); }
+
+    .nav-links a:hover::after,
+    .nav-links a[aria-current="true"]::after { transform: scaleX(1); }
+
+    .nav-meta {
+      justify-self: end;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .menu-button {
+      display: none;
+      justify-self: end;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .menu-button span {
+      display: block;
+      width: 22px;
+      height: 1px;
+      margin: 6px auto;
+      background: currentColor;
+      transition: transform 200ms var(--ease), opacity 200ms ease;
+    }
+
+    .menu-button[aria-expanded="true"] span:first-child { transform: translateY(3.5px) rotate(45deg); }
+    .menu-button[aria-expanded="true"] span:last-child { transform: translateY(-3.5px) rotate(-45deg); }
+
+    main { overflow: clip; }
+    .page-shell { width: var(--page); margin: auto; }
+    .section { padding-block: var(--s8); border-top: 1px solid var(--line); }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: minmax(120px, 2fr) minmax(0, 7fr);
+      gap: var(--s6);
+      align-items: start;
+      margin-bottom: var(--s7);
+    }
+
+    .kicker,
+    .eyebrow,
+    .project-index,
+    .project-meta,
+    .capability-number,
+    .contact-label,
+    .case-note-label,
+    .work-directory-label {
+      font-family: var(--mono);
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .kicker { margin: 0; color: var(--accent); font-size: 0.7rem; }
+
+    .section-title {
+      max-width: 18ch;
+      margin: 0;
+      color: var(--text);
+      font-size: clamp(2.25rem, 5.4vw, 5.75rem);
+      font-weight: 500;
+      letter-spacing: -0.055em;
+      line-height: 0.98;
+    }
+
+    .section-intro {
+      grid-column: 2;
+      max-width: 58ch;
+      margin: 0;
+      color: var(--soft);
+      font-size: clamp(1rem, 1.4vw, 1.18rem);
+    }
+
+    .hero {
+      min-height: 100svh;
+      padding-top: clamp(9rem, 18vh, 13rem);
+      padding-bottom: var(--s6);
+      display: grid;
+      grid-template-rows: 1fr auto;
+    }
+
+    .hero-main {
+      align-self: center;
+      display: grid;
+      grid-template-columns: minmax(0, 8fr) minmax(250px, 3fr);
+      gap: clamp(2rem, 6vw, 7rem);
+      align-items: end;
+    }
+
+    .eyebrow { margin: 0 0 var(--s4); color: var(--accent); font-size: 0.7rem; }
+
+    .hero-title {
+      max-width: 11ch;
+      margin: 0;
+      color: var(--text);
+      font-size: clamp(4rem, 10.4vw, 10rem);
+      font-weight: 500;
+      letter-spacing: -0.075em;
+      line-height: 0.83;
+    }
+
+    .hero-side { padding-bottom: 0.75rem; }
+
+    .hero-summary {
+      max-width: 34rem;
+      margin: 0;
+      color: var(--soft);
+      font-size: clamp(1.03rem, 1.55vw, 1.3rem);
+      line-height: 1.55;
+    }
+
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: var(--s5); }
+
+    .button-link {
+      display: inline-flex;
+      min-height: 46px;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 0.8rem 1.05rem;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: background var(--fast) ease, border-color var(--fast) ease, color var(--fast) ease;
+    }
+
+    .button-link::after { content: "↗"; font-size: 0.9rem; }
+    .button-link[href^="#"]::after { content: "↓"; }
+
+    .button-link:hover {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--accent-ink);
+    }
+
+    .button-link.quiet { border-color: transparent; color: var(--soft); }
+    .button-link.quiet:hover { border-color: var(--line-strong); background: transparent; color: var(--text); }
+
+    .hero-footer {
+      display: grid;
+      grid-template-columns: auto minmax(80px, 1fr) auto;
+      align-items: center;
+      gap: var(--s4);
+      padding-top: var(--s7);
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .hero-rule { height: 1px; background: var(--line-strong); }
+
+    .work-directory {
+      display: grid;
+      grid-template-columns: minmax(120px, 2fr) minmax(0, 7fr);
+      gap: var(--s6);
+      padding: var(--s4) 0 var(--s7);
+      border-top: 1px solid var(--line);
+    }
+
+    .work-directory-label { margin: 0; color: var(--muted); font-size: 0.66rem; }
+
+    .work-directory-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--line); }
+
+    .work-directory-links a {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: var(--s3);
+      align-items: center;
+      min-height: 72px;
+      padding: 0 var(--s3);
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      color: var(--soft);
+      text-decoration: none;
+      transition: background var(--fast) ease, color var(--fast) ease;
+    }
+
+    .work-directory-links a:hover { background: rgba(242, 240, 233, 0.035); color: var(--text); }
+    .work-directory-links span { color: var(--accent); font-family: var(--mono); font-size: 0.66rem; }
+    .work-directory-links strong { font-weight: 500; letter-spacing: -0.02em; }
+    .work-directory-links em { color: var(--muted); font-family: var(--mono); font-size: 0.65rem; font-style: normal; text-transform: uppercase; }
+
+    .work-list { display: grid; gap: var(--s8); }
+
+    .project {
+      display: grid;
+      grid-template-columns: minmax(220px, 3fr) minmax(0, 8fr);
+      gap: clamp(2rem, 6vw, 6rem);
+      align-items: start;
+      scroll-margin-top: 110px;
+    }
+
+    .project + .project { padding-top: var(--s8); border-top: 1px solid var(--line); }
+    .project-copy { position: sticky; top: 118px; }
+    .project-index { margin: 0 0 var(--s4); color: var(--accent); font-size: 0.68rem; }
+
+    .project-title {
+      margin: 0;
+      color: var(--text);
+      font-size: clamp(2.4rem, 5vw, 5.5rem);
+      font-weight: 500;
+      letter-spacing: -0.055em;
+      line-height: 0.95;
+    }
+
+    .project-summary {
+      max-width: 36rem;
+      margin: var(--s4) 0 0;
+      color: var(--soft);
+      font-size: clamp(1rem, 1.3vw, 1.14rem);
+    }
+
+    .project-meta { display: grid; gap: 0.7rem; margin: var(--s5) 0 0; color: var(--muted); font-size: 0.66rem; }
+    .project-meta div { display: grid; grid-template-columns: 72px 1fr; gap: 0.8rem; }
+    .project-meta dt, .project-meta dd { margin: 0; }
+    .project-meta dt { color: var(--soft); }
+    .project-actions { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: var(--s5); }
+
+    .project-note {
+      margin-top: var(--s5);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .project-note summary {
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--s3);
+      color: var(--soft);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.05em;
+      list-style: none;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .project-note summary::-webkit-details-marker { display: none; }
+    .project-note summary::after { content: "+"; color: var(--accent); font-size: 1rem; }
+    .project-note[open] summary::after { content: "−"; }
+
+    .project-note-body {
+      display: grid;
+      gap: var(--s4);
+      padding: 0 0 var(--s5);
+    }
+
+    .case-note-block { padding-top: var(--s3); border-top: 1px solid var(--line); }
+    .case-note-label { display: block; margin-bottom: 0.5rem; color: var(--accent); font-size: 0.64rem; }
+    .case-note-block p { margin: 0; color: var(--soft); font-size: 0.93rem; }
+
+    .project-media { min-width: 0; }
+
+    .lens-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--s3);
+      margin-bottom: 0.8rem;
+    }
+
+    .lens-toolbar p { margin: 0; color: var(--muted); font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.06em; text-transform: uppercase; }
+
+    .lens-toggle {
+      display: inline-flex;
+      padding: 3px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--bg-soft);
+    }
+
+    .lens-toggle button {
+      min-height: 34px;
+      padding: 0.45rem 0.75rem;
+      border-radius: 0.25rem;
+      background: transparent;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background var(--fast) ease, color var(--fast) ease;
+    }
+
+    .lens-toggle button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+
+    .media-stage {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 16 / 10;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+
+    .media-stage::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 1px;
+      transform: scaleX(0);
+      transform-origin: left;
+      background: var(--accent);
+      transition: transform 600ms var(--ease);
+      pointer-events: none;
+    }
+
+    .project-media[data-mode="system"] .media-stage::after { transform: scaleX(1); }
+
+    .media-button { width: 100%; height: 100%; padding: 0; background: transparent; cursor: zoom-in; }
+
+    .media-button img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      filter: saturate(0.86) contrast(1.02);
+      transition: transform 700ms var(--ease), filter var(--base) ease;
+    }
+
+    .media-button:hover img { transform: scale(1.018); filter: saturate(1); }
+
+    .system-layer {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      align-content: center;
+      gap: 0;
+      padding: clamp(1.3rem, 4vw, 3.5rem);
+      background: rgba(10, 10, 9, 0.95);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--base) var(--ease);
+    }
+
+    .project-media[data-mode="system"] .system-layer { opacity: 1; pointer-events: auto; }
+    .project-media[data-mode="system"] .media-button img { transform: scale(1.02); filter: grayscale(1) contrast(0.8) brightness(0.42); }
+
+    .system-row {
+      display: grid;
+      grid-template-columns: minmax(110px, 1.2fr) minmax(0, 3fr);
+      gap: var(--s4);
+      align-items: baseline;
+      padding-block: var(--s3);
+      border-bottom: 1px solid var(--line);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 320ms ease, transform 420ms var(--ease);
+    }
+
+    .system-row:last-child { border-bottom: 0; }
+    .project-media[data-mode="system"] .system-row { opacity: 1; transform: none; }
+    .project-media[data-mode="system"] .system-row:nth-child(2) { transition-delay: 45ms; }
+    .project-media[data-mode="system"] .system-row:nth-child(3) { transition-delay: 90ms; }
+    .project-media[data-mode="system"] .system-row:nth-child(4) { transition-delay: 135ms; }
+    .project-media[data-mode="system"] .system-row:nth-child(5) { transition-delay: 180ms; }
+
+    .system-row strong { color: var(--accent-strong); font-family: var(--mono); font-size: 0.68rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+    .system-row span { color: var(--soft); font-size: clamp(0.9rem, 1.2vw, 1.05rem); }
+
+    /* ===== PROJECT CAROUSEL ===== */
+
+    .media-stage .system-layer {
+      z-index: 5;
+    }
+
+    .carousel {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      touch-action: pan-y;
+      overscroll-behavior-x: contain;
+      user-select: none;
+      -webkit-user-select: none;
+      cursor: grab;
+    }
+
+    .carousel:focus-visible {
+      outline: 2px solid var(--accent-strong);
+      outline-offset: 4px;
+    }
+
+    .carousel.is-dragging {
+      cursor: grabbing;
+    }
+
+    .carousel.is-dragging .media-button {
+      cursor: grabbing;
+    }
+
+    .carousel-track {
+      display: flex;
+      height: 100%;
+      will-change: transform;
+      transform: translate3d(var(--x, 0px), 0, 0);
+      transition: transform 700ms var(--ease);
+    }
+
+    .carousel.is-dragging .carousel-track {
+      transition: none;
+    }
+
+    .carousel-slide {
+      flex: 0 0 100%;
+      height: 100%;
+      opacity: calc(1 - var(--dist, 1) * 0.45);
+      transform: scale(calc(1 - var(--dist, 1) * 0.04));
+      transition: opacity 700ms var(--ease), transform 700ms var(--ease);
+    }
+
+    .carousel.is-dragging .carousel-slide {
+      transition: none;
+    }
+
+    .carousel-slide .media-button {
+      width: 100%;
+      height: 100%;
+      will-change: transform;
+      transform: translate3d(calc(var(--p, 0) * -9%), 0, 0);
+      transition: transform 700ms var(--ease);
+    }
+
+    .carousel.is-dragging .carousel-slide .media-button {
+      transition: none;
+    }
+
+    .carousel-slide.is-empty {
+      display: none;
+    }
+
+    .carousel-controls {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
+      transition: opacity var(--motion-short) ease, visibility var(--motion-short) ease;
+    }
+
+    .carousel-controls[hidden] {
+      display: none;
+    }
+
+    .carousel-controls > * {
+      pointer-events: auto;
+    }
+
+    .carousel-arrow {
+      position: absolute;
+      top: 50%;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      background: color-mix(in srgb, var(--bg-soft) 60%, transparent);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--line);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      opacity: 0;
+      transition:
+        opacity var(--motion-short) var(--ease),
+        transform var(--motion-short) var(--ease),
+        background var(--fast) ease,
+        border-color var(--fast) ease,
+        color var(--fast) ease;
+    }
+
+    .carousel-arrow[data-dir="-1"] {
+      left: 12px;
+      transform: translateY(-50%) translateX(-6px);
+    }
+
+    .carousel-arrow[data-dir="1"] {
+      right: 12px;
+      transform: translateY(-50%) translateX(6px);
+    }
+
+    .media-stage:hover .carousel-arrow,
+    .media-stage:focus-within .carousel-arrow {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0);
+    }
+
+    @media (hover: none) {
+      .carousel-arrow {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0);
+      }
+    }
+
+    .carousel-arrow:hover:not([aria-disabled="true"]):not(:disabled) {
+      background: var(--surface-strong);
+      border-color: var(--line-strong);
+      color: var(--text);
+    }
+
+    .carousel-arrow[aria-disabled="true"],
+    .carousel-arrow:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .media-stage:hover .carousel-arrow[aria-disabled="true"],
+    .media-stage:focus-within .carousel-arrow[aria-disabled="true"] {
+      opacity: 0.35;
+    }
+
+    .carousel-counter {
+      position: absolute;
+      bottom: 12px;
+      left: 14px;
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      user-select: none;
+      line-height: 1;
+    }
+
+    .carousel-dots {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .carousel-dot {
+      width: 6px;
+      height: 6px;
+      padding: 0;
+      border-radius: 999px;
+      border: 0;
+      background: var(--muted);
+      opacity: 0.6;
+      cursor: pointer;
+      transition:
+        width 400ms var(--ease),
+        background 400ms var(--ease),
+        opacity 400ms var(--ease);
+    }
+
+    .carousel-dot:hover {
+      opacity: 1;
+      background: var(--text);
+    }
+
+    .carousel-dot[aria-current="true"] {
+      width: 22px;
+      background: var(--accent);
+      opacity: 1;
+    }
+
+    .project-media[data-mode="system"] .carousel-controls {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .capability-stage {
+      display: grid;
+      grid-template-columns: minmax(0, 6fr) minmax(270px, 3fr);
+      gap: clamp(2rem, 6vw, 6rem);
+      align-items: start;
+    }
+
+    .capability-list { border-top: 1px solid var(--line); }
+
+    .capability-item {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr) auto;
+      gap: var(--s4);
+      align-items: start;
+      padding: var(--s5) 0;
+      border-bottom: 1px solid var(--line);
+      background: transparent;
+      color: inherit;
+      text-align: left;
+      cursor: pointer;
+      transition: background var(--fast) ease, padding var(--fast) ease;
+    }
+
+    .capability-item:hover { padding-inline: var(--s3); background: rgba(242, 240, 233, 0.028); }
+    .capability-item[aria-pressed="true"] { padding-inline: var(--s3); background: rgba(157, 167, 121, 0.08); }
+    .capability-number { padding-top: 0.25rem; color: var(--accent); font-size: 0.66rem; }
+    .capability-copy h3 { margin: 0; color: var(--text); font-size: clamp(1.25rem, 2vw, 2rem); font-weight: 500; letter-spacing: -0.035em; }
+    .capability-copy p { max-width: 58ch; margin: 0.65rem 0 0; color: var(--soft); }
+    .capability-arrow { padding-top: 0.2rem; color: var(--muted); font-family: var(--mono); transition: color var(--fast) ease, transform var(--fast) var(--ease); }
+    .capability-item[aria-pressed="true"] .capability-arrow { color: var(--accent); transform: translateX(4px); }
+
+    .evidence-panel {
+      position: sticky;
+      top: 118px;
+      min-height: 360px;
+      padding: var(--s5);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(21, 21, 19, 0.72);
+    }
+
+    .evidence-kicker { margin: 0; color: var(--accent); font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.07em; text-transform: uppercase; }
+    .evidence-title { margin: var(--s4) 0 0; color: var(--text); font-size: clamp(1.7rem, 3vw, 3rem); font-weight: 500; letter-spacing: -0.045em; line-height: 1; }
+    .evidence-copy { margin: var(--s4) 0 0; color: var(--soft); }
+    .evidence-projects { margin: var(--s6) 0 0; padding-top: var(--s4); border-top: 1px solid var(--line); color: var(--muted); font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.04em; line-height: 1.8; text-transform: uppercase; }
+
+    .about-grid { display: grid; grid-template-columns: minmax(180px, 3fr) minmax(0, 7fr); gap: clamp(2rem, 8vw, 8rem); }
+
+    .about-stat {
+      align-self: start;
+      padding-top: 0.35rem;
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.07em;
+      line-height: 1.8;
+      text-transform: uppercase;
+    }
+
+    .about-copy { max-width: 820px; }
+
+    .about-copy > p {
+      margin: 0;
+      color: var(--soft);
+      font-size: clamp(1.25rem, 2.3vw, 2.2rem);
+      letter-spacing: -0.035em;
+      line-height: 1.35;
+    }
+
+    .about-principles { margin-top: var(--s6); border-top: 1px solid var(--line); }
+
+    .about-principle {
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr);
+      gap: var(--s4);
+      padding: var(--s4) 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .about-principle span { color: var(--accent); font-family: var(--mono); font-size: 0.66rem; }
+    .about-principle p { margin: 0; color: var(--muted); font-size: 1rem; }
+    .about-principle strong { color: var(--text); font-weight: 500; }
+    .exp-meta {
+      display: block;
+      margin: 0.25rem 0 0.5rem;
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    #about .section-heading {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      text-align: center;
+      gap: var(--s3);
+    }
+
+    #about .section-heading .kicker {
+      text-align: center;
+    }
+
+    #about .section-title {
+      max-width: none;
+      margin-inline: auto;
+      text-align: center;
+    }
+
+    #about .about-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    #about .about-copy {
+      width: min(100%, 820px);
+      max-width: 820px;
+      margin-inline: auto;
+      text-align: center;
+    }
+
+    #about .about-copy > p {
+      text-align: center;
+    }
+
+    #about .about-principles {
+      margin-top: var(--s6);
+      border-top: 1px solid var(--line);
+    }
+
+    #about .about-principle {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      text-align: center;
+      gap: var(--s2);
+      padding: var(--s5) 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    #about .about-principle > span {
+      display: block;
+      text-align: center;
+    }
+
+    #about .about-principle p {
+      max-width: 62ch;
+      margin-inline: auto;
+      text-align: center;
+    }
+
+    #about .about-principle strong {
+      display: block;
+      text-align: center;
+    }
+
+    #about .exp-meta {
+      display: block;
+      margin: 0.25rem auto 0.65rem;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .beyond-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      border-top: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+    }
+
+    .beyond-item {
+      position: relative;
+      min-height: 440px;
+      overflow: hidden;
+      padding: var(--s4);
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: var(--bg-soft);
+      isolation: isolate;
+    }
+
+    .beyond-item::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(to top, rgba(10, 10, 9, 0.92), rgba(10, 10, 9, 0.16));
+    }
+
+    .beyond-item.no-image::before {
+      content: "READ / OBSERVE / UNDERSTAND";
+      position: absolute;
+      inset: 50% auto auto 50%;
+      z-index: -1;
+      width: 150%;
+      transform: translate(-50%, -50%) rotate(-18deg);
+      color: rgba(196, 206, 153, 0.1);
+      font-family: var(--mono);
+      font-size: clamp(1.2rem, 2.3vw, 2.5rem);
+      letter-spacing: 0.18em;
+      line-height: 1.8;
+      text-align: center;
+    }
+
+    .beyond-item img {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.2;
+      filter: grayscale(1);
+      transition: opacity var(--base) ease, filter var(--base) ease, transform 800ms var(--ease);
+    }
+
+    .beyond-item:hover img { opacity: 0.42; filter: grayscale(0.2); transform: scale(1.025); }
+    .beyond-content { height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
+    .beyond-index { color: var(--accent); font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.06em; }
+    .beyond-bottom { display: grid; gap: var(--s3); }
+
+    .beyond-item h3 {
+      max-width: 11ch;
+      margin: 0;
+      color: var(--text);
+      font-size: clamp(1.8rem, 3vw, 3.5rem);
+      font-weight: 500;
+      letter-spacing: -0.05em;
+      line-height: 0.98;
+    }
+
+    .beyond-item p { max-width: 34ch; margin: 0; color: var(--soft); font-size: 0.9rem; }
+    .beyond-item a { width: max-content; color: var(--soft); font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.06em; text-transform: uppercase; }
+
+    .contact {
+      min-height: min(760px, 86svh);
+      display: grid;
+      align-content: center;
+      border-top: 1px solid var(--line);
+    }
+
+    .contact-label { margin: 0 0 var(--s4); color: var(--accent); font-size: 0.68rem; }
+
+    .contact-title {
+      max-width: 14ch;
+      margin: 0;
+      color: var(--text);
+      font-size: clamp(3.2rem, 9vw, 9rem);
+      font-weight: 500;
+      letter-spacing: -0.07em;
+      line-height: 0.86;
+    }
+
+    .contact-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); margin-top: var(--s6); }
+    .email-link { color: var(--text); font-size: clamp(1rem, 2.2vw, 1.8rem); text-decoration-color: var(--accent); }
+
+    .copy-button {
+      min-height: 42px;
+      padding: 0.65rem 0.85rem;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--soft);
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background var(--fast) ease, color var(--fast) ease, border-color var(--fast) ease;
+    }
+
+    .copy-button:hover { border-color: var(--accent); background: var(--accent); color: var(--accent-ink); }
+
+    .site-footer { padding-block: var(--s4); border-top: 1px solid var(--line); }
+
+    .footer-row {
+      width: var(--page);
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      gap: var(--s4);
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .footer-row a { color: var(--soft); }
+
+    .image-dialog {
+      width: min(94vw, 1380px);
+      max-height: 92vh;
+      padding: 0;
+      overflow: hidden;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .image-dialog::backdrop { background: rgba(0, 0, 0, 0.84); backdrop-filter: blur(10px); }
+
+    .dialog-header {
+      min-height: 54px;
+      padding-inline: var(--s3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--s3);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .dialog-title { margin: 0; color: var(--soft); font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.05em; text-transform: uppercase; }
+    .dialog-close { width: 38px; height: 38px; border-radius: var(--radius-sm); background: transparent; color: var(--text); cursor: pointer; }
+    .dialog-close:hover { background: var(--surface-strong); }
+    .image-dialog img { width: 100%; max-height: calc(92vh - 55px); object-fit: contain; background: #050505; }
+
+    [data-reveal] {
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity var(--base) var(--ease), transform var(--base) var(--ease);
+    }
+
+    [data-reveal].is-visible { opacity: 1; transform: none; }
+
+
+    /* ===== PHASE 3: INTERACTION PROTOTYPE ===== */
+
+    .work-directory-links a[aria-current="true"] {
+      background: rgba(157, 167, 121, 0.1);
+      color: var(--text);
+      box-shadow: inset 0 -1px 0 var(--accent);
+    }
+
+    .work-directory-links a.is-evidence-match {
+      background: rgba(157, 167, 121, 0.075);
+      color: var(--text);
+    }
+
+    .project {
+      position: relative;
+      transition:
+        opacity 360ms ease,
+        filter 360ms ease,
+        transform 520ms var(--ease);
+    }
+
+    .project::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: -1rem;
+      width: 1px;
+      transform: scaleY(0);
+      transform-origin: top;
+      background: var(--accent);
+      transition: transform 520ms var(--ease);
+    }
+
+    .project.is-active::before,
+    .project.is-arriving::before,
+    .project.is-evidence-match::before { transform: scaleY(1); }
+
+    .project.is-arriving { transform: translateY(-4px); }
+    .project.is-evidence-muted { opacity: 0.34; filter: saturate(0.35); }
+    .project.is-evidence-match { opacity: 1; filter: none; }
+
+    .project-note[open] { border-color: var(--line-strong); }
+    .project-note[open] summary { color: var(--text); }
+    .project-note[open] .project-note-body { animation: project-note-enter 360ms var(--ease) both; }
+
+    @keyframes project-note-enter {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .project-media[data-mode="system"] .lens-toolbar p { color: var(--accent-strong); }
+
+    .evidence-panel {
+      transition:
+        border-color var(--fast) ease,
+        background-color var(--fast) ease,
+        transform 360ms var(--ease);
+    }
+
+    .evidence-panel.is-updating {
+      transform: translateY(-3px);
+      border-color: var(--accent);
+      background: rgba(157, 167, 121, 0.075);
+    }
+
+    .evidence-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-top: var(--s4);
+    }
+
+    .evidence-links:empty { display: none; }
+
+    .evidence-link {
+      display: inline-flex;
+      min-height: 34px;
+      align-items: center;
+      padding: 0.45rem 0.65rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      color: var(--soft);
+      font-family: var(--mono);
+      font-size: 0.63rem;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: border-color var(--fast) ease, background-color var(--fast) ease, color var(--fast) ease;
+    }
+
+    .evidence-link:hover { border-color: var(--accent); background: var(--accent); color: var(--accent-ink); }
+
+    .dialog-header { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; }
+    .dialog-controls { display: inline-flex; align-items: center; gap: 0.4rem; }
+    .dialog-nav { width: 36px; height: 36px; border-radius: var(--radius-sm); background: transparent; color: var(--text); cursor: pointer; }
+    .dialog-nav:hover:not(:disabled) { background: var(--surface-strong); }
+    .dialog-nav:disabled { color: var(--muted); cursor: default; opacity: 0.45; }
+    .dialog-counter { min-width: 48px; color: var(--muted); font-family: var(--mono); font-size: 0.64rem; text-align: center; }
+
+    .copy-feedback {
+      min-height: 1.25rem;
+      margin: var(--s2) 0 0;
+      color: var(--accent-strong);
+      font-family: var(--mono);
+      font-size: 0.64rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .media-stage { --pointer-x: 50%; --pointer-y: 50%; }
+      .media-stage::before {
+        content: "";
+        position: absolute;
+        z-index: 3;
+        inset: 0;
+        background: radial-gradient(360px circle at var(--pointer-x) var(--pointer-y), rgba(242, 240, 233, 0.08), transparent 62%);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 260ms ease;
+      }
+      .media-stage:hover::before { opacity: 1; }
+    }
+
+
+    /* ===== PHASE 5: RESTRAINED MOTION PASS ===== */
+
+    .button-link,
+    .copy-button,
+    .case-study-close,
+    .dialog-close,
+    .dialog-nav,
+    .evidence-link {
+      will-change: transform;
+    }
+
+    .button-link::after {
+      display: inline-block;
+      transition: transform var(--motion-micro) var(--ease-out);
+    }
+
+    .button-link:hover::after,
+    .button-link:focus-visible::after {
+      transform: translate(2px, -2px);
+    }
+
+    .button-link[href^="#"]:hover::after,
+    .button-link[href^="#"]:focus-visible::after {
+      transform: translateY(3px);
+    }
+
+    .copy-button:hover,
+    .copy-button:focus-visible,
+    .case-study-close:hover,
+    .case-study-close:focus-visible,
+    .dialog-close:hover,
+    .dialog-close:focus-visible,
+    .dialog-nav:hover:not(:disabled),
+    .dialog-nav:focus-visible:not(:disabled) {
+      transform: translateY(-1px);
+    }
+
+    .copy-button.is-success {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--accent-ink);
+    }
+
+    .nav-links a {
+      transition:
+        color var(--motion-micro) ease,
+        opacity var(--motion-short) ease,
+        transform var(--motion-short) var(--ease-out);
+    }
+
+    .hero .eyebrow,
+    .hero .hero-summary,
+    .hero .hero-actions,
+    .hero-footer > * {
+      opacity: 0;
+      transform: translateY(10px);
+      transition:
+        opacity var(--motion-medium) var(--ease-out),
+        transform var(--motion-medium) var(--ease-out);
+    }
+
+    .hero [data-reveal].is-visible .eyebrow {
+      opacity: 1;
+      transform: none;
+      transition-delay: 60ms;
+    }
+
+    .hero [data-reveal].is-visible .hero-summary {
+      opacity: 1;
+      transform: none;
+      transition-delay: 260ms;
+    }
+
+    .hero [data-reveal].is-visible .hero-actions {
+      opacity: 1;
+      transform: none;
+      transition-delay: 390ms;
+    }
+
+    .hero-footer.is-visible > :nth-child(1) {
+      opacity: 1;
+      transform: none;
+      transition-delay: 520ms;
+    }
+
+    .hero-footer.is-visible > :nth-child(2) {
+      opacity: 1;
+      transform: none;
+      transition-delay: 610ms;
+    }
+
+    .hero-footer.is-visible > :nth-child(3) {
+      opacity: 1;
+      transform: none;
+      transition-delay: 700ms;
+    }
+
+    .hero-rule {
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform var(--motion-long) var(--ease-out);
+    }
+
+    .hero-footer.is-visible .hero-rule {
+      transform: scaleX(1);
+    }
+
+    .motion-word-wrap {
+      display: inline-block;
+      overflow: hidden;
+      vertical-align: bottom;
+      padding-bottom: 0.08em;
+      margin-bottom: -0.08em;
+    }
+
+    .motion-word {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(108%) rotate(0.6deg);
+      transition:
+        opacity var(--motion-medium) var(--ease-out),
+        transform var(--motion-long) var(--ease-out);
+      transition-delay: calc(var(--word-index, 0) * 80ms + 100ms);
+      will-change: transform;
+    }
+
+    .is-visible .motion-word,
+    .contact [data-reveal].is-visible .motion-word {
+      opacity: 1;
+      transform: translateY(0) rotate(0);
+    }
+
+    [data-reveal] {
+      --reveal-distance: 18px;
+      --reveal-delay: 0ms;
+      transform: translateY(var(--reveal-distance));
+      transition:
+        opacity var(--motion-medium) var(--ease-out),
+        transform var(--motion-medium) var(--ease-out);
+      transition-delay: var(--reveal-delay);
+    }
+
+    .section-heading > * {
+      opacity: 0;
+      transform: translateY(12px);
+      transition:
+        opacity var(--motion-medium) var(--ease-out),
+        transform var(--motion-medium) var(--ease-out);
+    }
+
+    .section-heading.is-visible > :nth-child(1) {
+      opacity: 1;
+      transform: none;
+      transition-delay: 20ms;
+    }
+
+    .section-heading.is-visible > :nth-child(2) {
+      opacity: 1;
+      transform: none;
+      transition-delay: 100ms;
+    }
+
+    .section-heading.is-visible > :nth-child(3) {
+      opacity: 1;
+      transform: none;
+      transition-delay: 180ms;
+    }
+
+    .work-directory-links a {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .work-directory-links a::before {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 1px;
+      transform: scaleX(0);
+      transform-origin: left;
+      background: var(--accent);
+      transition: transform var(--motion-short) var(--ease-out);
+    }
+
+    .work-directory-links a:hover::before,
+    .work-directory-links a:focus-visible::before,
+    .work-directory-links a[aria-current="true"]::before {
+      transform: scaleX(1);
+    }
+
+    .work-directory-links a em {
+      transition:
+        color var(--motion-micro) ease,
+        transform var(--motion-short) var(--ease-out);
+    }
+
+    .work-directory-links a:hover em,
+    .work-directory-links a:focus-visible em {
+      color: var(--soft);
+      transform: translateX(3px);
+    }
+
+    .project[data-reveal] .project-copy {
+      opacity: 0;
+      transform: translateY(18px);
+      transition:
+        opacity var(--motion-medium) var(--ease-out),
+        transform var(--motion-medium) var(--ease-out);
+    }
+
+    .project[data-reveal] .project-media {
+      opacity: 0;
+      transform: translateY(22px);
+      clip-path: inset(0 0 7% 0 round var(--radius));
+      transition:
+        opacity var(--motion-medium) var(--ease-out) 100ms,
+        transform var(--motion-long) var(--ease-out) 100ms,
+        clip-path var(--motion-long) var(--ease-out) 100ms;
+    }
+
+    .project[data-reveal].is-visible .project-copy,
+    .project[data-reveal].is-visible .project-media {
+      opacity: 1;
+      transform: none;
+      clip-path: inset(0 0 0 0 round var(--radius));
+    }
+
+    .project[data-reveal].is-visible .project-media {
+      transition-delay: 120ms;
+    }
+
+    .project[data-reveal] .media-button img {
+      transform: scale(1.035);
+    }
+
+    .project[data-reveal].is-visible .media-button img {
+      transform: scale(1);
+    }
+
+
+    .project[data-reveal].is-visible .media-button:hover img {
+      transform: scale(1.018);
+    }
+
+    .project[data-reveal].is-visible .project-media[data-mode="system"] .media-button img {
+      transform: scale(1.02);
+    }
+
+    .project[data-reveal].is-visible .project-media[data-mode="system"] .media-button:hover img {
+      transform: scale(1.024);
+    }
+
+    .beyond-item[data-reveal].is-visible:hover img {
+      transform: scale(1.025);
+    }
+
+    .project.is-arriving {
+      animation: project-arrival 760ms var(--ease-out);
+    }
+
+    @keyframes project-arrival {
+      0% { transform: translateY(0); }
+      42% { transform: translateY(-6px); }
+      100% { transform: translateY(0); }
+    }
+
+    .lens-toggle {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+    }
+
+    .lens-toggle::before {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      top: 3px;
+      bottom: 3px;
+      left: 3px;
+      width: calc(50% - 3px);
+      border-radius: 0.25rem;
+      background: var(--accent);
+      transform: translateX(0);
+      transition: transform var(--motion-short) var(--ease-out);
+    }
+
+    .project-media[data-mode="system"] .lens-toggle::before {
+      transform: translateX(100%);
+    }
+
+    .lens-toggle button,
+    .lens-toggle button[aria-pressed="true"] {
+      position: relative;
+      z-index: 1;
+      background: transparent;
+      transition: color var(--motion-short) ease;
+    }
+
+    .lens-toggle button[aria-pressed="true"] {
+      color: var(--accent-ink);
+    }
+
+    .project-media.is-switching .media-stage {
+      transform: scale(0.995);
+    }
+
+    .media-stage {
+      transform: scale(1);
+      transition:
+        transform var(--motion-short) var(--ease-out),
+        border-color var(--motion-short) ease;
+    }
+
+    .project-media[data-mode="system"] .media-stage {
+      border-color: rgba(196, 206, 153, 0.32);
+    }
+
+    .system-layer {
+      clip-path: inset(0 0 0 100%);
+      transition:
+        opacity var(--motion-medium) var(--ease-out),
+        clip-path var(--motion-long) var(--ease-out);
+    }
+
+    .project-media[data-mode="system"] .system-layer {
+      clip-path: inset(0 0 0 0);
+    }
+
+    .capability-item {
+      position: relative;
+      overflow: hidden;
+      transition:
+        background var(--motion-short) ease,
+        padding var(--motion-short) var(--ease-out),
+        color var(--motion-short) ease;
+    }
+
+    .capability-item::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 1px;
+      transform: scaleY(0);
+      transform-origin: top;
+      background: var(--accent);
+      transition: transform var(--motion-medium) var(--ease-out);
+    }
+
+    .capability-item[aria-pressed="true"]::before {
+      transform: scaleY(1);
+    }
+
+    .capability-item .capability-copy {
+      transition: transform var(--motion-short) var(--ease-out);
+    }
+
+    .capability-item:hover .capability-copy,
+    .capability-item:focus-visible .capability-copy,
+    .capability-item[aria-pressed="true"] .capability-copy {
+      transform: translateX(3px);
+    }
+
+    .evidence-panel.is-updating > :not(.evidence-links),
+    .evidence-panel.is-updating .evidence-link {
+      animation: evidence-refresh var(--motion-short) var(--ease-out) both;
+    }
+
+    @keyframes evidence-refresh {
+      from {
+        opacity: 0;
+        transform: translateY(7px);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .about-principle {
+      opacity: 0;
+      transform: translateX(-10px);
+      transition:
+        opacity var(--motion-medium) var(--ease-out),
+        transform var(--motion-medium) var(--ease-out);
+    }
+
+    .about-copy.is-visible .about-principle {
+      opacity: 1;
+      transform: none;
+    }
+
+    .about-copy.is-visible .about-principle:nth-child(1) { transition-delay: 160ms; }
+    .about-copy.is-visible .about-principle:nth-child(2) { transition-delay: 240ms; }
+    .about-copy.is-visible .about-principle:nth-child(3) { transition-delay: 320ms; }
+
+    #about .about-principle {
+      opacity: 0;
+      transform: translateY(10px);
+      transition:
+        opacity var(--motion-medium) var(--ease-out),
+        transform var(--motion-medium) var(--ease-out);
+    }
+
+    #about .about-copy.is-visible .about-principle {
+      opacity: 1;
+      transform: none;
+    }
+
+    #about .about-copy.is-visible .about-principle:nth-child(1) { transition-delay: 160ms; }
+    #about .about-copy.is-visible .about-principle:nth-child(2) { transition-delay: 240ms; }
+    #about .about-copy.is-visible .about-principle:nth-child(3) { transition-delay: 320ms; }
+
+    .beyond-item[data-reveal] img {
+      transform: scale(1.055);
+    }
+
+    .beyond-item[data-reveal].is-visible img {
+      transform: scale(1);
+    }
+
+    .beyond-item .beyond-index,
+    .beyond-item .beyond-bottom {
+      opacity: 0;
+      transform: translateY(12px);
+      transition:
+        opacity var(--motion-medium) var(--ease-out),
+        transform var(--motion-medium) var(--ease-out);
+    }
+
+    .beyond-item.is-visible .beyond-index {
+      opacity: 1;
+      transform: none;
+      transition-delay: 80ms;
+    }
+
+    .beyond-item.is-visible .beyond-bottom {
+      opacity: 1;
+      transform: none;
+      transition-delay: 170ms;
+    }
+
+    .beyond-item:hover .beyond-bottom {
+      transform: translateY(-3px);
+    }
+
+    .case-study {
+      display: block;
+      opacity: 0;
+      transform: translateY(22px);
+      clip-path: inset(0 0 12% 0 round var(--radius));
+      transition:
+        opacity var(--motion-medium) var(--ease-out),
+        transform var(--motion-long) var(--ease-out),
+        clip-path var(--motion-long) var(--ease-out);
+      will-change: transform, clip-path;
+    }
+
+    .case-study.is-open {
+      opacity: 1;
+      transform: none;
+      clip-path: inset(0 0 0 0 round var(--radius));
+    }
+
+    .case-study.is-closing {
+      opacity: 0;
+      transform: translateY(-10px);
+      clip-path: inset(0 0 7% 0 round var(--radius));
+      pointer-events: none;
+    }
+
+    .case-study .case-study-header,
+    .case-study .case-study-facts,
+    .case-study .case-study-block,
+    .case-study .case-study-reflection,
+    .case-study .case-study-footer {
+      opacity: 0;
+      transform: translateY(14px);
+      transition:
+        opacity var(--motion-medium) var(--ease-out),
+        transform var(--motion-medium) var(--ease-out);
+    }
+
+    .case-study.is-open .case-study-header {
+      opacity: 1;
+      transform: none;
+      transition-delay: 80ms;
+    }
+
+    .case-study.is-open .case-study-facts {
+      opacity: 1;
+      transform: none;
+      transition-delay: 150ms;
+    }
+
+    .case-study.is-open .case-study-block {
+      opacity: 1;
+      transform: none;
+    }
+
+    .case-study.is-open .case-study-block:nth-child(1) { transition-delay: 210ms; }
+    .case-study.is-open .case-study-block:nth-child(2) { transition-delay: 250ms; }
+    .case-study.is-open .case-study-block:nth-child(3) { transition-delay: 290ms; }
+    .case-study.is-open .case-study-block:nth-child(4) { transition-delay: 330ms; }
+    .case-study.is-open .case-study-block:nth-child(5) { transition-delay: 370ms; }
+    .case-study.is-open .case-study-block:nth-child(6) { transition-delay: 410ms; }
+    .case-study.is-open .case-study-block:nth-child(7) { transition-delay: 450ms; }
+
+    .case-study.is-open .case-study-reflection {
+      opacity: 1;
+      transform: none;
+      transition-delay: 490ms;
+    }
+
+    .case-study.is-open .case-study-footer {
+      opacity: 1;
+      transform: none;
+      transition-delay: 540ms;
+    }
+
+    .architecture-node {
+      transition:
+        background-color var(--motion-short) ease,
+        transform var(--motion-short) var(--ease-out);
+    }
+
+    .architecture-node:hover {
+      z-index: 1;
+      background: var(--surface-strong);
+      transform: translateY(-2px);
+    }
+
+    .image-dialog {
+      opacity: 0;
+      transform: translateY(10px) scale(0.988);
+      transition:
+        opacity var(--motion-short) var(--ease-out),
+        transform var(--motion-medium) var(--ease-out);
+    }
+
+    .image-dialog.is-open {
+      opacity: 1;
+      transform: none;
+    }
+
+    .image-dialog.is-closing {
+      opacity: 0;
+      transform: translateY(6px) scale(0.992);
+    }
+
+    .image-dialog::backdrop {
+      opacity: 0;
+      transition: opacity var(--motion-short) ease;
+    }
+
+    .image-dialog.is-open::backdrop {
+      opacity: 1;
+    }
+
+    .image-dialog img {
+      opacity: 1;
+      transform: scale(1);
+      transition:
+        opacity var(--motion-short) ease,
+        transform var(--motion-medium) var(--ease-out);
+    }
+
+    .image-dialog img.is-changing {
+      opacity: 0;
+      transform: scale(0.995);
+    }
+
+    .contact-actions {
+      opacity: 0;
+      transform: translateY(12px);
+      transition:
+        opacity var(--motion-medium) var(--ease-out) 360ms,
+        transform var(--motion-medium) var(--ease-out) 360ms;
+    }
+
+    .contact [data-reveal].is-visible .contact-actions {
+      opacity: 1;
+      transform: none;
+    }
+
+    .copy-feedback:not(:empty) {
+      animation: copy-feedback-enter var(--motion-short) var(--ease-out);
+    }
+
+    @keyframes copy-feedback-enter {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .motion-word {
+        transition-delay: calc(var(--word-index, 0) * 55ms + 80ms);
+      }
+
+      .project[data-reveal] .project-media {
+        clip-path: inset(0 0 4% 0 round var(--radius));
+      }
+
+      .case-study {
+        clip-path: inset(0 0 6% 0 round var(--radius));
+      }
+    }
+
+    @media (max-width: 1040px) {
+      .nav-shell { grid-template-columns: 1fr auto; }
+      .nav-links {
+        position: fixed;
+        inset: 76px 0 0;
+        z-index: 998;
+        display: grid;
+        align-content: start;
+        gap: 0;
+        padding: 2rem 1rem;
+        background: var(--bg);
+        transform: translateX(100%);
+        visibility: hidden;
+        transition: transform var(--base) var(--ease), visibility var(--base);
+      }
+      .nav-links.is-open { transform: translateX(0); visibility: visible; }
+      .nav-links a { padding: 1.15rem 0.5rem; border-bottom: 1px solid var(--line); color: var(--text); font-family: var(--sans); font-size: clamp(1.6rem, 6vw, 3rem); font-weight: 500; letter-spacing: -0.04em; text-transform: none; }
+      .nav-links a::after { display: none; }
+      .nav-meta { display: none; }
+      .menu-button { display: block; }
+      .hero-main { grid-template-columns: 1fr; align-items: start; }
+      .hero-title { max-width: 10ch; font-size: clamp(4rem, 15vw, 8rem); }
+      .hero-side { max-width: 600px; }
+      .project { grid-template-columns: 1fr; gap: var(--s6); }
+      .project-copy { position: static; }
+      .capability-stage { grid-template-columns: 1fr; }
+      .evidence-panel { position: static; min-height: auto; }
+      .beyond-grid { grid-template-columns: 1fr; }
+      .beyond-item { min-height: 360px; }
+    }
+
+    @media (max-width: 680px) {
+      :root { --page: min(100% - 24px, 1380px); --s8: 5.5rem; }
+      body { background-size: 48px 48px; }
+      .nav-shell { min-height: 66px; }
+      .nav-links { inset-block-start: 66px; }
+      .brand span { display: none; }
+      .section-heading, .work-directory { grid-template-columns: 1fr; gap: var(--s3); }
+      .section-title { max-width: 14ch; font-size: clamp(2.4rem, 13vw, 4rem); }
+      .section-intro { grid-column: 1; }
+      .hero { min-height: 100svh; padding-top: 7.5rem; padding-bottom: var(--s4); }
+      .hero-title { font-size: clamp(3.8rem, 20vw, 6.8rem); line-height: 0.86; }
+      .hero-summary { font-size: 1rem; }
+      .hero-footer { grid-template-columns: auto 1fr; }
+      .hero-footer span:last-child { display: none; }
+      .work-directory-links { grid-template-columns: 1fr; }
+      .work-directory-links a { border-right: 0; }
+      .project-title { font-size: clamp(2.75rem, 14vw, 4.6rem); }
+      .project-meta div { grid-template-columns: 64px 1fr; }
+      .lens-toolbar { align-items: flex-start; flex-direction: column; }
+      .lens-toggle { width: 100%; }
+      .lens-toggle button { flex: 1; }
+      .media-stage { aspect-ratio: 4 / 3; }
+      .project::before { left: -0.5rem; }
+      .project.is-evidence-muted { opacity: 0.52; }
+      .dialog-header { grid-template-columns: minmax(0, 1fr) auto; min-height: auto; padding-block: 0.55rem; }
+      .dialog-controls { grid-column: 1 / -1; grid-row: 2; justify-self: center; }
+      .system-layer { align-content: start; overflow-y: auto; }
+      .system-row { grid-template-columns: 1fr; gap: 0.35rem; }
+      .capability-item { grid-template-columns: 48px minmax(0, 1fr) auto; gap: var(--s2); }
+      .capability-item:hover, .capability-item[aria-pressed="true"] { padding-inline: 0.65rem; }
+      .about-grid { grid-template-columns: 1fr; gap: var(--s4); }
+      .about-copy > p { font-size: clamp(1.25rem, 6vw, 1.75rem); }
+
+      #about .section-heading {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+        gap: var(--s2);
+      }
+      #about .section-title {
+        max-width: 14ch;
+        margin-inline: auto;
+        text-align: center;
+      }
+      #about .kicker {
+        text-align: center;
+      }
+      #about .about-grid {
+        grid-template-columns: 1fr;
+        gap: var(--s4);
+      }
+      #about .about-copy {
+        width: 100%;
+        margin-inline: auto;
+        text-align: center;
+      }
+      #about .about-copy > p {
+        text-align: center;
+      }
+      #about .about-principle {
+        gap: var(--s2);
+        padding: var(--s4) 0;
+      }
+      #about .about-principle p {
+        max-width: 100%;
+        margin-inline: auto;
+        text-align: center;
+      }
+
+      .beyond-item { min-height: 330px; }
+      .contact { min-height: 72svh; }
+      .contact-title { font-size: clamp(3.4rem, 18vw, 6.2rem); }
+      .footer-row { flex-direction: column; }
+    }
+
+
+    /* ===== FINAL MOBILE NAVIGATION FIX ===== */
+    @media (max-width: 1040px) {
+      body.nav-open {
+        overflow: hidden;
+        overscroll-behavior: none;
+        touch-action: none;
+      }
+
+      body.nav-open .site-header {
+        height: 100dvh;
+        min-height: 100svh;
+        overflow: hidden;
+        border-color: var(--line);
+        background: var(--bg);
+        transform: translateY(0);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
+
+      body.nav-open main,
+      body.nav-open .site-footer {
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .nav-shell {
+        position: relative;
+        z-index: 2;
+      }
+
+      .nav-links {
+        position: absolute;
+        inset: 76px calc((100vw - var(--page)) / -2) auto;
+        width: 100vw;
+        height: calc(100dvh - 76px);
+        min-height: calc(100svh - 76px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: stretch;
+        gap: 0;
+        padding:
+          max(1.5rem, env(safe-area-inset-top))
+          max(20px, calc((100vw - var(--page)) / 2))
+          max(2rem, env(safe-area-inset-bottom));
+        overflow-x: hidden;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        background: var(--bg);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateY(-10px);
+        transition:
+          opacity var(--motion-short) ease,
+          transform var(--motion-medium) var(--ease-out),
+          visibility 0s linear var(--motion-medium);
+      }
+
+      .nav-links.is-open {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateY(0);
+        transition-delay: 0s;
+      }
+
+      .nav-links a {
+        display: flex;
+        width: 100%;
+        min-height: 68px;
+        align-items: center;
+        justify-content: space-between;
+        padding: clamp(0.9rem, 2.6vh, 1.5rem) 0;
+        border-bottom: 1px solid var(--line);
+        color: var(--text);
+        font-family: var(--sans);
+        font-size: clamp(2.15rem, 9vw, 4.5rem);
+        font-weight: 500;
+        letter-spacing: -0.055em;
+        line-height: 0.95;
+        text-transform: none;
+        opacity: 0;
+        transform: translateY(12px);
+        transition:
+          color var(--motion-micro) ease,
+          opacity var(--motion-medium) var(--ease-out),
+          transform var(--motion-medium) var(--ease-out);
+      }
+
+      .nav-links a::before {
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 0.64rem;
+        font-weight: 400;
+        letter-spacing: 0.06em;
+        line-height: 1;
+      }
+
+      .nav-links a:nth-child(1)::before { content: "01"; }
+      .nav-links a:nth-child(2)::before { content: "02"; }
+      .nav-links a:nth-child(3)::before { content: "03"; }
+      .nav-links a:nth-child(4)::before { content: "04"; }
+      .nav-links a:nth-child(5)::before { content: "05"; }
+
+      .nav-links.is-open a {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .nav-links.is-open a:nth-child(1) { transition-delay: 70ms; }
+      .nav-links.is-open a:nth-child(2) { transition-delay: 110ms; }
+      .nav-links.is-open a:nth-child(3) { transition-delay: 150ms; }
+      .nav-links.is-open a:nth-child(4) { transition-delay: 190ms; }
+      .nav-links.is-open a:nth-child(5) { transition-delay: 230ms; }
+
+      .nav-links a:hover,
+      .nav-links a:focus-visible,
+      .nav-links a[aria-current="true"] {
+        color: var(--accent-strong);
+      }
+
+      .menu-button {
+        position: relative;
+        z-index: 3;
+        color: var(--text);
+      }
+    }
+
+    @media (max-width: 680px) {
+      .nav-links {
+        inset-block-start: 66px;
+        height: calc(100dvh - 66px);
+        min-height: calc(100svh - 66px);
+        padding-inline:
+          max(24px, calc((100vw - var(--page)) / 2));
+      }
+
+      .nav-links a {
+        min-height: 64px;
+        font-size: clamp(2.25rem, 11vw, 3.75rem);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition-duration: 0.01ms !important; }
+      [data-reveal],
+      [data-reveal] > *,
+      .section-heading > *,
+      .hero .eyebrow,
+      .hero .hero-summary,
+      .hero .hero-actions,
+      .hero-footer > *,
+      .motion-word,
+      .project[data-reveal] .project-copy,
+      .project[data-reveal] .project-media,
+      .about-principle,
+      .beyond-item .beyond-index,
+      .beyond-item .beyond-bottom,
+      .case-study,
+      .case-study .case-study-header,
+      .case-study .case-study-facts,
+      .case-study .case-study-block,
+      .case-study .case-study-reflection,
+      .case-study .case-study-footer,
+      .contact-actions {
+        opacity: 1 !important;
+        transform: none !important;
+        clip-path: none !important;
+      }
+      .hero-rule { transform: scaleX(1) !important; }
+      .system-row { opacity: 1; transform: none; }
+      .carousel-track,
+      .carousel-slide,
+      .carousel-slide .media-button,
+      .carousel-arrow,
+      .carousel-dot,
+      .carousel-controls {
+        transition-duration: 0.01ms !important;
+        animation: none !important;
+      }
+      .carousel-slide {
+        transform: none !important;
+        opacity: 1 !important;
+      }
+      .carousel-slide .media-button {
+        transform: none !important;
+      }
+    }
+  </style>
+
+  <noscript>
+    <style>
+      [data-reveal],
+      [data-reveal] > *,
+      .section-heading > *,
+      .hero .eyebrow,
+      .hero .hero-summary,
+      .hero .hero-actions,
+      .hero-footer > *,
+      .project-copy,
+      .project-media,
+      .about-principle,
+      .beyond-index,
+      .beyond-bottom,
+      .contact-actions {
+        opacity: 1 !important;
+        transform: none !important;
+        clip-path: none !important;
+      }
+
+      .hero-rule {
+        transform: scaleX(1) !important;
+      }
+    </style>
+  </noscript>
+
+
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Sounak Poddar",
+  "url": "https://sounakpoddar.com/",
+  "sameAs": [
+    "https://www.linkedin.com/in/sounak-poddar-591870334"
+  ],
+  "description": "B.Tech Artificial Intelligence and Machine Learning student building applied AI systems, interfaces, and tools.",
+  "knowsAbout": [
+    "Artificial Intelligence",
+    "Machine Learning",
+    "AI systems",
+    "Software engineering",
+    "Interface design"
+  ]
+}
+</script>
+</head>
+
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header" id="site-header">
+    <nav class="nav-shell" aria-label="Primary navigation">
+      <a class="brand" href="#top" aria-label="Sounak Poddar, home">Sounak Poddar <span>AI / ML</span></a>
+
+      <div class="nav-links" id="nav-links">
+        <a href="#work">Work</a>
+        <a href="#capabilities">Capabilities</a>
+        <a href="#about">Experience</a>
+        <a href="#beyond">Beyond</a>
+        <a href="#contact">Contact</a>
+      </div>
+
+      <div class="nav-meta" aria-hidden="true">India</div>
+
+      <button class="menu-button" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="nav-links">
+        <span></span>
+        <span></span>
+      </button>
+    </nav>
+  </header>
+
+  <main id="main-content">
+    <section class="hero page-shell" id="top" aria-labelledby="hero-title">
+      <div class="hero-main">
+        <div data-reveal>
+          <p class="eyebrow">CSE AI / ML · 2024—2028</p>
+          <h1 class="hero-title" id="hero-title">Building AI systems.</h1>
+        </div>
+
+        <div class="hero-side" data-reveal>
+          <p class="hero-summary">I’m Sounak Poddar, an engineering student developing applied + core AI systems that combine training/fine-tuning models (Core AI), software engineering with AI integration (Applied AI), and interface designs (UI designing) that add up to their beauty.</p>
+          <div class="hero-actions">
+            <a class="button-link" href="#work">View my work</a>
+            <a class="button-link quiet" href="#about">About me</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-footer" aria-hidden="true">
+        <span></span>
+        <span class="hero-rule"></span>
+        <span></span>
+      </div>
+    </section>
+
+    <section class="section page-shell" id="work" aria-labelledby="work-title">
+      <div class="section-heading" data-reveal>
+        <p class="kicker">01 / My work</p>
+        <h2 class="section-title" id="work-title">Products that I have engineered.</h2>
+        <p class="section-intro">Each project can be viewed from two sides: the product people use and the system decisions behind it.</p>
+      </div>
+
+      
+
+
+      <div class="work-list">
+        <article class="project" id="sentiq-chat" data-reveal>
+          <div class="project-copy">
+            <p class="project-index">Project 01 / All-in-one academic workspace </p>
+            <h3 class="project-title">StudentOS</h3>
+             <p class="project-summary">An AI-native academic workspace that turns courses, syllabi, assignments, schedules, and study materials into a clear solid roadmap broken into daily TO-DO lists.</p>
+
+            <div class="project-actions">
+              <a class="button-link" href="https://studentos.sentiqlabs.com/" target="_blank" rel="noopener noreferrer" style="color:inherit; text-decoration:none;">Visit product</a>
+            </div>
+
+           
+
+            <details class="project-note">
+              <summary>Read project note</summary>
+              <div class="project-note-body">
+                <div class="case-note-block">
+                  <span class="case-note-label">Purpose</span>
+                  <p>Reduce the 'Analysis Paralysis' scenarios of student life by bringing their entire academic context, scehdules, materials, and AI-driven assistance grounded to their academic story into one coherent environment.</p>
+                </div>
+                <div class="case-note-block">
+                  <span class="case-note-label">Engineering pov</span>
+                  <p>Lifecycle-driven onboarding, academic context retrieval, adaptive planning, Google Classroom integration, AI orchestration, and multi-tenant data architecture.</p>
+                </div>
+                <div class="case-note-block">
+                  <span class="case-note-label">Current state</span>
+                  <p>The product is already live. The first version is stable. Further versions are being actively worked upon. </p>
+                </div>
+              </div>
+            </details>
+          </div>
+
+
+          <div class="project-media" data-mode="product">
+            <div class="lens-toolbar">
+              <div class="lens-toggle" role="group" aria-label="StudentOS view">
+                <button type="button" aria-pressed="true" data-lens-mode="product">Product</button>
+                <button type="button" aria-pressed="false" data-lens-mode="system">System</button>
+              </div>
+            </div>
+
+            <div class="media-stage">
+              <div class="carousel" data-carousel role="region" aria-roledescription="carousel" aria-label="StudentOS screenshots" tabindex="0">
+                <div class="carousel-track">
+                  <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="1 of 3">
+                    <button class="media-button" type="button" aria-label="Open StudentOS screenshot 1 in full view" data-dialog-image="https://i.ibb.co/jkB9vQLr/Screenshot-2026-07-14-182748.png" data-dialog-title="StudentOS academic workspace interface">
+                      <img src="https://i.ibb.co/jkB9vQLr/Screenshot-2026-07-14-182748.png" alt="StudentOS academic workspace interface" width="1912" height="874" draggable="false" loading="lazy" decoding="async">
+                    </button>
+                  </div>
+                  <div class="carousel-slide is-empty" aria-hidden="true">
+                    <!-- PLACEHOLDER: to use this slot, remove class "is-empty" and aria-hidden, then add the same <button class="media-button" data-dialog-image="URL" data-dialog-title="..."><img src="URL" alt="..." draggable="false" loading="lazy" decoding="async"></button> as slide 1 -->
+                  </div>
+                  <div class="carousel-slide is-empty" aria-hidden="true">
+                    <!-- PLACEHOLDER: to use this slot, remove class "is-empty" and aria-hidden, then add the same <button class="media-button" data-dialog-image="URL" data-dialog-title="..."><img src="URL" alt="..." draggable="false" loading="lazy" decoding="async"></button> as slide 1 -->
+                  </div>
+                </div>
+              </div>
+              <div class="carousel-controls">
+                <button class="carousel-arrow" data-dir="-1" type="button" aria-label="Previous image">←</button>
+                <button class="carousel-arrow" data-dir="1" type="button" aria-label="Next image">→</button>
+                <span class="carousel-counter" aria-hidden="true">01 / 03</span>
+                <div class="carousel-dots"></div>
+              </div>
+              <p class="carousel-live" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></p>
+
+              <div class="system-layer" aria-hidden="true">
+                <div class="system-row"><strong>Today</strong><span>Breaks the student's overall academic state down into a clear set of TO-DO list for the day.</span></div>
+                <div class="system-row"><strong>Academic Context</strong><span>Connects and combines materials, syllabi, assignments, and schedules in one place.</span></div>
+                <div class="system-row"><strong>Planning</strong><span>AI-driven roadmap based on student's academic context, that adapts with their performance.</span></div>
+                <div class="system-row"><strong>Classroom</strong><span>Supports Google Classroom integration for fetching study materials, courses, etc. </span></div>
+                <div class="system-row"><strong>Ask StudentOS</strong><span>AI guidance, revision, and overall study support, grounded solely on Academic Context. </span></div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="project" id="sentiq-chat" data-reveal>
+          <div class="project-copy">
+            <p class="project-index">Project 02 / AI Orchestrator</p>
+            <h3 class="project-title">SentIQ Chat</h3>
+            <p class="project-summary">A multimodal, multi-model, and multi-tool AI Orchestrator built around conversation with memory & contextual awareness capable of file understanding and generation, chart & image generation, web search, deep research, live speech-speech conversation.</p>
+
+           
+            <div class="project-actions">
+              <a class="button-link" href="https://sentiqchat.sentiqlabs.com/" target="_blank" rel="noopener noreferrer">Visit product</a>
+            </div>
+
+            <details class="project-note">
+              <summary>Read project note</summary>
+              <div class="project-note-body">
+                <div class="case-note-block">
+                  <span class="case-note-label">Purpose</span>
+                  <p>Bring several applied AI models, their capabilities and tools into one. </p>
+                </div>
+                <div class="case-note-block">
+                  <span class="case-note-label">Engineering pov</span>
+                  <p>Orchestration, tool designing and routing, streaming, memory, db and auth management, file understanding, prompt design, and overall system behaviour.</p>
+                </div>
+                <div class="case-note-block">
+                  <span class="case-note-label">Current state</span>
+                  <p>The product is actively evolving through ongoing feature and systems work.</p>
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <div class="project-media" data-mode="product">
+            <div class="lens-toolbar">
+              
+              <div class="lens-toggle" role="group" aria-label="SentIQ Chat view">
+                <button type="button" aria-pressed="true" data-lens-mode="product">Product</button>
+                <button type="button" aria-pressed="false" data-lens-mode="system">System</button>
+              </div>
+            </div>
+
+            <div class="media-stage">
+              <div class="carousel" data-carousel role="region" aria-roledescription="carousel" aria-label="SentIQ Chat screenshots" tabindex="0">
+                <div class="carousel-track">
+                  <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="1 of 3">
+                    <button class="media-button" type="button" aria-label="Open SentIQ Chat screenshot 1 in full view" data-dialog-image="https://i.ibb.co/nsRD4K6z/Screenshot-2026-03-15-113205.png" data-dialog-title="Earlier SentIQGPT interface, predecessor to SentIQ Chat">
+                      <img src="https://i.ibb.co/nsRD4K6z/Screenshot-2026-03-15-113205.png" alt="Earlier SentIQGPT interface, predecessor to SentIQ Chat" width="1912" height="874" draggable="false" loading="lazy" decoding="async">
+                    </button>
+                  </div>
+                  <div class="carousel-slide is-empty" aria-hidden="true">
+                    <!-- PLACEHOLDER: to use this slot, remove class "is-empty" and aria-hidden, then add the same <button class="media-button" data-dialog-image="URL" data-dialog-title="..."><img src="URL" alt="..." draggable="false" loading="lazy" decoding="async"></button> as slide 1 -->
+                  </div>
+                  <div class="carousel-slide is-empty" aria-hidden="true">
+                    <!-- PLACEHOLDER: to use this slot, remove class "is-empty" and aria-hidden, then add the same <button class="media-button" data-dialog-image="URL" data-dialog-title="..."><img src="URL" alt="..." draggable="false" loading="lazy" decoding="async"></button> as slide 1 -->
+                  </div>
+                </div>
+              </div>
+              <div class="carousel-controls">
+                <button class="carousel-arrow" data-dir="-1" type="button" aria-label="Previous image">←</button>
+                <button class="carousel-arrow" data-dir="1" type="button" aria-label="Next image">→</button>
+                <span class="carousel-counter" aria-hidden="true">01 / 03</span>
+                <div class="carousel-dots"></div>
+              </div>
+              <p class="carousel-live" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></p>
+
+              <div class="system-layer" aria-hidden="true">
+                <div class="system-row"><strong>Conversation</strong><span>The central interface for interacting with the assistant.</span></div>
+                <div class="system-row"><strong>Memory</strong><span>Maintains context across interactions and threads.</span></div>
+                <div class="system-row"><strong>Files</strong><span>Extends the assistant into file understanding and analysis.</span></div>
+                <div class="system-row"><strong>Tool routing</strong><span>Connects a request to the appropriate capability.</span></div>
+                <div class="system-row"><strong>Streaming</strong><span>Delivers generated output token by token through the interface.</span></div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="project" id="sentiq-labs" data-reveal>
+          <div class="project-copy">
+            <p class="project-index">Project 03 / AI for the field</p>
+            <h3 class="project-title">FieldLine</h3>
+            <p class="project-summary">AI for bridging the communication gap effectively between the project lead and the field workers in large infrastructure projects. Aids project lead to manage the overall project effectively, while also guiding the execution team on the field.</p>
+
+      
+            <div class="project-actions">
+              <a class="button-link" href="https://fieldline.sentiqlabs.com/" target="_blank" rel="noopener noreferrer">Visit FieldLine</a>
+            </div>
+
+            <details class="project-note">
+              <summary>Read project note</summary>
+              <div class="project-note-body">
+                <div class="case-note-block">
+                  <span class="case-note-label">Purpose</span>
+                  <p>Connects project schedules with on-site reports and work updates, helping teams see what is completed, delayed, or at risk, while autonomously updating project status, and warning managers / admin only when any kind of anomalities are detected. </p>
+                </div>
+                <div class="case-note-block">
+                  <span class="case-note-label">Engineering pov</span>
+                  <p>Core AI + Applied AI : Houses machine learning models trained specifically for anomaly detection (statistical) and progress classification (logistic regression) in the progresses reported by the field workers, while appiled AI is used in usual AI response generaton, image recognition, while also allowing workers to report in their native language through speech to speech. </p>
+                </div>
+                <div class="case-note-block">
+                  <span class="case-note-label">Current state</span>
+                  <p>FieldLine v1 is stable and has been deployed. Initially developed for SIH 2026. Qualified in Round 1. Round 2 is under evaluation. </p>
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <div class="project-media" data-mode="product">
+            <div class="lens-toolbar">
+              
+              <div class="lens-toggle" role="group" aria-label="FieldLine view">
+                <button type="button" aria-pressed="true" data-lens-mode="product">Product</button>
+                <button type="button" aria-pressed="false" data-lens-mode="system">System</button>
+              </div>
+            </div>
+
+            <div class="media-stage">
+              <div class="carousel" data-carousel role="region" aria-roledescription="carousel" aria-label="FieldLine screenshots" tabindex="0">
+                <div class="carousel-track">
+                  <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="1 of 3">
+                    <button class="media-button" type="button" aria-label="Open FieldLine screenshot 1 in full view" data-dialog-image="https://i.ibb.co/CKyJjqjk/Screenshot-2026-10-11-185504.png" data-dialog-title="FieldLine: field operations task dashboard and safety briefing board">
+                      <img src="https://i.ibb.co/CKyJjqjk/Screenshot-2026-10-11-185504.png" alt="FieldLine: field operations task dashboard and safety briefing board" width="1897" height="872" draggable="false" loading="lazy" decoding="async">
+                    </button>
+                  </div>
+                  <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="2 of 3">
+                    <button class="media-button" type="button" aria-label="Open FieldLine screenshot 2 in full view" data-dialog-image="https://i.ibb.co/27zhVNC9/Screenshot-2026-10-11-184535.png" data-dialog-title="FieldLine: refinery expansion project overview and admin control room">
+                      <img src="https://i.ibb.co/27zhVNC9/Screenshot-2026-10-11-184535.png" alt="FieldLine: refinery expansion project overview and admin control room" width="1901" height="868" draggable="false" loading="lazy" decoding="async">
+                    </button>
+                  </div>
+                  <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="3 of 3">
+                    <button class="media-button" type="button" aria-label="Open FieldLine screenshot 3 in full view" data-dialog-image="https://i.ibb.co/FkNm4g4z/Screenshot-2026-10-11-185804.png" data-dialog-title="FieldLine: activity delay tracking and schedule variance table">
+                      <img src="https://i.ibb.co/FkNm4g4z/Screenshot-2026-10-11-185804.png" alt="FieldLine: activity delay tracking and schedule variance table" width="1892" height="843" draggable="false" loading="lazy" decoding="async">
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="carousel-controls">
+                <button class="carousel-arrow" data-dir="-1" type="button" aria-label="Previous image">←</button>
+                <button class="carousel-arrow" data-dir="1" type="button" aria-label="Next image">→</button>
+                <span class="carousel-counter" aria-hidden="true">01 / 03</span>
+                <div class="carousel-dots"></div>
+              </div>
+              <p class="carousel-live" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></p>
+
+              <div class="system-layer" aria-hidden="true">
+                <div class="system-row"><strong>Specialisation</strong><span>Built for infrastructure projects that need reliable progress tracking and early identification of delays.</span></div>
+                <div class="system-row"><strong>Field Context</strong><span>Bring together daily reports, site records, spreadsheets, and inspection documents.</span></div>
+                <div class="system-row"><strong>Easy Reporting</strong><span>Allows non-tech savvy field workers to report their progresses easily through text / speech in native language.</span></div>
+                <div class="system-row"><strong>Linguistic barriers</strong>Converts the report made in native lanugage by the worker into english, hence addressing linguistic barries between the admin and the execution team.  <span></span></div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section page-shell" id="capabilities" aria-labelledby="capabilities-title">
+      <div class="section-heading" data-reveal>
+        <p class="kicker">02 / Capabilities</p>
+        <h2 class="section-title" id="capabilities-title">Skills connected to my work.</h2>
+        <p class="section-intro">Select a capability to see how it matters to my work. </p>
+      </div>
+
+      <div class="capability-stage">
+        <div class="capability-list" data-reveal>
+          <button class="capability-item" type="button" aria-pressed="true"
+            data-evidence-title="Programming and systems"
+            data-evidence-copy="I generally apply Python, Typescript, Javascript, PLpgSQL to build the planned AI architecture, automation, orchestration, and the backend logic associated with the products I develop. For StudentOS the backend is served through Node.js. Java is employed in aspects of object oriented programming, with C included in the broader programming foundation."
+            data-evidence-projects="StudentOS · SentIQ Chat · FieldLine"
+            >
+            <span class="capability-number">01</span>
+            <span class="capability-copy"><h3>Programming and systems thinking </h3><p>Capable of broad architecture design, and implementing it across softwares and systems. </p></span>
+            <span class="capability-arrow" aria-hidden="true">→</span>
+          </button>
+
+          <button class="capability-item" type="button" aria-pressed="false"
+            data-evidence-title="Core AI integration"
+            data-evidence-copy="FieldLine includes machine learning models trained from scratch: a classification model, built with logistic regression, that assigns reported work to the correct domain, and an anomaly detection model that identifies anomalies in reports. "
+            data-evidence-projects="FieldLine · AI / ML Internship projects"
+            >
+            <span class="capability-number">02</span>
+            <span class="capability-copy"><h3>Core AI integration</h3><p>sklearn, PyTorch, Tensorlfow, ML fundamentals</p></span>
+            <span class="capability-arrow" aria-hidden="true">→</span>
+          </button>
+
+          <button class="capability-item" type="button" aria-pressed="false"
+            data-evidence-title="Applied AI Integrations"
+            data-evidence-copy="LLM workflows, API integration, and related work that uses complex models to assist with response generation, file analysis, speech-to-speech, and more."
+            data-evidence-projects="Evidence: SentIQ Chat · StudentOS · FieldLine"
+            >
+            <span class="capability-number">03</span>
+            <span class="capability-copy"><h3>Applied AI</h3><p>Integrating applied AI through APIs inside the product per the planned architecture. </p></span>
+            <span class="capability-arrow" aria-hidden="true">→</span>
+          </button>
+
+          <button class="capability-item" type="button" aria-pressed="false"
+            data-evidence-title="Communication and leadership"
+            data-evidence-copy="Public speaker, stage performer, and team leader. Two-year Class Representative, Duncan in Macbeth at the British Council, current SIH 2026 team lead, and an active Table Topics competitor. "
+            data-evidence-projects="Voice · Stage · Teams"
+            data-evidence-targets="about beyond">
+            <span class="capability-number">04</span>
+            <span class="capability-copy"><h3>Speaking, performance and leadership</h3><p>Thinking on my feet in impromptu contests, performing before live audiences, and leading teams from the classroom to SIH 2026.</p></span>
+            <span class="capability-arrow" aria-hidden="true">→</span>
+          </button>
+        </div>
+
+        <aside class="evidence-panel" data-reveal aria-live="polite" aria-atomic="true">
+          
+          <h3 class="evidence-title" id="evidence-title">Programming and systems</h3>
+          <p class="evidence-copy" id="evidence-copy">Python has been applied through AI systems, automation, orchestration, and backend logic. Java in object-oriented programming, with C included in the broader programming foundation.</p>
+          <p class="evidence-projects" id="evidence-projects">StudentOS · SentIQ Chat · SentIQ AI Laboratories</p>
+          <nav class="evidence-links" id="evidence-links" aria-label="Related evidence"></nav>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section page-shell" id="about" aria-labelledby="about-title">
+      <div class="section-heading" data-reveal>
+        <p class="kicker">03 / Experience</p>
+        <h2 class="section-title" id="about-title">Experience.</h2>
+      </div>
+
+      <div class="about-grid">
+      
+
+        <div class="about-copy" data-reveal>
+          <p>Two remote AI internships between November 2025 and January 2026, focused on applied AI/ML workflows and LLM behaviour.</p>
+
+          <div class="about-principles">
+            <div class="about-principle">
+              <span>01</span>
+              <p>
+                <strong>Artificial Intelligence Intern.</strong>
+                <span class="exp-meta">Edunet Foundation, IBM SkillsBuild · Remote | Dec 2025 – Jan 2026</span>
+                Completed a six-week applied AI/ML internship covering data preparation, model training, evaluation, NLP, and large language model fundamentals. Built Python workflows using Pandas, NumPy, scikit-learn, and Streamlit.
+              </p>
+            </div>
+            <div class="about-principle">
+              <span>02</span>
+              <p>
+                <strong>Artificial Intelligence Intern.</strong>
+                <span class="exp-meta">Vault of Codes · Remote | Nov 2025 – Dec 2025</span>
+                Designed prompts and lightweight AI workflows to study model behaviour, response quality, and automation. Built a Python-based AI chatbot as part of the internship programme.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section page-shell" id="beyond" aria-labelledby="beyond-title">
+      <div class="section-heading" data-reveal>
+        <p class="kicker">04 / Beyond AI/ML</p>
+        <h2 class="section-title" id="beyond-title">Other ways I think and create.</h2>
+      </div>
+
+      
+
+      <div class="beyond-grid">
+
+         <article class="beyond-item" data-reveal>
+          <img src="https://i.ibb.co/n8P5WGvM/Macbeth-Voices-of-Power.jpg" alt="Macbeth: Voices of Power" width="1861" height="768" loading="lazy" decoding="async">
+          <div class="beyond-content">
+            <span class="beyond-index">01 / Theatre</span>
+            <div class="beyond-bottom">
+              <h3>Theatre allows expression with awareness.</h3>
+              <p>Theatre teaches me to express freely while staying aware of my voice, my audience, and my scene partners. It is a method of learning, not just an extra co-curricular activity. </p>
+              <a href="https://www.britishcouncil.in/events/world-mental-health-day-stories-theatre-wellbeing" target="_blank" rel="noopener noreferrer">Read about my latest performance ↗</a>
+            </div>
+          </div>
+        </article>
+
+        
+        <article class="beyond-item no-image" data-reveal>
+          <div class="beyond-content">
+            <span class="beyond-index">02 / Reading</span>
+            <div class="beyond-bottom">
+              <h3>Understanding people and decisions.</h3>
+              <p>Reading books on people fosters psychological understanding, empathy, communication, and a broader understanding of the people around. </p>
+            </div>
+          </div>
+        </article>
+
+        <article class="beyond-item" data-reveal>
+          <img src="https://i.ibb.co/tMzm6QYS/image.png" alt="Cover artwork for The Man Who Remembered His Future" width="1861" height="768" loading="lazy" decoding="async">
+          <div class="beyond-content">
+            <span class="beyond-index">03 / Writing</span>
+            <div class="beyond-bottom">
+              <h3>I am a storyteller on Wattpad. </h3>
+              <p>Science fiction is my home genre. I write it on Wattpad, <i>because the future is the best place to explore the present.</i> </p>
+              <a href="https://www.wattpad.com/story/396303130-the-man-who-remembered-his-future" target="_blank" rel="noopener noreferrer">Read on Wattpad ↗</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="beyond-item" data-reveal>
+          <img src="https://i.ibb.co/c8SPnTv/graphics.jpg" alt="A selection of graphic design work" width="1920" height="1080" loading="lazy" decoding="async">
+          <div class="beyond-content">
+            <span class="beyond-index">03 / Visual design</span>
+            <div class="beyond-bottom">
+              <h3>Simple, smooth, easy on the eyes.</h3>
+              <p>I design interfaces where nothing feels cluttered, abrupt, or out of place.</p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="contact page-shell" id="contact" aria-labelledby="contact-title">
+      <div data-reveal>
+        <p class="contact-label">05 / Contact</p>
+        <h2 class="contact-title" id="contact-title">Let’s connect.</h2>
+        <div class="contact-actions">
+          <a class="email-link" href="mailto:rcsou123@gmail.com">rcsou123@gmail.com</a>
+          <button class="copy-button" type="button" data-copy-email="rcsou123@gmail.com" aria-describedby="copy-feedback">Copy email</button>
+          <a class="button-link quiet" href="https://www.linkedin.com/in/sounak-poddar-591870334" target="_blank" rel="me noopener noreferrer">LinkedIn</a>
+        </div>
+        <p class="copy-feedback" id="copy-feedback" aria-live="polite"></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-row">
+      <span>© <span id="current-year"></span> Sounak Poddar</span>
+      <a href="#top">Back to top ↑</a>
+    </div>
+  </footer>
+
+  <dialog class="image-dialog" id="image-dialog" aria-labelledby="dialog-title">
+    <div class="dialog-header">
+      <p class="dialog-title" id="dialog-title">Project image</p>
+      <div class="dialog-controls" aria-label="Project image navigation">
+        <button class="dialog-nav" id="dialog-previous" type="button" aria-label="Previous project image">←</button>
+        <span class="dialog-counter" id="dialog-counter" aria-live="polite">1 / 2</span>
+        <button class="dialog-nav" id="dialog-next" type="button" aria-label="Next project image">→</button>
+      </div>
+      <button class="dialog-close" type="button" aria-label="Close image viewer">✕</button>
+    </div>
+    <img id="dialog-image" alt="" decoding="async">
+  </dialog>
+
+  <script>
+    (() => {
+      const header = document.getElementById('site-header');
+      const menuButton = document.querySelector('.menu-button');
+      const navLinks = document.getElementById('nav-links');
+      const navAnchors = [...document.querySelectorAll('.nav-links a')];
+      const pageMain = document.getElementById('main-content');
+      const pageFooter = document.querySelector('.site-footer');
+      const revealItems = [...document.querySelectorAll('[data-reveal]')];
+      const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+      const projects = [...document.querySelectorAll('.project')];
+      const directoryLinks = [...document.querySelectorAll('[data-project-link]')];
+      const caseStudyTriggers = [...document.querySelectorAll('[data-case-study-toggle]')];
+      const caseStudySections = [...document.querySelectorAll('.case-study')];
+      const caseStudyCloseButtons = [...document.querySelectorAll('[data-case-study-close]')];
+      const dialog = document.getElementById('image-dialog');
+      const dialogImage = document.getElementById('dialog-image');
+      const dialogTitle = document.getElementById('dialog-title');
+      const dialogClose = document.querySelector('.dialog-close');
+      const dialogPrevious = document.getElementById('dialog-previous');
+      const dialogNext = document.getElementById('dialog-next');
+      const dialogCounter = document.getElementById('dialog-counter');
+      let galleryButtons = [...document.querySelectorAll('[data-dialog-image]')];
+      let activeLightboxCarousel = null;
+
+      let lastScrollY = window.scrollY;
+      let galleryIndex = 0;
+      let dialogCloseTimer = 0;
+
+      const splitWords = element => {
+        if (!element || reducedMotion.matches || element.dataset.motionSplit === 'true') return;
+        const words = element.textContent.trim().split(/\s+/);
+        element.setAttribute('aria-label', element.textContent.trim());
+        element.dataset.motionSplit = 'true';
+        element.innerHTML = words.map((word, index) => (
+          `<span class="motion-word-wrap" aria-hidden="true"><span class="motion-word" style="--word-index:${index}">${word}</span></span>`
+        )).join(' ');
+      };
+
+      splitWords(document.querySelector('.hero-title'));
+      splitWords(document.querySelector('.contact-title'));
+
+      const revealGroups = [
+        [...document.querySelectorAll('.beyond-grid > [data-reveal]')],
+        [...document.querySelectorAll('.about-grid > [data-reveal]')],
+        [...document.querySelectorAll('.work-list > [data-reveal]')]
+      ];
+
+      revealGroups.forEach(group => {
+        group.forEach((item, index) => {
+          item.style.setProperty('--reveal-delay', `${Math.min(index * 70, 180)}ms`);
+        });
+      });
+
+      const heroFooter = document.querySelector('.hero-footer');
+      if (heroFooter) {
+        heroFooter.setAttribute('data-reveal', '');
+        revealItems.push(heroFooter);
+      }
+
+      const setPageInert = inert => {
+        if (pageMain) pageMain.inert = inert;
+        if (pageFooter) pageFooter.inert = inert;
+      };
+
+      const closeNavigation = ({ restoreFocus = false } = {}) => {
+        navLinks.classList.remove('is-open');
+        menuButton.setAttribute('aria-expanded', 'false');
+        menuButton.setAttribute('aria-label', 'Open navigation');
+        document.body.classList.remove('nav-open');
+        header.classList.remove('is-hidden');
+        setPageInert(false);
+
+        if (restoreFocus) {
+          requestAnimationFrame(() => menuButton.focus());
+        }
+      };
+
+      menuButton.addEventListener('click', () => {
+        const isOpen = menuButton.getAttribute('aria-expanded') === 'true';
+        const willOpen = !isOpen;
+
+        menuButton.setAttribute('aria-expanded', String(willOpen));
+        menuButton.setAttribute('aria-label', willOpen ? 'Close navigation' : 'Open navigation');
+        navLinks.classList.toggle('is-open', willOpen);
+        document.body.classList.toggle('nav-open', willOpen);
+        header.classList.remove('is-hidden');
+        setPageInert(willOpen);
+
+        if (willOpen) {
+          requestAnimationFrame(() => navAnchors[0]?.focus());
+        }
+      });
+
+      navAnchors.forEach(link => {
+        link.addEventListener('click', () => closeNavigation());
+      });
+
+      const syncHeader = () => {
+        const currentY = window.scrollY;
+        const moved = currentY - lastScrollY;
+        const navIsOpen = menuButton.getAttribute('aria-expanded') === 'true';
+
+        header.classList.toggle('is-scrolled', currentY > 16);
+
+        if (!navIsOpen && currentY > 140 && moved > 8) {
+          header.classList.add('is-hidden');
+        } else if (moved < -5 || currentY < 80 || navIsOpen) {
+          header.classList.remove('is-hidden');
+        }
+
+        lastScrollY = currentY;
+      };
+
+      addEventListener('scroll', syncHeader, { passive: true });
+      syncHeader();
+
+      if (reducedMotion.matches || !('IntersectionObserver' in window)) {
+        revealItems.forEach(item => item.classList.add('is-visible'));
+      } else {
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          });
+        }, {
+          threshold: 0.12,
+          rootMargin: '0px 0px -6% 0px'
+        });
+
+        revealItems.forEach(item => revealObserver.observe(item));
+      }
+
+      if ('IntersectionObserver' in window) {
+        const sectionObserver = new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+
+            navAnchors.forEach(anchor => {
+              anchor.removeAttribute('aria-current');
+              if (anchor.getAttribute('href') === `#${entry.target.id}`) {
+                anchor.setAttribute('aria-current', 'true');
+              }
+            });
+          });
+        }, {
+          rootMargin: '-30% 0px -60% 0px'
+        });
+
+        document.querySelectorAll('main > section[id]').forEach(section => sectionObserver.observe(section));
+
+        const projectObserver = new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+
+            projects.forEach(project => project.classList.toggle('is-active', project === entry.target));
+            directoryLinks.forEach(link => {
+              if (link.dataset.projectLink === entry.target.id) {
+                link.setAttribute('aria-current', 'true');
+              } else {
+                link.removeAttribute('aria-current');
+              }
+            });
+          });
+        }, {
+          rootMargin: '-22% 0px -58% 0px',
+          threshold: 0.08
+        });
+
+        projects.forEach(project => projectObserver.observe(project));
+      }
+
+      directoryLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          const project = document.getElementById(link.dataset.projectLink);
+          if (!project) return;
+
+          project.classList.remove('is-arriving');
+          requestAnimationFrame(() => project.classList.add('is-arriving'));
+          setTimeout(() => project.classList.remove('is-arriving'), reducedMotion.matches ? 20 : 800);
+        });
+      });
+
+      const finalizeCaseStudyClose = (section, trigger, restoreFocus) => {
+        section.classList.remove('is-open', 'is-closing');
+        section.hidden = true;
+        trigger?.setAttribute('aria-expanded', 'false');
+        section.closest('.project')?.classList.remove('is-case-study-open');
+        if (restoreFocus) trigger?.focus();
+      };
+
+      const closeCaseStudy = (section, options = {}) => {
+        const {
+          restoreFocus = false,
+          updateHash = true,
+          immediate = false
+        } = options;
+
+        if (!section || section.hidden) return;
+
+        const trigger = document.querySelector(`[data-case-study-toggle="${section.id}"]`);
+
+        if (updateHash && location.hash === `#${section.id}`) {
+          const project = section.closest('.project');
+          history.replaceState(null, '', project ? `#${project.id}` : '#work');
+        }
+
+        if (immediate || reducedMotion.matches) {
+          finalizeCaseStudyClose(section, trigger, restoreFocus);
+          return;
+        }
+
+        section.classList.remove('is-open');
+        section.classList.add('is-closing');
+
+        setTimeout(() => {
+          finalizeCaseStudyClose(section, trigger, restoreFocus);
+        }, 440);
+      };
+
+      const openCaseStudy = (section, options = {}) => {
+        const {
+          moveFocus = true,
+          updateHash = true,
+          scroll = true
+        } = options;
+
+        if (!section) return;
+
+        caseStudySections.forEach(other => {
+          if (other !== section) {
+            closeCaseStudy(other, { updateHash: false, immediate: true });
+          }
+        });
+
+        const trigger = document.querySelector(`[data-case-study-toggle="${section.id}"]`);
+        section.hidden = false;
+        section.classList.remove('is-closing');
+        trigger?.setAttribute('aria-expanded', 'true');
+        section.closest('.project')?.classList.add('is-case-study-open');
+
+        if (updateHash) history.pushState(null, '', `#${section.id}`);
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            section.classList.add('is-open');
+
+            if (scroll) {
+              section.scrollIntoView({
+                behavior: reducedMotion.matches ? 'auto' : 'smooth',
+                block: 'start'
+              });
+            }
+
+            if (moveFocus) section.focus({ preventScroll: true });
+          });
+        });
+      };
+
+      caseStudyTriggers.forEach(trigger => {
+        trigger.addEventListener('click', () => {
+          const section = document.getElementById(trigger.dataset.caseStudyToggle);
+          if (!section) return;
+
+          if (section.hidden) {
+            openCaseStudy(section);
+          } else {
+            closeCaseStudy(section, { restoreFocus: true });
+          }
+        });
+      });
+
+      caseStudyCloseButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          closeCaseStudy(
+            document.getElementById(button.dataset.caseStudyClose),
+            { restoreFocus: true }
+          );
+        });
+      });
+
+      const syncCaseStudyFromHash = () => {
+        if (!location.hash) return;
+
+        const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+
+        if (target?.classList.contains('case-study')) {
+          openCaseStudy(target, {
+            moveFocus: false,
+            updateHash: false,
+            scroll: true
+          });
+          return;
+        }
+
+        caseStudySections.forEach(section => {
+          closeCaseStudy(section, {
+            updateHash: false,
+            immediate: true
+          });
+        });
+      };
+
+      syncCaseStudyFromHash();
+      addEventListener('hashchange', syncCaseStudyFromHash);
+
+      document.querySelectorAll('.project-media').forEach(projectMedia => {
+        const buttons = [...projectMedia.querySelectorAll('[data-lens-mode]')];
+        const systemLayer = projectMedia.querySelector('.system-layer');
+
+        const setLensMode = button => {
+          const mode = button.dataset.lensMode;
+
+          projectMedia.classList.add('is-switching');
+          projectMedia.dataset.mode = mode;
+
+          buttons.forEach(candidate => {
+            candidate.setAttribute('aria-pressed', String(candidate === button));
+          });
+
+          systemLayer.setAttribute('aria-hidden', String(mode !== 'system'));
+
+          setTimeout(() => {
+            projectMedia.classList.remove('is-switching');
+          }, reducedMotion.matches ? 20 : 260);
+        };
+
+        buttons.forEach((button, index) => {
+          button.addEventListener('click', () => setLensMode(button));
+
+          button.addEventListener('keydown', event => {
+            if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+            event.preventDefault();
+
+            let nextIndex = index;
+            if (event.key === 'ArrowLeft') nextIndex = (index - 1 + buttons.length) % buttons.length;
+            if (event.key === 'ArrowRight') nextIndex = (index + 1) % buttons.length;
+            if (event.key === 'Home') nextIndex = 0;
+            if (event.key === 'End') nextIndex = buttons.length - 1;
+
+            buttons[nextIndex].focus();
+            setLensMode(buttons[nextIndex]);
+          });
+        });
+
+        const stage = projectMedia.querySelector('.media-stage');
+
+        if (stage && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+          stage.addEventListener('pointermove', event => {
+            const rect = stage.getBoundingClientRect();
+            stage.style.setProperty(
+              '--pointer-x',
+              `${((event.clientX - rect.left) / rect.width) * 100}%`
+            );
+            stage.style.setProperty(
+              '--pointer-y',
+              `${((event.clientY - rect.top) / rect.height) * 100}%`
+            );
+          });
+        }
+      });
+
+      /* ===== PROJECT CAROUSEL ===== */
+      const CAROUSEL_WHEEL = 'vertical-capture';
+
+      document.querySelectorAll('[data-carousel]').forEach(carouselEl => {
+        const projectMedia = carouselEl.closest('.project-media');
+        const stage = carouselEl.closest('.media-stage');
+        const track = carouselEl.querySelector('.carousel-track');
+        const controls = stage ? stage.querySelector('.carousel-controls') : null;
+        const counter = controls ? controls.querySelector('.carousel-counter') : null;
+        const dotsContainer = controls ? controls.querySelector('.carousel-dots') : null;
+        const prevArrow = controls ? controls.querySelector('.carousel-arrow[data-dir="-1"]') : null;
+        const nextArrow = controls ? controls.querySelector('.carousel-arrow[data-dir="1"]') : null;
+        const liveRegion = stage ? stage.querySelector('.carousel-live') : null;
+
+        const allSlideEls = [...carouselEl.querySelectorAll('.carousel-slide')];
+        const realSlides = allSlideEls.filter(slide => {
+          if (slide.classList.contains('is-empty')) return false;
+          const img = slide.querySelector('img');
+          return img && img.getAttribute('src') && img.getAttribute('src').trim() !== '';
+        });
+
+        let currentIndex = 0;
+        let width = carouselEl.getBoundingClientRect().width || 0;
+        let isHovered = false;
+
+        const isMultiSlide = realSlides.length >= 2;
+
+        if (!isMultiSlide) {
+          if (controls) controls.hidden = true;
+          carouselEl.style.cursor = 'default';
+        }
+
+        const goTo = (i, { instant = false } = {}) => {
+          if (realSlides.length === 0) return;
+          const nextIndex = Math.max(0, Math.min(i, realSlides.length - 1));
+          currentIndex = nextIndex;
+
+          const shouldSnap = instant || reducedMotion.matches;
+          if (shouldSnap) {
+            track.style.transition = 'none';
+            realSlides.forEach(slide => {
+              slide.style.transition = 'none';
+              const btn = slide.querySelector('.media-button');
+              if (btn) btn.style.transition = 'none';
+            });
+          }
+
+          const targetX = -currentIndex * width;
+          track.style.setProperty('--x', `${targetX}px`);
+
+          realSlides.forEach((slide, k) => {
+            const isActive = (k === currentIndex);
+            slide.classList.toggle('is-active', isActive);
+            const p = k - currentIndex;
+            slide.style.setProperty('--p', p);
+            slide.style.setProperty('--dist', Math.min(1, Math.abs(p)));
+            if (isActive) {
+              slide.removeAttribute('inert');
+            } else {
+              slide.setAttribute('inert', '');
+            }
+          });
+
+          if (counter) {
+            const curStr = String(currentIndex + 1).padStart(2, '0');
+            const totStr = String(realSlides.length).padStart(2, '0');
+            counter.textContent = `${curStr} / ${totStr}`;
+          }
+
+          if (dotsContainer) {
+            const dots = dotsContainer.querySelectorAll('.carousel-dot');
+            dots.forEach((dot, k) => {
+              dot.setAttribute('aria-current', k === currentIndex ? 'true' : 'false');
+            });
+          }
+
+          if (prevArrow) {
+            const isFirst = currentIndex === 0;
+            prevArrow.setAttribute('aria-disabled', String(isFirst));
+            prevArrow.disabled = isFirst;
+          }
+          if (nextArrow) {
+            const isLast = currentIndex === realSlides.length - 1;
+            nextArrow.setAttribute('aria-disabled', String(isLast));
+            nextArrow.disabled = isLast;
+          }
+
+          if (liveRegion) {
+            liveRegion.textContent = `Image ${currentIndex + 1} of ${realSlides.length}`;
+          }
+
+          if (shouldSnap) {
+            void track.offsetWidth;
+            requestAnimationFrame(() => {
+              track.style.transition = '';
+              realSlides.forEach(slide => {
+                slide.style.transition = '';
+                const btn = slide.querySelector('.media-button');
+                if (btn) btn.style.transition = '';
+              });
+            });
+          }
+        };
+
+        const carouselApi = {
+          goTo,
+          getIndex: () => currentIndex,
+          getRealSlides: () => realSlides
+        };
+
+        // Initialize dots
+        if (dotsContainer) {
+          dotsContainer.innerHTML = '';
+          realSlides.forEach((slide, k) => {
+            const dot = document.createElement('button');
+            dot.type = 'button';
+            dot.className = 'carousel-dot';
+            dot.setAttribute('aria-label', `Go to image ${k + 1}`);
+            dot.setAttribute('aria-current', k === 0 ? 'true' : 'false');
+            dot.addEventListener('click', () => goTo(k));
+            dotsContainer.appendChild(dot);
+          });
+        }
+
+        // Initialize arrow buttons
+        prevArrow?.addEventListener('click', () => goTo(currentIndex - 1));
+        nextArrow?.addEventListener('click', () => goTo(currentIndex + 1));
+
+        // Lightbox trigger binding for this project
+        realSlides.forEach((slide, slideIndex) => {
+          const mediaBtn = slide.querySelector('.media-button[data-dialog-image]');
+          if (!mediaBtn) return;
+          mediaBtn.dataset.dialogBound = 'true';
+          mediaBtn.addEventListener('click', () => {
+            galleryButtons = realSlides
+              .map(s => s.querySelector('.media-button[data-dialog-image]'))
+              .filter(Boolean);
+            activeLightboxCarousel = carouselApi;
+            openDialog(slideIndex);
+          });
+        });
+
+        // ResizeObserver
+        if ('ResizeObserver' in window) {
+          const ro = new ResizeObserver(entries => {
+            for (const entry of entries) {
+              const newWidth = entry.contentRect.width;
+              if (newWidth > 0 && Math.abs(newWidth - width) > 0.5) {
+                width = newWidth;
+                goTo(currentIndex, { instant: true });
+              }
+            }
+          });
+          ro.observe(carouselEl);
+        }
+
+        // Preload non-first slides when carousel nears viewport
+        if ('IntersectionObserver' in window) {
+          const preloadObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+              if (!entry.isIntersecting) return;
+              realSlides.slice(1).forEach(slide => {
+                const img = slide.querySelector('img');
+                if (img) {
+                  img.loading = 'eager';
+                  if (typeof img.decode === 'function') {
+                    img.decode().catch(() => {});
+                  }
+                }
+              });
+              observer.unobserve(entry.target);
+            });
+          }, { rootMargin: '200px' });
+          preloadObserver.observe(carouselEl);
+        }
+
+        // Drag tracking (only if multiple real slides)
+        if (isMultiSlide) {
+          let pointerActive = false;
+          let pointerId = null;
+          let startX = 0;
+          let startY = 0;
+          let startTrackX = 0;
+          let hasMovedPastThreshold = false;
+          let dragHistory = [];
+
+          carouselEl.addEventListener('dragstart', event => event.preventDefault());
+
+          carouselEl.addEventListener('pointerdown', event => {
+            if (projectMedia?.dataset.mode === 'system') return;
+            if (event.pointerType === 'mouse' && event.button !== 0) return;
+
+            pointerActive = true;
+            pointerId = event.pointerId;
+            startX = event.clientX;
+            startY = event.clientY;
+            startTrackX = -currentIndex * width;
+            hasMovedPastThreshold = false;
+            dragHistory = [{ x: event.clientX, t: performance.now() }];
+          });
+
+          carouselEl.addEventListener('pointermove', event => {
+            if (!pointerActive || event.pointerId !== pointerId) return;
+
+            const dx = event.clientX - startX;
+            const dy = event.clientY - startY;
+
+            if (!hasMovedPastThreshold) {
+              if (event.pointerType === 'touch') {
+                if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) >= 6) {
+                  pointerActive = false;
+                  return;
+                }
+              }
+              if (Math.abs(dx) >= 6) {
+                hasMovedPastThreshold = true;
+                carouselEl.classList.add('is-dragging');
+                try {
+                  carouselEl.setPointerCapture(event.pointerId);
+                } catch (_) {}
+              }
+            }
+
+            if (hasMovedPastThreshold) {
+              const now = performance.now();
+              dragHistory.push({ x: event.clientX, t: now });
+              while (dragHistory.length > 1 && now - dragHistory[0].t > 100) {
+                dragHistory.shift();
+              }
+
+              const rawPos = startTrackX + dx;
+              const maxPos = 0;
+              const minPos = -(realSlides.length - 1) * width;
+              let effectiveX = rawPos;
+
+              if (rawPos > maxPos) {
+                effectiveX = maxPos + (rawPos - maxPos) * 0.35;
+              } else if (rawPos < minPos) {
+                effectiveX = minPos + (rawPos - minPos) * 0.35;
+              }
+
+              track.style.setProperty('--x', `${effectiveX}px`);
+
+              realSlides.forEach((slide, k) => {
+                const slideCenterOffset = effectiveX + k * width;
+                const p = -slideCenterOffset / width;
+                slide.style.setProperty('--p', p);
+                slide.style.setProperty('--dist', Math.min(1, Math.abs(p)));
+              });
+            }
+          });
+
+          const handlePointerEnd = event => {
+            if (!pointerActive || event.pointerId !== pointerId) return;
+            pointerActive = false;
+
+            try {
+              carouselEl.releasePointerCapture(event.pointerId);
+            } catch (_) {}
+
+            carouselEl.classList.remove('is-dragging');
+
+            if (hasMovedPastThreshold) {
+              const preventClick = e => {
+                e.stopPropagation();
+                e.preventDefault();
+              };
+              carouselEl.addEventListener('click', preventClick, { capture: true, once: true });
+              setTimeout(() => {
+                carouselEl.removeEventListener('click', preventClick, { capture: true });
+              }, 400);
+
+              const now = performance.now();
+              const oldest = dragHistory[0] || { x: event.clientX, t: now };
+              const dt = now - oldest.t;
+              const vx = dt > 0 ? (event.clientX - oldest.x) / dt : 0;
+              const dx = event.clientX - startX;
+
+              let target = currentIndex;
+              if (Math.abs(vx) > 0.35) {
+                target = vx > 0 ? currentIndex - 1 : currentIndex + 1;
+              } else {
+                if (Math.abs(dx) >= width * 0.18) {
+                  target = dx > 0 ? currentIndex - 1 : currentIndex + 1;
+                } else {
+                  target = currentIndex;
+                }
+              }
+              goTo(target);
+            } else {
+              goTo(currentIndex);
+            }
+          };
+
+          carouselEl.addEventListener('pointerup', handlePointerEnd);
+          carouselEl.addEventListener('pointercancel', event => {
+            if (!pointerActive || event.pointerId !== pointerId) return;
+            pointerActive = false;
+            try { carouselEl.releasePointerCapture(event.pointerId); } catch (_) {}
+            carouselEl.classList.remove('is-dragging');
+            goTo(currentIndex);
+          });
+        }
+
+        // Wheel gesture handling
+        if (isMultiSlide) {
+          let wheelLocked = false;
+          let isTransitioning = false;
+          let wheelIdleTimer = null;
+          let wheelTransitionTimer = null;
+
+          carouselEl.addEventListener('wheel', event => {
+            if (projectMedia?.dataset.mode === 'system') return;
+
+            let dx = event.deltaX;
+            let dy = event.deltaY;
+            if (event.deltaMode === 1) {
+              dx *= 24;
+              dy *= 24;
+            } else if (event.deltaMode === 2) {
+              dx *= 600;
+              dy *= 600;
+            }
+
+            const isHorizontal = Math.abs(dx) > Math.abs(dy) || event.shiftKey;
+            if (event.shiftKey && Math.abs(dx) === 0 && Math.abs(dy) !== 0) {
+              dx = dy;
+              dy = 0;
+            }
+
+            clearTimeout(wheelIdleTimer);
+            wheelIdleTimer = setTimeout(() => {
+              if (!isTransitioning) {
+                wheelLocked = false;
+              }
+            }, 120);
+
+            if (wheelLocked) {
+              if (isHorizontal) {
+                event.preventDefault();
+              } else if (CAROUSEL_WHEEL === 'vertical-capture') {
+                const dir = dy > 0 ? 1 : -1;
+                const atBoundary = (dir === 1 && currentIndex >= realSlides.length - 1) ||
+                                   (dir === -1 && currentIndex <= 0);
+                if (!atBoundary) {
+                  event.preventDefault();
+                }
+              }
+              return;
+            }
+
+            if (Math.hypot(dx, dy) < 4) return;
+
+            if (isHorizontal) {
+              const dir = dx > 0 ? 1 : -1;
+              event.preventDefault();
+              const target = currentIndex + dir;
+              if (target >= 0 && target < realSlides.length) {
+                wheelLocked = true;
+                isTransitioning = true;
+                clearTimeout(wheelTransitionTimer);
+                wheelTransitionTimer = setTimeout(() => {
+                  isTransitioning = false;
+                  if (!wheelIdleTimer) {
+                    wheelLocked = false;
+                  }
+                }, reducedMotion.matches ? 10 : 700);
+                goTo(target);
+              }
+            } else {
+              if (CAROUSEL_WHEEL === 'vertical-capture') {
+                const dir = dy > 0 ? 1 : -1;
+                const atBoundary = (dir === 1 && currentIndex >= realSlides.length - 1) ||
+                                   (dir === -1 && currentIndex <= 0);
+                if (atBoundary) {
+                  return;
+                }
+
+                event.preventDefault();
+                wheelLocked = true;
+                isTransitioning = true;
+                clearTimeout(wheelTransitionTimer);
+                wheelTransitionTimer = setTimeout(() => {
+                  isTransitioning = false;
+                  if (!wheelIdleTimer) {
+                    wheelLocked = false;
+                  }
+                }, reducedMotion.matches ? 10 : 700);
+                goTo(currentIndex + dir);
+              }
+            }
+          }, { passive: false });
+        }
+
+        // Keyboard navigation
+        if (stage) {
+          stage.addEventListener('pointerenter', () => { isHovered = true; });
+          stage.addEventListener('pointerleave', () => { isHovered = false; });
+        }
+
+        window.addEventListener('keydown', event => {
+          if (projectMedia?.dataset.mode === 'system') return;
+          if (!isMultiSlide) return;
+
+          const activeEl = document.activeElement;
+          if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable)) return;
+
+          const focusInside = carouselEl.contains(activeEl) || (controls && controls.contains(activeEl));
+          if (!focusInside && !isHovered) return;
+
+          if (event.key === 'ArrowLeft') {
+            if (currentIndex > 0) {
+              event.preventDefault();
+              goTo(currentIndex - 1);
+            }
+          } else if (event.key === 'ArrowRight') {
+            if (currentIndex < realSlides.length - 1) {
+              event.preventDefault();
+              goTo(currentIndex + 1);
+            }
+          } else if (focusInside && event.key === 'Home') {
+            if (currentIndex !== 0) {
+              event.preventDefault();
+              goTo(0);
+            }
+          } else if (focusInside && event.key === 'End') {
+            if (currentIndex !== realSlides.length - 1) {
+              event.preventDefault();
+              goTo(realSlides.length - 1);
+            }
+          }
+        });
+
+        // Initialize state at index 0
+        goTo(0, { instant: true });
+      });
+
+      const capabilityItems = [...document.querySelectorAll('.capability-item')];
+      const evidencePanel = document.querySelector('.evidence-panel');
+      const evidenceTitle = document.getElementById('evidence-title');
+      const evidenceCopy = document.getElementById('evidence-copy');
+      const evidenceProjects = document.getElementById('evidence-projects');
+      const evidenceLinks = document.getElementById('evidence-links');
+
+      const readableTargetName = target => (
+        target.querySelector('.project-title')?.textContent.trim() ||
+        target.querySelector('h2')?.textContent.trim() ||
+        target.id.replace(/-/g, ' ')
+      );
+
+      const updateCapabilityEvidence = item => {
+        capabilityItems.forEach(candidate => {
+          candidate.setAttribute('aria-pressed', String(candidate === item));
+        });
+
+        evidencePanel.classList.remove('is-updating');
+        void evidencePanel.offsetWidth;
+        evidencePanel.classList.add('is-updating');
+
+        evidenceTitle.textContent = item.dataset.evidenceTitle;
+        evidenceCopy.textContent = item.dataset.evidenceCopy;
+        evidenceProjects.textContent = item.dataset.evidenceProjects;
+
+        const targetIds = (item.dataset.evidenceTargets || '')
+          .split(/\s+/)
+          .filter(Boolean);
+
+        const projectIds = targetIds.filter(id => (
+          document.getElementById(id)?.classList.contains('project')
+        ));
+
+        projects.forEach(project => {
+          const match = projectIds.includes(project.id);
+          project.classList.toggle('is-evidence-match', match);
+          project.classList.toggle('is-evidence-muted', projectIds.length > 0 && !match);
+        });
+
+        directoryLinks.forEach(link => {
+          link.classList.toggle(
+            'is-evidence-match',
+            projectIds.includes(link.dataset.projectLink)
+          );
+        });
+
+        evidenceLinks.replaceChildren();
+
+        targetIds.forEach(id => {
+          const target = document.getElementById(id);
+          if (!target) return;
+
+          const link = document.createElement('a');
+          link.className = 'evidence-link';
+          link.href = `#${id}`;
+          link.textContent = `${readableTargetName(target)} ↓`;
+
+          link.addEventListener('click', () => {
+            target.classList.remove('is-arriving');
+            requestAnimationFrame(() => target.classList.add('is-arriving'));
+            setTimeout(
+              () => target.classList.remove('is-arriving'),
+              reducedMotion.matches ? 20 : 800
+            );
+          });
+
+          evidenceLinks.append(link);
+        });
+
+        setTimeout(() => {
+          evidencePanel.classList.remove('is-updating');
+        }, reducedMotion.matches ? 20 : 360);
+      };
+
+      capabilityItems.forEach((item, index) => {
+        item.addEventListener('click', () => updateCapabilityEvidence(item));
+
+        item.addEventListener('keydown', event => {
+          if (!['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
+          event.preventDefault();
+
+          let nextIndex = index;
+          if (event.key === 'ArrowUp') nextIndex = (index - 1 + capabilityItems.length) % capabilityItems.length;
+          if (event.key === 'ArrowDown') nextIndex = (index + 1) % capabilityItems.length;
+          if (event.key === 'Home') nextIndex = 0;
+          if (event.key === 'End') nextIndex = capabilityItems.length - 1;
+
+          capabilityItems[nextIndex].focus();
+          updateCapabilityEvidence(capabilityItems[nextIndex]);
+        });
+      });
+
+      updateCapabilityEvidence(
+        capabilityItems.find(item => item.getAttribute('aria-pressed') === 'true') ||
+        capabilityItems[0]
+      );
+
+      const renderGalleryItem = index => {
+        galleryIndex = (index + galleryButtons.length) % galleryButtons.length;
+        const button = galleryButtons[galleryIndex];
+        const image = button.querySelector('img');
+
+        dialogImage.classList.add('is-changing');
+
+        setTimeout(() => {
+          dialogImage.src = button.dataset.dialogImage;
+          dialogImage.alt = image?.alt || 'Project image';
+          dialogTitle.textContent = button.dataset.dialogTitle || 'Project image';
+          dialogCounter.textContent = `${galleryIndex + 1} / ${galleryButtons.length}`;
+          dialogPrevious.disabled = galleryButtons.length < 2;
+          dialogNext.disabled = galleryButtons.length < 2;
+
+          requestAnimationFrame(() => {
+            dialogImage.classList.remove('is-changing');
+          });
+        }, reducedMotion.matches ? 0 : 120);
+      };
+
+      const openDialog = index => {
+        clearTimeout(dialogCloseTimer);
+        renderGalleryItem(index);
+        dialog.showModal();
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => dialog.classList.add('is-open'));
+        });
+      };
+
+      const closeDialog = () => {
+        if (!dialog.open) return;
+
+        if (activeLightboxCarousel) {
+          activeLightboxCarousel.goTo(galleryIndex, { instant: true });
+        }
+
+        if (reducedMotion.matches) {
+          dialog.classList.remove('is-open', 'is-closing');
+          dialog.close();
+          return;
+        }
+
+        dialog.classList.remove('is-open');
+        dialog.classList.add('is-closing');
+
+        dialogCloseTimer = window.setTimeout(() => {
+          dialog.classList.remove('is-closing');
+          dialog.close();
+        }, 320);
+      };
+
+      dialogPrevious.addEventListener('click', () => renderGalleryItem(galleryIndex - 1));
+      dialogNext.addEventListener('click', () => renderGalleryItem(galleryIndex + 1));
+      dialogClose.addEventListener('click', closeDialog);
+
+      dialog.addEventListener('cancel', event => {
+        event.preventDefault();
+        closeDialog();
+      });
+
+      dialog.addEventListener('click', event => {
+        const bounds = dialog.getBoundingClientRect();
+        const outside = (
+          event.clientX < bounds.left ||
+          event.clientX > bounds.right ||
+          event.clientY < bounds.top ||
+          event.clientY > bounds.bottom
+        );
+
+        if (outside) closeDialog();
+      });
+
+      dialog.addEventListener('keydown', event => {
+        if (event.key === 'ArrowLeft') {
+          event.preventDefault();
+          renderGalleryItem(galleryIndex - 1);
+        }
+
+        if (event.key === 'ArrowRight') {
+          event.preventDefault();
+          renderGalleryItem(galleryIndex + 1);
+        }
+      });
+
+      const copyButton = document.querySelector('[data-copy-email]');
+      const copyFeedback = document.getElementById('copy-feedback');
+
+      copyButton.addEventListener('click', async () => {
+        const email = copyButton.dataset.copyEmail;
+
+        try {
+          await navigator.clipboard.writeText(email);
+          copyButton.textContent = 'Copied';
+          copyButton.classList.add('is-success');
+          copyFeedback.textContent = 'Email copied to clipboard.';
+        } catch {
+          copyButton.textContent = 'Select email';
+          copyFeedback.textContent = `Copy manually: ${email}`;
+        }
+
+        setTimeout(() => {
+          copyButton.textContent = 'Copy email';
+          copyButton.classList.remove('is-success');
+          copyFeedback.textContent = '';
+        }, 2200);
+      });
+
+      document.addEventListener('keydown', event => {
+        if (event.key !== 'Escape') return;
+
+        closeNavigation({ restoreFocus: true });
+
+        if (!dialog.open) {
+          const openCaseStudySection = caseStudySections.find(section => !section.hidden);
+          if (openCaseStudySection) {
+            closeCaseStudy(openCaseStudySection, { restoreFocus: true });
+          }
+        }
+      });
+
+      document.getElementById('current-year').textContent = new Date().getFullYear();
+    })();
+  </script>
+</body>
+</html>
