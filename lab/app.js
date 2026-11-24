@@ -104,6 +104,7 @@ uniform sampler2D uTexture;
 uniform vec2 uPlaneSize;
 uniform vec2 uImageSize;
 uniform vec2 uUvOffset;
+uniform float uTextureScale;
 uniform float uDim;
 uniform float uOpacity;
 
@@ -120,6 +121,7 @@ void main() {
     scale.x = planeAspect / imageAspect;
   }
 
+  scale /= max(uTextureScale, 0.001);
   vec2 uv = (vUv - 0.5) * scale + 0.5 + uUvOffset;
   vec4 color = texture2D(uTexture, uv);
   gl_FragColor = vec4(color.rgb * uDim, color.a * uOpacity);
@@ -192,6 +194,7 @@ const uniforms = {
   planeSize: gl.getUniformLocation(program, "uPlaneSize"),
   imageSize: gl.getUniformLocation(program, "uImageSize"),
   uvOffset: gl.getUniformLocation(program, "uUvOffset"),
+  textureScale: gl.getUniformLocation(program, "uTextureScale"),
   dim: gl.getUniformLocation(program, "uDim"),
   opacity: gl.getUniformLocation(program, "uOpacity")
 };
@@ -214,6 +217,51 @@ function easeInOutQuart(t) {
 function easeOutCubic(t) {
   return 1 - Math.pow(1 - t, 3);
 }
+
+function easeOutPower6(t) {
+  return 1 - Math.pow(1 - clamp(t, 0, 1), 6);
+}
+
+function cubicBezier(x1, y1, x2, y2) {
+  const cx = 3 * x1;
+  const bx = 3 * (x2 - x1) - cx;
+  const ax = 1 - cx - bx;
+  const cy = 3 * y1;
+  const by = 3 * (y2 - y1) - cy;
+  const ay = 1 - cy - by;
+
+  const sampleX = t => ((ax * t + bx) * t + cx) * t;
+  const sampleY = t => ((ay * t + by) * t + cy) * t;
+  const sampleDerivativeX = t => (3 * ax * t + 2 * bx) * t + cx;
+
+  return value => {
+    const x = clamp(value, 0, 1);
+    let t = x;
+
+    for (let i = 0; i < 6; i += 1) {
+      const dx = sampleX(t) - x;
+      const derivative = sampleDerivativeX(t);
+      if (Math.abs(dx) < 1e-5 || Math.abs(derivative) < 1e-6) break;
+      t -= dx / derivative;
+      t = clamp(t, 0, 1);
+    }
+
+    let low = 0;
+    let high = 1;
+    for (let i = 0; i < 8; i += 1) {
+      const sampled = sampleX(t);
+      if (Math.abs(sampled - x) < 1e-5) break;
+      if (sampled < x) low = t;
+      else high = t;
+      t = (low + high) * 0.5;
+    }
+
+    return sampleY(t);
+  };
+}
+
+const loaderEaseIn = cubicBezier(0.8, 0, 0.1, 1);
+const loaderEaseOut = cubicBezier(0.72, 0, 0.11, 1);
 
 const state = {
   mode: "focus",
@@ -759,13 +807,29 @@ function drawPlane(plane, rect, opacity) {
   gl.uniform2f(uniforms.planeSize, rect.w * dpr, rect.h * dpr);
   gl.uniform2f(uniforms.imageSize, plane.imageWidth, plane.imageHeight);
   gl.uniform2f(uniforms.uvOffset, cropParallax, 0);
+  gl.uniform1f(uniforms.textureScale, 1);
   gl.uniform1f(uniforms.dim, dim);
   gl.uniform1f(uniforms.opacity, opacity);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
 
-function drawIntroPlane(plane, rect, opacity, dim = 0.98) {
+function drawIntroPlane(
+  plane,
+  rect,
+  opacity = 1,
+  dim = 1,
+  textureScale = 1
+) {
   if (rect.w <= 1 || rect.h <= 1 || opacity <= 0.001) return;
+
+  if (
+    rect.x >= innerWidth ||
+    rect.x + rect.w <= 0 ||
+    rect.y >= innerHeight ||
+    rect.y + rect.h <= 0
+  ) {
+    return;
+  }
 
   const dpr = canvas.width / innerWidth;
 
@@ -781,33 +845,133 @@ function drawIntroPlane(plane, rect, opacity, dim = 0.98) {
   gl.uniform2f(uniforms.planeSize, rect.w * dpr, rect.h * dpr);
   gl.uniform2f(uniforms.imageSize, plane.imageWidth, plane.imageHeight);
   gl.uniform2f(uniforms.uvOffset, 0, 0);
+  gl.uniform1f(uniforms.textureScale, textureScale);
   gl.uniform1f(uniforms.dim, dim);
   gl.uniform1f(uniforms.opacity, opacity);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
 
-function introGridRect(index) {
-  const columns = 5;
-  const rows = 5;
-  const column = index % columns;
-  const row = Math.floor(index / columns);
-  const gapX = innerWidth <= 780 ? innerWidth * 0.018 : innerWidth * 0.014;
-  const gapY = innerHeight <= 780 ? innerHeight * 0.018 : innerHeight * 0.022;
-  const availableW = innerWidth * (innerWidth <= 780 ? 0.96 : 0.9);
-  const availableH = innerHeight * (innerWidth <= 780 ? 0.84 : 0.88);
-  const w = (availableW - gapX * (columns - 1)) / columns;
-  const h = (availableH - gapY * (rows - 1)) / rows;
-  const startX = (innerWidth - availableW) * 0.5;
-  const startY = (innerHeight - availableH) * 0.5;
+function loaderLayout(index) {
+  const w = innerWidth;
+  const h = innerHeight;
+  const designWidth = w <= 780 ? 375 : 1440;
+  const widthScale = w / designWidth;
+
+  let padding = 30 * widthScale;
+  const cellW = (w - 4 * padding) / 4;
+  const cellH = cellW * h / w;
+  const cellStepY = cellH + padding;
+  const cellStepX = cellW + padding;
+  const halfStepY = 0.5 * cellStepY;
+  const verticalBase = h + 0.5 * (5 * cellH + 4 * padding - h);
+  const travelUnit = 12 * cellH;
+
+  const finalW = w + 2;
+  const finalH = h + 2;
+  padding = padding * finalW / cellW;
+
+  const finalStepY = finalH + padding;
+  const finalStepX = finalW + padding;
+
+  const column = Math.floor(index / 5) - 2;
+  const oddColumn = Math.abs(column % 2) === 1;
+  const row = index % 5;
+  const rowFromCenter = row - 2;
+  const columnDistance = Math.abs(column);
+
+  const entryOffsetY = oddColumn
+    ? -(
+        verticalBase -
+        halfStepY +
+        (4 - row) * travelUnit +
+        columnDistance * cellH +
+        20
+      )
+    : (
+        verticalBase +
+        row * travelUnit +
+        columnDistance * cellH +
+        20
+      );
+
+  const gridX = 0.5 * (w - cellW) + column * cellStepX;
+  const gridY =
+    0.5 * (h - cellH) +
+    rowFromCenter * cellStepY -
+    (oddColumn ? halfStepY : 0);
+
+  const finalX = 0.5 * (w - finalW) + column * finalStepX;
+  const finalY =
+    0.5 * (h - finalH) +
+    rowFromCenter * finalStepY -
+    (oddColumn ? 0.5 * finalStepY : 0);
 
   return {
-    x: startX + column * (w + gapX),
-    y: startY + row * (h + gapY),
-    w,
-    h,
-    column,
-    row
+    grid: { x: gridX, y: gridY, w: cellW, h: cellH },
+    final: { x: finalX, y: finalY, w: finalW, h: finalH },
+    entryOffsetY
   };
+}
+
+function thumbnailMetrics(index) {
+  const w = innerWidth;
+  const h = innerHeight;
+  const scale =
+    w / h > 16 / 9
+      ? h / (w <= 780 ? 812 : 900)
+      : w / (w <= 780 ? 375 : 1440);
+
+  const thumbW = Math.max(42, Math.round(76 * scale));
+  const thumbH = Math.max(24, Math.round((9 * thumbW) / 16));
+  const gap = Math.max(3, Math.round(5 * scale));
+  const edge = Math.max(18, Math.round(40 * scale));
+
+  return {
+    x:
+      w -
+      edge -
+      thumbW -
+      (PROJECTS.length - 1 - index) * (thumbW + gap),
+    y: h - edge - thumbH,
+    w: thumbW,
+    h: thumbH,
+    startOffsetY: edge + gap + thumbH
+  };
+}
+
+function drawHomeThumbnails(now, duringIntro = false) {
+  planes.forEach((plane, index) => {
+    const target = thumbnailMetrics(index);
+    let yOffset = state.transition * target.startOffsetY;
+    let opacity = 1;
+
+    if (duringIntro) {
+      if (state.intro.startedAt === null) return;
+
+      const elapsed = now - state.intro.startedAt;
+      const local = clamp(
+        (elapsed - (3200 + 50 * index)) / 1500,
+        0,
+        1
+      );
+      const eased = easeOutPower6(local);
+      yOffset = lerp(target.startOffsetY, 0, eased);
+      opacity = local <= 0 ? 0 : 1;
+    }
+
+    drawIntroPlane(
+      plane,
+      {
+        x: target.x,
+        y: target.y + yOffset,
+        w: target.w,
+        h: target.h
+      },
+      opacity,
+      1,
+      1
+    );
+  });
 }
 
 function renderIntro(now) {
@@ -817,61 +981,35 @@ function renderIntro(now) {
   if (startedAt === null) return true;
 
   const raw = clamp((now - startedAt) / state.intro.duration, 0, 1);
-  const settleStart = 0.56;
-  const settleRaw = clamp(raw / settleStart, 0, 1);
-  const settle = easeOutCubic(settleRaw);
-  const collapseRaw = clamp((raw - settleStart) / (1 - settleStart), 0, 1);
-  const collapse = easeInOutQuart(collapseRaw);
+  const phaseIn = loaderEaseIn(clamp(raw / 0.65, 0, 1));
+  const phaseOut = loaderEaseOut(clamp((raw - 0.4) / 0.6, 0, 1));
 
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.useProgram(program);
 
   introPlanes.forEach((plane, index) => {
-    const base = introGridRect(index);
-    const direction = base.column % 2 === 0 ? -1 : 1;
-    const travel = innerHeight + base.h * 2.4;
-    const entryY = base.y + direction * travel * (1 - settle);
+    const layout = loaderLayout(index);
+    const grid = layout.grid;
+    const final = layout.final;
 
-    let rect = {
-      x: base.x,
-      y: entryY,
-      w: base.w,
-      h: base.h
+    const rect = {
+      x: lerp(grid.x, final.x, phaseOut),
+      y:
+        lerp(grid.y, final.y, phaseOut) +
+        lerp(layout.entryOffsetY, 0, phaseIn),
+      w: lerp(grid.w, final.w, phaseOut),
+      h: lerp(grid.h, final.h, phaseOut)
     };
-    let opacity = clamp(settleRaw * 1.55, 0, 1);
-    let dim = index === INTRO_CENTER_INDEX ? 1 : 0.9;
 
-    if (collapseRaw > 0) {
-      if (index === INTRO_CENTER_INDEX) {
-        const target = focusRect();
-        rect = {
-          x: lerp(base.x, target.x, collapse),
-          y: lerp(base.y, target.y, collapse),
-          w: lerp(base.w, target.w, collapse),
-          h: lerp(base.h, target.h, collapse)
-        };
-        opacity = 1;
-        dim = lerp(0.95, 0.8, collapse);
-      } else {
-        const cx = base.x + base.w * 0.5;
-        const cy = base.y + base.h * 0.5;
-        const vx = cx - innerWidth * 0.5;
-        const vy = cy - innerHeight * 0.5;
-        const length = Math.max(Math.hypot(vx, vy), 1);
-        const push = Math.min(innerWidth, innerHeight) * 0.2 * collapse;
+    const textureScale =
+      index === INTRO_CENTER_INDEX
+        ? 1 + lerp(0.5, 0, phaseOut)
+        : 1;
 
-        rect = {
-          x: base.x + (vx / length) * push,
-          y: base.y + (vy / length) * push,
-          w: base.w * lerp(1, 0.84, collapse),
-          h: base.h * lerp(1, 0.84, collapse)
-        };
-        opacity = 1 - collapse;
-      }
-    }
-
-    drawIntroPlane(plane, rect, opacity, dim);
+    drawIntroPlane(plane, rect, 1, 1, textureScale);
   });
+
+  drawHomeThumbnails(now, true);
 
   if (raw >= 1) {
     state.intro.active = false;
@@ -1064,6 +1202,8 @@ function render(now) {
 
     drawPlane(plane, rect, opacity);
   });
+
+  drawHomeThumbnails(now, false);
 
   if (state.focusCycle.active && state.focusCycle.progress >= 1) {
     state.focusCycle.active = false;
