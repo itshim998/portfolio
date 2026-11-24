@@ -193,12 +193,20 @@ const state = {
   transitionDuration: 880,
   activeIndex: 0,
   trackCurrent: 0,
-  trackTarget: 0,
+  trackVelocity: 0,
+  settleTarget: null,
+  recenter: {
+    active: false,
+    from: 0,
+    to: 0,
+    startedAt: 0,
+    duration: 880
+  },
   pointerDown: false,
   pointerId: null,
   startX: 0,
   startY: 0,
-  dragStartTarget: 0,
+  dragStartCurrent: 0,
   dragDistanceX: 0,
   dragDistanceY: 0,
   pointerMoved: false,
@@ -387,24 +395,40 @@ function setMode(nextMode, selectedIndex = state.activeIndex) {
   if (state.focusCycle.active) return;
   if (nextMode === state.mode && selectedIndex === state.activeIndex) return;
 
+  const now = performance.now();
+
   if (nextMode === "focus") {
     setActiveIndex(selectedIndex, true);
-    state.trackTarget = centeredTrackFor(selectedIndex);
+    state.trackVelocity = 0;
+    state.settleTarget = null;
+    state.recenter = {
+      active: true,
+      from: state.trackCurrent,
+      to: centeredTrackFor(selectedIndex),
+      startedAt: now,
+      duration: state.transitionDuration
+    };
     revealFocusChromeAfterDelay();
   } else {
-    state.trackTarget = centeredTrackFor(state.activeIndex);
+    state.trackCurrent = centeredTrackFor(state.activeIndex);
+    state.trackVelocity = 0;
+    state.settleTarget = null;
+    state.recenter.active = false;
     document.body.classList.remove("is-entering-focus");
   }
 
   state.mode = nextMode;
   state.transitionFrom = state.transition;
   state.transitionTo = nextMode === "strip" ? 1 : 0;
-  state.transitionStartedAt = performance.now();
+  state.transitionStartedAt = now;
   document.body.dataset.mode = nextMode;
 
   if (reducedMotion.matches) {
     state.transition = state.transitionTo;
-    state.trackCurrent = state.trackTarget;
+    if (state.recenter.active) {
+      state.trackCurrent = state.recenter.to;
+      state.recenter.active = false;
+    }
   }
 }
 
@@ -428,7 +452,9 @@ function cycleFocus(direction) {
   };
 
   state.activeIndex = toIndex;
-  state.trackTarget = centeredTrackFor(toIndex);
+  state.trackCurrent = centeredTrackFor(toIndex);
+  state.trackVelocity = 0;
+  state.settleTarget = null;
 
   focusTitle.classList.add("is-changing");
   clearTimeout(state.titleSwapTimer);
@@ -460,10 +486,14 @@ addEventListener("keydown", event => {
 
   if (event.key === "ArrowRight" || event.key === "ArrowDown") {
     event.preventDefault();
-    state.trackTarget = clamp(state.trackTarget + spacing() * 0.72, 0, maxTrack());
+    const next = clamp(nearestProjectIndex(state.trackCurrent) + 1, 0, PROJECTS.length - 1);
+    state.settleTarget = centeredTrackFor(next);
+    state.trackVelocity = 0;
   } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
     event.preventDefault();
-    state.trackTarget = clamp(state.trackTarget - spacing() * 0.72, 0, maxTrack());
+    const next = clamp(nearestProjectIndex(state.trackCurrent) - 1, 0, PROJECTS.length - 1);
+    state.settleTarget = centeredTrackFor(next);
+    state.trackVelocity = 0;
   } else if (event.key === "Enter" || event.key === " ") {
     event.preventDefault();
     setMode("focus", state.activeIndex);
@@ -471,8 +501,6 @@ addEventListener("keydown", event => {
     setMode("focus", state.activeIndex);
   }
 });
-
-let wheelIdleTimer = 0;
 
 addEventListener("wheel", event => {
   const dominant =
@@ -487,14 +515,14 @@ addEventListener("wheel", event => {
   }
 
   const factor = event.deltaMode === 1 ? 24 : event.deltaMode === 2 ? 600 : 1;
-  state.trackTarget = clamp(
-    state.trackTarget + dominant * factor * 0.9,
-    0,
-    maxTrack()
-  );
+  const impulse = dominant * factor * 11;
 
-  clearTimeout(wheelIdleTimer);
-  wheelIdleTimer = setTimeout(() => {}, 90);
+  state.settleTarget = null;
+  state.trackVelocity = clamp(
+    state.trackVelocity + impulse,
+    -3200,
+    3200
+  );
 
   event.preventDefault();
 }, { passive: false });
@@ -506,7 +534,7 @@ canvas.addEventListener("pointerdown", event => {
   state.pointerId = event.pointerId;
   state.startX = event.clientX;
   state.startY = event.clientY;
-  state.dragStartTarget = state.trackTarget;
+  state.dragStartCurrent = state.trackCurrent;
   state.dragDistanceX = 0;
   state.dragDistanceY = 0;
   state.pointerMoved = false;
@@ -534,7 +562,7 @@ canvas.addEventListener("pointermove", event => {
   if (state.mode === "focus") {
     if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
       setMode("strip");
-      state.dragStartTarget = state.trackTarget;
+      state.dragStartCurrent = state.trackCurrent;
       state.startX = event.clientX;
       state.startY = event.clientY;
       state.dragDistanceX = 0;
@@ -553,18 +581,21 @@ canvas.addEventListener("pointermove", event => {
     state.pointerHistory.shift();
   }
 
-  const raw = state.dragStartTarget - dx;
+  const raw = state.dragStartCurrent - dx;
   const max = maxTrack();
 
-  if (raw < 0) {
-    state.trackTarget = raw * 0.28;
-  } else if (raw > max) {
-    state.trackTarget = max + (raw - max) * 0.28;
-  } else {
-    state.trackTarget = raw;
-  }
+  state.settleTarget = null;
+  state.trackVelocity = 0;
 
-  state.trackCurrent = state.trackTarget;
+  if (raw < 0) {
+    const distance = -raw;
+    state.trackCurrent = -150 * (1 - Math.exp(-distance / 220));
+  } else if (raw > max) {
+    const distance = raw - max;
+    state.trackCurrent = max + 150 * (1 - Math.exp(-distance / 220));
+  } else {
+    state.trackCurrent = raw;
+  }
 });
 
 function hitTestProject(x, y) {
@@ -613,11 +644,8 @@ function finishPointer(event) {
   const dt = Math.max(now - oldest.t, 1);
   const vx = (event.clientX - oldest.x) / dt;
 
-  state.trackTarget = clamp(
-    state.trackTarget - vx * 260,
-    0,
-    maxTrack()
-  );
+  state.settleTarget = null;
+  state.trackVelocity = clamp(-vx * 1000 * 0.95, -3200, 3200);
 }
 
 canvas.addEventListener("pointerup", finishPointer);
@@ -625,7 +653,7 @@ canvas.addEventListener("pointercancel", event => {
   if (!state.pointerDown || event.pointerId !== state.pointerId) return;
   state.pointerDown = false;
   canvas.classList.remove("is-grabbing");
-  state.trackTarget = clamp(state.trackTarget, 0, maxTrack());
+  state.settleTarget = null;
 });
 
 function resize() {
@@ -642,11 +670,12 @@ function resize() {
   canvas.style.height = `${innerHeight}px`;
   gl.viewport(0, 0, width, height);
 
-  state.trackTarget = clamp(state.trackTarget, 0, maxTrack());
-  state.trackCurrent = clamp(state.trackCurrent, 0, maxTrack());
-
   if (state.mode === "focus") {
-    state.trackTarget = centeredTrackFor(state.activeIndex);
+    state.trackCurrent = centeredTrackFor(state.activeIndex);
+    state.trackVelocity = 0;
+    state.settleTarget = null;
+  } else {
+    state.trackCurrent = clamp(state.trackCurrent, -150, maxTrack() + 150);
   }
 }
 
@@ -748,23 +777,74 @@ function render(now) {
     }
   }
 
-  if (
-    !state.pointerDown &&
-    (
-      state.mode === "strip" ||
-      state.transition > 0.001 ||
-      Math.abs(state.trackCurrent - state.trackTarget) > 0.25
-    )
-  ) {
-    const target = clamp(state.trackTarget, 0, maxTrack());
-    state.trackTarget = target;
-    state.trackCurrent = reducedMotion.matches
-      ? target
-      : damp(state.trackCurrent, target, 8.5, dt);
+  if (state.recenter.active) {
+    const raw = clamp(
+      (now - state.recenter.startedAt) / state.recenter.duration,
+      0,
+      1
+    );
+    state.trackCurrent = lerp(
+      state.recenter.from,
+      state.recenter.to,
+      easeInOutQuart(raw)
+    );
+
+    if (raw >= 1) {
+      state.trackCurrent = state.recenter.to;
+      state.recenter.active = false;
+    }
+  } else if (state.mode === "strip" && !state.pointerDown) {
+    const max = maxTrack();
+
+    if (reducedMotion.matches) {
+      state.trackVelocity = 0;
+      if (state.trackCurrent < 0) state.trackCurrent = 0;
+      if (state.trackCurrent > max) state.trackCurrent = max;
+    } else {
+      let acceleration = 0;
+
+      if (state.trackCurrent < 0) {
+        acceleration += (0 - state.trackCurrent) * 62 - state.trackVelocity * 12;
+        state.settleTarget = null;
+      } else if (state.trackCurrent > max) {
+        acceleration += (max - state.trackCurrent) * 62 - state.trackVelocity * 12;
+        state.settleTarget = null;
+      } else {
+        state.trackVelocity *= Math.exp(-1.7 * dt);
+
+        if (
+          state.settleTarget === null &&
+          Math.abs(state.trackVelocity) < 52
+        ) {
+          state.settleTarget = centeredTrackFor(
+            nearestProjectIndex(state.trackCurrent)
+          );
+        }
+
+        if (state.settleTarget !== null) {
+          const distance = state.settleTarget - state.trackCurrent;
+          acceleration += distance * 15 - state.trackVelocity * 6.4;
+
+          if (
+            Math.abs(distance) < 0.55 &&
+            Math.abs(state.trackVelocity) < 5
+          ) {
+            state.trackCurrent = state.settleTarget;
+            state.trackVelocity = 0;
+            state.settleTarget = null;
+          }
+        }
+      }
+
+      state.trackVelocity += acceleration * dt;
+      state.trackCurrent += state.trackVelocity * dt;
+    }
   }
 
   if (state.mode === "strip") {
-    const nearest = nearestProjectIndex(state.trackCurrent);
+    const nearest = nearestProjectIndex(
+      clamp(state.trackCurrent, 0, maxTrack())
+    );
     if (nearest !== state.activeIndex) {
       state.activeIndex = nearest;
     }
@@ -811,7 +891,8 @@ function render(now) {
     state.focusCycle.active = false;
     state.focusCycle.progress = 0;
     state.trackCurrent = centeredTrackFor(state.activeIndex);
-    state.trackTarget = state.trackCurrent;
+    state.trackVelocity = 0;
+    state.settleTarget = null;
   }
 
   requestAnimationFrame(render);
@@ -845,7 +926,7 @@ Promise.all(
     const image = await loadImageFrom(plane.project);
 
     gl.bindTexture(gl.TEXTURE_2D, plane.texture);
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
     gl.texImage2D(
       gl.TEXTURE_2D,
       0,
