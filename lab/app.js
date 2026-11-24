@@ -368,23 +368,12 @@ function setMode(nextMode, selectedIndex = state.activeIndex) {
 
   if (nextMode === "focus") {
     setActiveIndex(selectedIndex);
-    const metrics = stripMetrics();
-    const spacing = metrics.w + metrics.gap;
-    state.trackCurrent = selectedIndex * spacing;
-    state.trackTarget = state.trackCurrent;
   }
 
   state.mode = nextMode;
   state.transitionFrom = state.transition;
   state.transitionTo = nextMode === "strip" ? 1 : 0;
   state.transitionStartedAt = performance.now();
-
-  if (nextMode === "strip") {
-    const metrics = stripMetrics();
-    const spacing = metrics.w + metrics.gap;
-    state.trackCurrent = state.activeIndex * spacing;
-    state.trackTarget = state.trackCurrent;
-  }
 
   document.body.dataset.mode = nextMode;
   modeButton.setAttribute("aria-pressed", String(nextMode === "strip"));
