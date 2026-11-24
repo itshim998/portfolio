@@ -29,58 +29,57 @@ Validated behavior includes:
 
 ## Checkpoint 3B — loader choreography calibration
 
-3B replaces the generic grid-collapse approximation with choreography translated from the recovered Camille loader mechanics.
+3B replaced the generic grid-collapse approximation with choreography translated from the recovered Camille loader mechanics:
 
-### Main 25-plane motion
+- 5000ms main intro;
+- viewport-derived 25-plane geometry;
+- alternating vertical columns;
+- 0–65% convergence via `cubic-bezier(0.8, 0, 0.1, 1)`;
+- 40–100% expansion via `cubic-bezier(0.72, 0, 0.11, 1)`;
+- center-plane 1.5× texture zoom relaxation;
+- spatial surrounding-plane exit;
+- persistent center-plane → homepage handoff;
+- loader-linked homepage thumbnail rail.
 
-- Total duration remains 5000ms.
-- Loader cells are derived from viewport geometry using the recovered sizing relationship:
-  - horizontal padding scales from a 30px desktop design value;
-  - loader cell width is `(viewportWidth - 4 × padding) / 4`;
-  - loader cell height inherits the viewport aspect ratio.
-- Five vertical columns are generated from the 25 planes.
-- Odd columns use the opposite vertical entry direction.
-- Apparent staggering comes from different per-plane travel distances, not per-plane timer delays.
-- Initial vertical travel uses a `12 × cellHeight` spacing unit, matching the recovered production math.
+A browser audit found the architecture and main choreography correct, with only three timing/presentation issues remaining.
 
-### Overlapping easing phases
+## Checkpoint 3C — final loader timing polish
 
-The main loader uses two simultaneous progress windows:
+3C addresses only those audit blockers and deliberately leaves the validated 3B structure unchanged.
 
-1. **Convergence phase: 0 → 65%**
-   - cubic-bezier `(0.8, 0, 0.1, 1)`;
-   - large alternating vertical offsets collapse toward the 5×5 field.
+### Thumbnail rail timing
 
-2. **Expansion/exit phase: 40 → 100%**
-   - cubic-bezier `(0.72, 0, 0.11, 1)`;
-   - cells expand toward viewport-sized planes while moving to their final off-screen/home positions.
+- Intro rail start moved from 3200ms to 3700ms.
+- Per-project stagger remains 50ms.
+- Rise duration reduced from 1500ms to 1200ms.
+- With three current projects, the final thumbnail begins at 3800ms and reaches its resting slot at the 5000ms loader handoff.
+- This keeps the rail below or barely breaking the viewport edge while the hero still has visible black margins.
 
-Because the phases overlap between 40% and 65%, the loader never pauses at a static grid.
+### Final expansion tail
 
-### Center plane
+- The recovered `0.40 → 1.0` expansion window and cubic-bezier remain unchanged.
+- Only the final portion of the already-eased result is remapped.
+- Values up to 0.84 are untouched.
+- The remaining 0.84 → 1.0 range uses an additional cubic ease-out, closing the last black border decisively without altering the validated middle of the intro.
+- Center-plane crop/zoom continuity remains unchanged.
 
-- Plane index 12 remains the homepage main texture.
-- Its grid position is geometrically centered.
-- Its final target is a viewport-plus-2px rectangle, matching the recovered full-bleed target.
-- The center texture begins with an extra 0.5 texture-scale component—approximately a 1.5× zoom—and relaxes to the normal crop through the expansion phase.
-- At the final loader frame the center plane is already at the homepage full-bleed geometry, so the next homepage frame does not require a scene swap.
+### Preloader presentation
 
-### Homepage thumbnail emergence
+- The visible `TEXTURES` eyebrow is suppressed.
+- The percentage becomes a compact ~12–14px readout rather than a large display number.
+- Loader overlay fade is shortened from 700ms to 240ms.
+- The WebGL intro begins only after the preloader fade has cleared, preventing loading typography from overlapping the first visible column entry.
 
-- Small project thumbnails begin rising from below the viewport at 3200ms.
-- Each thumbnail uses a 1500ms ease-out-power-6 motion.
-- Successive project thumbnails are staggered by 50ms.
-- Desktop sizing is based on the recovered 76px × 16:9 thumbnail target, with 5px gaps and ~40px edge spacing at the 1440×900 reference viewport.
-- The thumbnails slide below the viewport again as the homepage transitions from IN to OUT.
+## Freeze boundary after 3C
 
-## Intentionally deferred after 3B
+Unless a new browser check finds a reproducible regression in these three corrections, the loader architecture and homepage motion engine should now be treated as frozen.
 
-- browser-based side-by-side audit of the calibrated loader against Camille;
-- any final numeric loader adjustments revealed by that audit;
+The next major milestone is persistent client-side routing and same-plane homepage → project-hero transition work.
+
+Still deferred:
+
 - mobile-specific loader calibration;
 - custom cursor;
-- project routes and project pages;
+- real project detail pages;
 - About page migration;
-- final typography polish.
-
-The acceptance criterion for 3B is visual choreography: the loader should read as alternating columns converging and expanding through one continuous 5-second WebGL motion, with the center project visibly becoming the fullscreen homepage while the small project rail emerges during the final third.
+- final typography and visual polish.
