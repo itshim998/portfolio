@@ -1,7 +1,6 @@
 const PROJECTS = [
   {
     slug: "studentos",
-    eyebrow: "01 / All-in-one academic workspace",
     title: "StudentOS",
     href: "https://studentos.sentiqlabs.com/",
     image: "https://i.ibb.co/jkB9vQLr/Screenshot-2026-07-14-182748.png",
@@ -9,7 +8,6 @@ const PROJECTS = [
   },
   {
     slug: "sentiq-chat",
-    eyebrow: "02 / AI orchestrator",
     title: "SentIQ Chat",
     href: "https://sentiqchat.sentiqlabs.com/",
     image: "https://i.ibb.co/nsRD4K6z/Screenshot-2026-03-15-113205.png",
@@ -17,7 +15,6 @@ const PROJECTS = [
   },
   {
     slug: "fieldline",
-    eyebrow: "03 / AI for the field",
     title: "FieldLine",
     href: "https://fieldline.sentiqlabs.com/",
     image: "https://i.ibb.co/CKyJjqjk/Screenshot-2026-10-11-185504.png",
@@ -29,13 +26,12 @@ const canvas = document.getElementById("experience");
 const loading = document.getElementById("loading");
 const loadingValue = document.getElementById("loading-value");
 const fallback = document.getElementById("fallback");
-const modeButton = document.getElementById("mode-button");
-const modeLabel = modeButton.querySelector(".mode-button__label");
-const projectLabel = document.querySelector(".project-label");
-const projectIndex = document.getElementById("project-index");
+const focusTitle = document.getElementById("focus-title");
 const projectTitle = document.getElementById("project-title");
-const projectLink = document.getElementById("project-link");
 const projectCounter = document.getElementById("project-counter");
+const previousProject = document.getElementById("previous-project");
+const nextProject = document.getElementById("next-project");
+const openActiveProject = document.getElementById("open-active-project");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
 document.body.dataset.mode = "focus";
@@ -184,13 +180,17 @@ function easeInOutQuart(t) {
     : 1 - Math.pow(-2 * t + 2, 4) / 2;
 }
 
+function easeOutCubic(t) {
+  return 1 - Math.pow(1 - t, 3);
+}
+
 const state = {
   mode: "focus",
   transition: 0,
   transitionFrom: 0,
   transitionTo: 0,
   transitionStartedAt: performance.now(),
-  transitionDuration: 1050,
+  transitionDuration: 880,
   activeIndex: 0,
   trackCurrent: 0,
   trackTarget: 0,
@@ -204,7 +204,18 @@ const state = {
   pointerMoved: false,
   pointerHistory: [],
   lastTime: performance.now(),
-  renderedRects: []
+  renderedRects: [],
+  focusCycle: {
+    active: false,
+    fromIndex: 0,
+    toIndex: 0,
+    direction: 1,
+    startedAt: 0,
+    duration: 620,
+    progress: 0
+  },
+  titleRevealTimer: 0,
+  titleSwapTimer: 0
 };
 
 const planes = PROJECTS.map((project, index) => ({
@@ -241,33 +252,40 @@ function createPlaceholderTexture(index) {
 
 function stripMetrics() {
   if (innerWidth <= 780) {
-    const w = Math.min(innerWidth * 0.66, innerHeight * 0.38);
-    const h = Math.min(innerHeight * 0.53, w * 1.48);
+    const w = innerWidth * 0.82;
+    const h = Math.min(innerHeight * 0.46, w / 1.58);
     return {
       w,
       h,
-      gap: Math.max(24, innerWidth * 0.055),
+      gap: innerWidth * 0.075,
       centerX: innerWidth * 0.5,
-      centerY: innerHeight * 0.46
+      centerY: innerHeight * 0.5
     };
   }
 
-  const vmin = Math.min(innerWidth, innerHeight) / 100;
-  const w = 40 * vmin;
-  const h = 56 * vmin;
+  const h = innerHeight * 0.56;
+  const w = Math.min(innerWidth * 0.58, h * 1.66);
 
   return {
     w,
     h,
-    gap: 4 * vmin,
+    gap: innerWidth * 0.06,
     centerX: innerWidth * 0.5,
     centerY: innerHeight * 0.5
   };
 }
 
-function maxTrack() {
+function spacing() {
   const metrics = stripMetrics();
-  return Math.max(0, (PROJECTS.length - 1) * (metrics.w + metrics.gap));
+  return metrics.w + metrics.gap;
+}
+
+function maxTrack() {
+  return Math.max(0, (PROJECTS.length - 1) * spacing());
+}
+
+function centeredTrackFor(index) {
+  return clamp(index, 0, PROJECTS.length - 1) * spacing();
 }
 
 function focusRect() {
@@ -276,11 +294,11 @@ function focusRect() {
 
 function hiddenFocusRect(index) {
   const direction = index < state.activeIndex ? -1 : 1;
-  const w = innerWidth * 0.28;
-  const h = innerHeight * 0.5;
+  const w = innerWidth * 0.36;
+  const h = innerHeight * 0.56;
 
   return {
-    x: direction < 0 ? -w - 100 : innerWidth + 100,
+    x: direction < 0 ? -w - 120 : innerWidth + 120,
     y: innerHeight * 0.5 - h * 0.5,
     w,
     h
@@ -289,22 +307,20 @@ function hiddenFocusRect(index) {
 
 function stripRect(index, trackPosition) {
   const metrics = stripMetrics();
-  const spacing = metrics.w + metrics.gap;
-  const x =
-    metrics.centerX -
-    metrics.w * 0.5 +
-    index * spacing -
-    trackPosition;
 
   return {
-    x,
+    x:
+      metrics.centerX -
+      metrics.w * 0.5 +
+      index * (metrics.w + metrics.gap) -
+      trackPosition,
     y: metrics.centerY - metrics.h * 0.5,
     w: metrics.w,
     h: metrics.h
   };
 }
 
-function rectForPlane(index, trackPosition) {
+function transitionRectForPlane(index, trackPosition) {
   const from =
     index === state.activeIndex
       ? focusRect()
@@ -321,26 +337,21 @@ function rectForPlane(index, trackPosition) {
   };
 }
 
-function setTrackTarget(value) {
-  state.trackTarget = clamp(value, 0, maxTrack());
-}
-
 function nearestProjectIndex(trackPosition) {
-  const metrics = stripMetrics();
-  const spacing = metrics.w + metrics.gap;
-  return clamp(Math.round(trackPosition / Math.max(spacing, 1)), 0, PROJECTS.length - 1);
+  return clamp(
+    Math.round(trackPosition / Math.max(spacing(), 1)),
+    0,
+    PROJECTS.length - 1
+  );
 }
 
-function updateProjectLabel(index, immediate = false) {
+function updateProjectTitle(index, immediate = false) {
   const project = PROJECTS[index];
   if (!project) return;
 
   const apply = () => {
-    projectIndex.textContent = project.eyebrow;
     projectTitle.textContent = project.title;
-    projectLink.href = project.href;
-    projectCounter.textContent =
-      `${String(index + 1).padStart(2, "0")} / ${String(PROJECTS.length).padStart(2, "0")}`;
+    projectCounter.textContent = String(index + 1).padStart(2, "0");
   };
 
   if (immediate || reducedMotion.matches) {
@@ -348,64 +359,111 @@ function updateProjectLabel(index, immediate = false) {
     return;
   }
 
-  projectLabel.classList.add("is-changing");
-  setTimeout(() => {
+  focusTitle.classList.add("is-changing");
+  clearTimeout(state.titleSwapTimer);
+  state.titleSwapTimer = setTimeout(() => {
     apply();
-    requestAnimationFrame(() => projectLabel.classList.remove("is-changing"));
-  }, 135);
+    requestAnimationFrame(() => focusTitle.classList.remove("is-changing"));
+  }, 150);
 }
 
 function setActiveIndex(index, immediate = false) {
   const next = clamp(index, 0, PROJECTS.length - 1);
   if (next === state.activeIndex) return;
-
   state.activeIndex = next;
-  updateProjectLabel(next, immediate);
+  updateProjectTitle(next, immediate);
+}
+
+function revealFocusChromeAfterDelay() {
+  clearTimeout(state.titleRevealTimer);
+  document.body.classList.add("is-entering-focus");
+
+  state.titleRevealTimer = setTimeout(() => {
+    document.body.classList.remove("is-entering-focus");
+  }, reducedMotion.matches ? 0 : 540);
 }
 
 function setMode(nextMode, selectedIndex = state.activeIndex) {
+  if (state.focusCycle.active) return;
   if (nextMode === state.mode && selectedIndex === state.activeIndex) return;
 
   if (nextMode === "focus") {
-    setActiveIndex(selectedIndex);
+    setActiveIndex(selectedIndex, true);
+    state.trackTarget = centeredTrackFor(selectedIndex);
+    revealFocusChromeAfterDelay();
+  } else {
+    state.trackTarget = centeredTrackFor(state.activeIndex);
+    document.body.classList.remove("is-entering-focus");
   }
 
   state.mode = nextMode;
   state.transitionFrom = state.transition;
   state.transitionTo = nextMode === "strip" ? 1 : 0;
   state.transitionStartedAt = performance.now();
-
   document.body.dataset.mode = nextMode;
-  modeButton.setAttribute("aria-pressed", String(nextMode === "strip"));
-  modeLabel.textContent = nextMode === "strip" ? "Close" : "View all";
 
   if (reducedMotion.matches) {
     state.transition = state.transitionTo;
+    state.trackCurrent = state.trackTarget;
   }
 }
 
-modeButton.addEventListener("click", () => {
-  setMode(state.mode === "strip" ? "focus" : "strip");
-});
+function cycleFocus(direction) {
+  if (state.mode !== "focus" || state.transition > 0.001 || state.focusCycle.active) {
+    return;
+  }
+
+  const fromIndex = state.activeIndex;
+  const toIndex =
+    (fromIndex + direction + PROJECTS.length) % PROJECTS.length;
+
+  state.focusCycle = {
+    active: true,
+    fromIndex,
+    toIndex,
+    direction,
+    startedAt: performance.now(),
+    duration: reducedMotion.matches ? 1 : 620,
+    progress: 0
+  };
+
+  state.activeIndex = toIndex;
+  state.trackTarget = centeredTrackFor(toIndex);
+
+  focusTitle.classList.add("is-changing");
+  clearTimeout(state.titleSwapTimer);
+  state.titleSwapTimer = setTimeout(() => {
+    projectTitle.textContent = PROJECTS[toIndex].title;
+    projectCounter.textContent = String(toIndex + 1).padStart(2, "0");
+    focusTitle.classList.remove("is-changing");
+  }, reducedMotion.matches ? 0 : 230);
+}
+
+previousProject.addEventListener("click", () => cycleFocus(-1));
+nextProject.addEventListener("click", () => cycleFocus(1));
+openActiveProject.addEventListener("click", () => setMode("focus", state.activeIndex));
 
 addEventListener("keydown", event => {
   if (state.mode === "focus") {
-    if (["ArrowDown", "ArrowRight", " "].includes(event.key)) {
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      cycleFocus(-1);
+    } else if (event.key === "ArrowRight") {
+      event.preventDefault();
+      cycleFocus(1);
+    } else if (event.key === "ArrowDown" || event.key === " ") {
       event.preventDefault();
       setMode("strip");
     }
     return;
   }
 
-  const metrics = stripMetrics();
-  const spacing = metrics.w + metrics.gap;
-
   if (event.key === "ArrowRight" || event.key === "ArrowDown") {
     event.preventDefault();
-    setTrackTarget(state.trackTarget + spacing * 0.72);
+    state.trackTarget = clamp(state.trackTarget + spacing() * 0.72, 0, maxTrack());
   } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
     event.preventDefault();
-    setTrackTarget(state.trackTarget - spacing * 0.72);
+    state.trackTarget = clamp(state.trackTarget - spacing() * 0.72, 0, maxTrack());
   } else if (event.key === "Enter" || event.key === " ") {
     event.preventDefault();
     setMode("focus", state.activeIndex);
@@ -414,7 +472,6 @@ addEventListener("keydown", event => {
   }
 });
 
-let wheelVelocity = 0;
 let wheelIdleTimer = 0;
 
 addEventListener("wheel", event => {
@@ -430,13 +487,14 @@ addEventListener("wheel", event => {
   }
 
   const factor = event.deltaMode === 1 ? 24 : event.deltaMode === 2 ? 600 : 1;
-  wheelVelocity = dominant * factor;
-  setTrackTarget(state.trackTarget + wheelVelocity * 0.9);
+  state.trackTarget = clamp(
+    state.trackTarget + dominant * factor * 0.9,
+    0,
+    maxTrack()
+  );
 
   clearTimeout(wheelIdleTimer);
-  wheelIdleTimer = setTimeout(() => {
-    wheelVelocity = 0;
-  }, 90);
+  wheelIdleTimer = setTimeout(() => {}, 90);
 
   event.preventDefault();
 }, { passive: false });
@@ -474,7 +532,7 @@ canvas.addEventListener("pointermove", event => {
   }
 
   if (state.mode === "focus") {
-    if (Math.abs(dx) > 18 || Math.abs(dy) > 18) {
+    if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
       setMode("strip");
       state.dragStartTarget = state.trackTarget;
       state.startX = event.clientX;
@@ -487,6 +545,7 @@ canvas.addEventListener("pointermove", event => {
 
   const now = performance.now();
   state.pointerHistory.push({ x: event.clientX, t: now });
+
   while (
     state.pointerHistory.length > 1 &&
     now - state.pointerHistory[0].t > 120
@@ -541,9 +600,11 @@ function finishPointer(event) {
 
   if (!state.pointerMoved) {
     const hit = hitTestProject(event.clientX, event.clientY);
+
     if (hit !== null) {
       setMode("focus", hit);
     }
+
     return;
   }
 
@@ -581,14 +642,11 @@ function resize() {
   canvas.style.height = `${innerHeight}px`;
   gl.viewport(0, 0, width, height);
 
-  if (state.mode === "strip") {
-    state.trackTarget = clamp(state.trackTarget, 0, maxTrack());
-    state.trackCurrent = clamp(state.trackCurrent, 0, maxTrack());
-  } else {
-    const metrics = stripMetrics();
-    const spacing = metrics.w + metrics.gap;
-    state.trackTarget = state.activeIndex * spacing;
-    state.trackCurrent = state.trackTarget;
+  state.trackTarget = clamp(state.trackTarget, 0, maxTrack());
+  state.trackCurrent = clamp(state.trackCurrent, 0, maxTrack());
+
+  if (state.mode === "focus") {
+    state.trackTarget = centeredTrackFor(state.activeIndex);
   }
 }
 
@@ -604,12 +662,12 @@ function drawPlane(plane, rect, opacity) {
     (center - innerWidth * 0.5) / Math.max(innerWidth, 1);
 
   const cropParallax =
-    clamp(normalizedFromCenter * -0.22, -0.11, 0.11) * state.transition;
+    clamp(normalizedFromCenter * -0.18, -0.15, 0.15) * state.transition;
 
   const distanceToCenter = Math.abs(normalizedFromCenter);
   const dim = lerp(
-    0.78,
-    clamp(1 - distanceToCenter * 0.25, 0.76, 0.96),
+    0.8,
+    clamp(1 - distanceToCenter * 0.18, 0.8, 0.98),
     state.transition
   );
 
@@ -630,6 +688,44 @@ function drawPlane(plane, rect, opacity) {
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
 
+function focusCycleVisual(index, now) {
+  const cycle = state.focusCycle;
+  if (!cycle.active) return null;
+
+  const raw = clamp((now - cycle.startedAt) / cycle.duration, 0, 1);
+  const eased = easeOutCubic(raw);
+  cycle.progress = raw;
+
+  if (index === cycle.fromIndex) {
+    return {
+      rect: {
+        x: lerp(0, -cycle.direction * innerWidth * 0.22, eased),
+        y: 0,
+        w: innerWidth,
+        h: innerHeight
+      },
+      opacity: 1 - eased
+    };
+  }
+
+  if (index === cycle.toIndex) {
+    return {
+      rect: {
+        x: lerp(cycle.direction * innerWidth * 0.22, 0, eased),
+        y: 0,
+        w: innerWidth,
+        h: innerHeight
+      },
+      opacity: eased
+    };
+  }
+
+  return {
+    rect: hiddenFocusRect(index),
+    opacity: 0
+  };
+}
+
 function render(now) {
   const dt = Math.min((now - state.lastTime) / 1000, 0.05);
   state.lastTime = now;
@@ -640,6 +736,7 @@ function render(now) {
       0,
       1
     );
+
     state.transition = lerp(
       state.transitionFrom,
       state.transitionTo,
@@ -651,7 +748,14 @@ function render(now) {
     }
   }
 
-  if (state.mode === "strip" && !state.pointerDown) {
+  if (
+    !state.pointerDown &&
+    (
+      state.mode === "strip" ||
+      state.transition > 0.001 ||
+      Math.abs(state.trackCurrent - state.trackTarget) > 0.25
+    )
+  ) {
     const target = clamp(state.trackTarget, 0, maxTrack());
     state.trackTarget = target;
     state.trackCurrent = reducedMotion.matches
@@ -662,24 +766,37 @@ function render(now) {
   if (state.mode === "strip") {
     const nearest = nearestProjectIndex(state.trackCurrent);
     if (nearest !== state.activeIndex) {
-      setActiveIndex(nearest);
+      state.activeIndex = nearest;
     }
   }
 
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.useProgram(program);
-
   state.renderedRects = [];
 
   planes.forEach(plane => {
-    const rect = rectForPlane(plane.index, state.trackCurrent);
-    const visible =
-      rect.x + rect.w > -rect.w * 0.4 &&
-      rect.x < innerWidth + rect.w * 0.4;
+    let rect;
+    let opacity;
 
-    const focusOpacity = plane.index === state.activeIndex ? 1 : 0;
-    const stripOpacity = visible ? 1 : 0;
-    const opacity = lerp(focusOpacity, stripOpacity, state.transition);
+    if (
+      state.focusCycle.active &&
+      state.mode === "focus" &&
+      state.transition <= 0.001
+    ) {
+      const cycleVisual = focusCycleVisual(plane.index, now);
+      rect = cycleVisual.rect;
+      opacity = cycleVisual.opacity;
+    } else {
+      rect = transitionRectForPlane(plane.index, state.trackCurrent);
+
+      const visible =
+        rect.x + rect.w > -rect.w * 0.45 &&
+        rect.x < innerWidth + rect.w * 0.45;
+
+      const focusOpacity = plane.index === state.activeIndex ? 1 : 0;
+      const stripOpacity = visible ? 1 : 0;
+      opacity = lerp(focusOpacity, stripOpacity, state.transition);
+    }
 
     state.renderedRects.push({
       index: plane.index,
@@ -689,6 +806,13 @@ function render(now) {
 
     drawPlane(plane, rect, opacity);
   });
+
+  if (state.focusCycle.active && state.focusCycle.progress >= 1) {
+    state.focusCycle.active = false;
+    state.focusCycle.progress = 0;
+    state.trackCurrent = centeredTrackFor(state.activeIndex);
+    state.trackTarget = state.trackCurrent;
+  }
 
   requestAnimationFrame(render);
 }
@@ -740,7 +864,7 @@ Promise.all(
   })
 )
   .then(() => {
-    updateProjectLabel(0, true);
+    updateProjectTitle(0, true);
     setTimeout(() => loading.classList.add("is-complete"), 180);
   })
   .catch(() => {
