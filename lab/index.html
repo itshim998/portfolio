@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#090908" />
-  <title>Camille Lab — Multi-plane Home Proof</title>
+  <title>Camille Lab — Continuous Sliding Strip</title>
   <meta name="robots" content="noindex,nofollow" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,43 +22,31 @@
   <header class="chrome">
     <a class="brand" href="./" aria-label="Sounak Poddar Camille interaction laboratory">
       <span>Sounak Poddar</span>
-      <small>Interaction Lab / 02</small>
+      <small>Interaction Lab / 02B</small>
     </a>
 
     <button class="mode-button" id="mode-button" type="button" aria-pressed="false">
-      <span class="mode-button__label">Overview</span>
+      <span class="mode-button__label">View all</span>
       <span class="mode-button__mark" aria-hidden="true"></span>
     </button>
   </header>
 
-  <main class="ui" id="ui">
-    <section class="project-copy" aria-labelledby="project-title">
-      <p class="project-index" id="project-index">01 / All-in-one academic workspace</p>
+  <main class="ui">
+    <section class="project-label" aria-live="polite" aria-atomic="true">
+      <p id="project-index">01 / All-in-one academic workspace</p>
       <h1 id="project-title">StudentOS</h1>
-      <p class="project-summary" id="project-summary">
-        An AI-native academic workspace that turns courses, syllabi, assignments,
-        schedules, and study materials into a clear daily roadmap.
-      </p>
       <a id="project-link" href="https://studentos.sentiqlabs.com/" target="_blank" rel="noopener noreferrer">
         Visit product <span aria-hidden="true">↗</span>
       </a>
     </section>
 
-    <div class="gallery-nav" aria-label="Project navigation">
-      <button id="previous-project" type="button" aria-label="Previous project">←</button>
-      <span id="project-counter" aria-live="polite">01 / 03</span>
-      <button id="next-project" type="button" aria-label="Next project">→</button>
+    <div class="strip-status" aria-hidden="true">
+      <span id="project-counter">01 / 03</span>
+      <span class="strip-status__line"></span>
+      <span>drag / scroll</span>
     </div>
 
-    <div class="overview-meta" aria-hidden="true">
-      <span>Work</span>
-      <span class="overview-meta__line"></span>
-      <span>Drag / Scroll</span>
-    </div>
-
-    <p class="gesture-hint" id="gesture-hint">
-      Scroll, drag, or use the control to open the gallery
-    </p>
+    <p class="gesture-hint">Drag or scroll to reveal the strip</p>
   </main>
 
   <div class="fallback" id="fallback" hidden>
