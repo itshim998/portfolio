@@ -4,7 +4,7 @@ This directory is the isolated implementation laboratory for the Camille-style p
 
 ## Frozen homepage interaction foundation
 
-Checkpoint 2D is now treated as the approved homepage interaction base.
+Checkpoint 2D remains the approved homepage interaction base.
 
 Validated behavior includes:
 
@@ -20,53 +20,67 @@ Validated behavior includes:
 - elastic strip boundaries;
 - immediate grab/arrest during inertia;
 - simultaneous off-center recenter + expansion;
-- stable project state under stress.
+- stable project state under stress;
+- final crop-parallax clamp of `±0.045`.
 
-The final pre-freeze shader correction is also applied: crop parallax remains at the approved `-0.18` movement ratio but is clamped to `±0.045` to prevent edge-pixel smearing on landscape screenshots.
+## Checkpoint 3A — loader architecture
 
-## Checkpoint 3A — 25-plane loader foundation
+3A established the 25-texture WebGL loader pipeline, real GPU upload progress, a persistent central StudentOS plane, and a continuous handoff into the frozen homepage engine.
 
-This is the first contained loader checkpoint.
+## Checkpoint 3B — loader choreography calibration
 
-### Texture pipeline
+3B replaces the generic grid-collapse approximation with choreography translated from the recovered Camille loader mechanics.
 
-- 25 logical loader media entries are created.
-- Each loader plane owns a real WebGL texture.
-- Loading progress is calculated from completed loader texture uploads rather than a fake timer.
-- Direct image loading falls back to a CORS-safe image proxy when required.
-- The three homepage project textures reuse already-loaded loader textures, avoiding a second post-loader fetch.
+### Main 25-plane motion
 
-### Loader scene
+- Total duration remains 5000ms.
+- Loader cells are derived from viewport geometry using the recovered sizing relationship:
+  - horizontal padding scales from a 30px desktop design value;
+  - loader cell width is `(viewportWidth - 4 × padding) / 4`;
+  - loader cell height inherits the viewport aspect ratio.
+- Five vertical columns are generated from the 25 planes.
+- Odd columns use the opposite vertical entry direction.
+- Apparent staggering comes from different per-plane travel distances, not per-plane timer delays.
+- Initial vertical travel uses a `12 × cellHeight` spacing unit, matching the recovered production math.
 
-- 25 planes are arranged as a 5 × 5 field.
-- Five vertical columns enter with alternating motion directions.
-- Loader duration is currently 5000ms, matching the recovered production timing target.
-- Plane index 12 is the central StudentOS plane.
-- The center plane is visually emphasized during the transition.
-- During the second half of the intro, surrounding planes move outward and fade.
-- The center plane expands from its grid rectangle into the exact fullscreen homepage rectangle.
-- Homepage chrome remains hidden during the loader and fades in after the handoff.
+### Overlapping easing phases
 
-### Handoff
+The main loader uses two simultaneous progress windows:
 
-- Loader completion resets homepage strip velocity and settle state.
-- The homepage begins in Project 01 fullscreen mode.
-- No Checkpoint 2D motion constants or interaction mechanics are replaced by the loader scene.
+1. **Convergence phase: 0 → 65%**
+   - cubic-bezier `(0.8, 0, 0.1, 1)`;
+   - large alternating vertical offsets collapse toward the 5×5 field.
 
-## Intentionally not final yet
+2. **Expansion/exit phase: 40 → 100%**
+   - cubic-bezier `(0.72, 0, 0.11, 1)`;
+   - cells expand toward viewport-sized planes while moving to their final off-screen/home positions.
 
-Checkpoint 3A establishes loader architecture and continuity only.
+Because the phases overlap between 40% and 65%, the loader never pauses at a static grid.
 
-Still to calibrate in subsequent loader checkpoints:
+### Center plane
 
-- exact Camille loader plane dimensions and padding;
-- precise initial column offsets;
-- stagger between individual planes;
-- center-plane emphasis timing;
-- exact easing curves;
-- thumbnail/minimap emergence;
-- loader text/number typography;
-- mobile loader geometry;
-- frame-by-frame parity against Camille reference footage.
+- Plane index 12 remains the homepage main texture.
+- Its grid position is geometrically centered.
+- Its final target is a viewport-plus-2px rectangle, matching the recovered full-bleed target.
+- The center texture begins with an extra 0.5 texture-scale component—approximately a 1.5× zoom—and relaxes to the normal crop through the expansion phase.
+- At the final loader frame the center plane is already at the homepage full-bleed geometry, so the next homepage frame does not require a scene swap.
 
-The acceptance criterion for 3A is that the 25-plane sequence loads reliably, reads as one continuous WebGL scene, and hands the central project plane into the already-approved homepage without a visible scene swap.
+### Homepage thumbnail emergence
+
+- Small project thumbnails begin rising from below the viewport at 3200ms.
+- Each thumbnail uses a 1500ms ease-out-power-6 motion.
+- Successive project thumbnails are staggered by 50ms.
+- Desktop sizing is based on the recovered 76px × 16:9 thumbnail target, with 5px gaps and ~40px edge spacing at the 1440×900 reference viewport.
+- The thumbnails slide below the viewport again as the homepage transitions from IN to OUT.
+
+## Intentionally deferred after 3B
+
+- browser-based side-by-side audit of the calibrated loader against Camille;
+- any final numeric loader adjustments revealed by that audit;
+- mobile-specific loader calibration;
+- custom cursor;
+- project routes and project pages;
+- About page migration;
+- final typography polish.
+
+The acceptance criterion for 3B is visual choreography: the loader should read as alternating columns converging and expanding through one continuous 5-second WebGL motion, with the center project visibly becoming the fullscreen homepage while the small project rail emerges during the final third.
