@@ -13,38 +13,65 @@ This directory is the isolated implementation laboratory for the Camille-style p
 
 ## Checkpoint 02B — continuous sliding strip
 
-The earlier carousel-like checkpoint was intentionally replaced after comparison with Camille-inspired sliding-track references.
+- Three persistent WebGL project planes.
+- OUT mode is a free horizontal strip rather than a snap-to-card carousel.
+- Drag and wheel update one continuous track position.
+- Image crop counter-moves through shader UV offset.
+- Clicking a visible plane can transition that plane into fullscreen.
+- The third-party SlidingImages clone was used only as a behavioral reference.
 
-Current behavior:
+## Checkpoint 02C — Camille geometry and interface choreography
 
-- Three persistent WebGL project planes: StudentOS, SentIQ Chat, FieldLine.
-- OUT mode is a free horizontal strip, not a snap-to-card carousel.
-- Drag movement updates the strip continuously.
-- Wheel/trackpad input moves the same continuous target.
-- The active project is inferred from whichever plane is nearest the viewport center; it does not control or snap the strip.
-- Image crop shifts according to screen position, reproducing the track/image counter-motion principle used by Camille-inspired clones.
-- Pointer release includes restrained inertial continuation.
-- Edge resistance is applied while dragging beyond the first/last project.
-- Clicking any visible plane transitions that exact plane from its current screen position into fullscreen.
-- Returning to the strip preserves the strip position instead of resetting/re-centering it.
-- Keyboard remains available as an accessibility input path.
+Implemented after browser comparison against the original Camille Mormal homepage at 1440 × 900.
 
-## Behavioral reference
+### Geometry
 
-The continuous-track correction was informed by:
+- Desktop OUT-state cards are now approximately `58vw × 56vh`.
+- Card width is constrained to approximately a `1.66:1` landscape aspect ratio.
+- Desktop gap is approximately `6vw`.
+- Cards remain vertically centered.
 
-- Camille Mormal's original interaction architecture previously reverse-engineered for this project.
-- `SherAli2022000/SlidingImages-Html-CSS`, whose useful behavioral idea is a continuously translated image track paired with counter-moving image crop/object-position.
+### IN state
 
-The third-party implementation is used only as a behavioral reference; its code is not transplanted.
+- Project title is centered in the viewport rather than anchored bottom-left.
+- A small superscript project counter sits beside the title.
+- Left and right 22px cross controls cycle projects without leaving fullscreen.
+- Fullscreen project cycling uses a short WebGL slide/cross-fade rather than switching DOM images.
 
-## Not implemented yet
+### IN → OUT
+
+- Centered title moves upward and fades as the active plane contracts.
+- Fullscreen left/right crosses disappear with the title.
+- The explicit `View all / Close` mode button has been removed.
+- The strip contains no persistent project-title block.
+
+### OUT state
+
+- A single 22px cross appears at the exact viewport center as the active-project affordance.
+- Nearest-center project state is inferred from track position.
+- Clicking the center cross opens the active project.
+
+### OUT → IN
+
+- Clicking any visible off-center plane selects it.
+- Its track position recenters toward the viewport while the same plane expands simultaneously.
+- Neighboring planes leave the viewport during the same transition.
+- Returning to OUT targets the currently selected project, preserving project context rather than resetting to Project 01.
+
+## Intentionally deferred to Checkpoint 02D
+
+- Long-tail velocity/friction model.
+- Low-energy centering behavior.
+- Elastic/rubber-band boundary spring.
+- Final drag sensitivity.
+- Final parallax calibration.
+
+## Still deferred
 
 - 25-plane intro/loader.
-- Exact Camille geometry/timing calibration.
 - Project route transitions.
 - Individual project pages.
 - About page migration.
 - Final typography and visual polish.
 
-The acceptance criterion remains interaction architecture and plane continuity, not final visual parity.
+The acceptance criterion for 02C is geometry and interaction choreography. Physics tuning remains intentionally separate.
