@@ -22,6 +22,36 @@ const PROJECTS = [
   }
 ];
 
+const INTRO_CENTER_INDEX = 12;
+
+const INTRO_MEDIA = [
+  "https://i.ibb.co/jkB9vQLr/Screenshot-2026-07-14-182748.png",
+  "https://i.ibb.co/nsRD4K6z/Screenshot-2026-03-15-113205.png",
+  "https://i.ibb.co/CKyJjqjk/Screenshot-2026-10-11-185504.png",
+  "https://i.ibb.co/27zhVNC9/Screenshot-2026-10-11-184535.png",
+  "https://i.ibb.co/FkNm4g4z/Screenshot-2026-10-11-185804.png",
+  "https://i.ibb.co/n8P5WGvM/Macbeth-Voices-of-Power.jpg",
+  "https://i.ibb.co/nsRD4K6z/Screenshot-2026-03-15-113205.png",
+  "https://i.ibb.co/tMzm6QYS/image.png",
+  "https://i.ibb.co/c8SPnTv/graphics.jpg",
+  "https://i.ibb.co/CKyJjqjk/Screenshot-2026-10-11-185504.png",
+  "https://i.ibb.co/27zhVNC9/Screenshot-2026-10-11-184535.png",
+  "https://i.ibb.co/FkNm4g4z/Screenshot-2026-10-11-185804.png",
+  "https://i.ibb.co/jkB9vQLr/Screenshot-2026-07-14-182748.png",
+  "https://i.ibb.co/n8P5WGvM/Macbeth-Voices-of-Power.jpg",
+  "https://i.ibb.co/tMzm6QYS/image.png",
+  "https://i.ibb.co/c8SPnTv/graphics.jpg",
+  "https://i.ibb.co/nsRD4K6z/Screenshot-2026-03-15-113205.png",
+  "https://i.ibb.co/27zhVNC9/Screenshot-2026-10-11-184535.png",
+  "https://i.ibb.co/CKyJjqjk/Screenshot-2026-10-11-185504.png",
+  "https://i.ibb.co/FkNm4g4z/Screenshot-2026-10-11-185804.png",
+  "https://i.ibb.co/c8SPnTv/graphics.jpg",
+  "https://i.ibb.co/n8P5WGvM/Macbeth-Voices-of-Power.jpg",
+  "https://i.ibb.co/jkB9vQLr/Screenshot-2026-07-14-182748.png",
+  "https://i.ibb.co/nsRD4K6z/Screenshot-2026-03-15-113205.png",
+  "https://i.ibb.co/CKyJjqjk/Screenshot-2026-10-11-185504.png"
+];
+
 const canvas = document.getElementById("experience");
 const loading = document.getElementById("loading");
 const loadingValue = document.getElementById("loading-value");
@@ -35,6 +65,7 @@ const openActiveProject = document.getElementById("open-active-project");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
 document.body.dataset.mode = "focus";
+document.body.dataset.intro = "true";
 
 const gl = canvas.getContext("webgl", {
   alpha: false,
@@ -223,13 +254,27 @@ const state = {
     progress: 0
   },
   titleRevealTimer: 0,
-  titleSwapTimer: 0
+  titleSwapTimer: 0,
+  intro: {
+    active: true,
+    startedAt: null,
+    duration: 5000,
+    complete: false
+  }
 };
 
 const planes = PROJECTS.map((project, index) => ({
   project,
   index,
   texture: createPlaceholderTexture(index),
+  imageWidth: 1600,
+  imageHeight: 900
+}));
+
+const introPlanes = INTRO_MEDIA.map((source, index) => ({
+  source,
+  index,
+  texture: createPlaceholderTexture(index + 3),
   imageWidth: 1600,
   imageHeight: 900
 }));
@@ -693,7 +738,7 @@ function drawPlane(plane, rect, opacity) {
     (center - innerWidth * 0.5) / Math.max(innerWidth, 1);
 
   const cropParallax =
-    clamp(normalizedFromCenter * -0.18, -0.15, 0.15) * state.transition;
+    clamp(normalizedFromCenter * -0.18, -0.045, 0.045) * state.transition;
 
   const distanceToCenter = Math.abs(normalizedFromCenter);
   const dim = lerp(
@@ -717,6 +762,132 @@ function drawPlane(plane, rect, opacity) {
   gl.uniform1f(uniforms.dim, dim);
   gl.uniform1f(uniforms.opacity, opacity);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+}
+
+function drawIntroPlane(plane, rect, opacity, dim = 0.98) {
+  if (rect.w <= 1 || rect.h <= 1 || opacity <= 0.001) return;
+
+  const dpr = canvas.width / innerWidth;
+
+  gl.bindTexture(gl.TEXTURE_2D, plane.texture);
+  gl.uniform2f(uniforms.viewport, canvas.width, canvas.height);
+  gl.uniform4f(
+    uniforms.rect,
+    rect.x * dpr,
+    rect.y * dpr,
+    rect.w * dpr,
+    rect.h * dpr
+  );
+  gl.uniform2f(uniforms.planeSize, rect.w * dpr, rect.h * dpr);
+  gl.uniform2f(uniforms.imageSize, plane.imageWidth, plane.imageHeight);
+  gl.uniform2f(uniforms.uvOffset, 0, 0);
+  gl.uniform1f(uniforms.dim, dim);
+  gl.uniform1f(uniforms.opacity, opacity);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+}
+
+function introGridRect(index) {
+  const columns = 5;
+  const rows = 5;
+  const column = index % columns;
+  const row = Math.floor(index / columns);
+  const gapX = innerWidth <= 780 ? innerWidth * 0.018 : innerWidth * 0.014;
+  const gapY = innerHeight <= 780 ? innerHeight * 0.018 : innerHeight * 0.022;
+  const availableW = innerWidth * (innerWidth <= 780 ? 0.96 : 0.9);
+  const availableH = innerHeight * (innerWidth <= 780 ? 0.84 : 0.88);
+  const w = (availableW - gapX * (columns - 1)) / columns;
+  const h = (availableH - gapY * (rows - 1)) / rows;
+  const startX = (innerWidth - availableW) * 0.5;
+  const startY = (innerHeight - availableH) * 0.5;
+
+  return {
+    x: startX + column * (w + gapX),
+    y: startY + row * (h + gapY),
+    w,
+    h,
+    column,
+    row
+  };
+}
+
+function renderIntro(now) {
+  if (!state.intro.active) return false;
+
+  const startedAt = state.intro.startedAt;
+  if (startedAt === null) return true;
+
+  const raw = clamp((now - startedAt) / state.intro.duration, 0, 1);
+  const settleStart = 0.56;
+  const settleRaw = clamp(raw / settleStart, 0, 1);
+  const settle = easeOutCubic(settleRaw);
+  const collapseRaw = clamp((raw - settleStart) / (1 - settleStart), 0, 1);
+  const collapse = easeInOutQuart(collapseRaw);
+
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.useProgram(program);
+
+  introPlanes.forEach((plane, index) => {
+    const base = introGridRect(index);
+    const direction = base.column % 2 === 0 ? -1 : 1;
+    const travel = innerHeight + base.h * 2.4;
+    const entryY = base.y + direction * travel * (1 - settle);
+
+    let rect = {
+      x: base.x,
+      y: entryY,
+      w: base.w,
+      h: base.h
+    };
+    let opacity = clamp(settleRaw * 1.55, 0, 1);
+    let dim = index === INTRO_CENTER_INDEX ? 1 : 0.9;
+
+    if (collapseRaw > 0) {
+      if (index === INTRO_CENTER_INDEX) {
+        const target = focusRect();
+        rect = {
+          x: lerp(base.x, target.x, collapse),
+          y: lerp(base.y, target.y, collapse),
+          w: lerp(base.w, target.w, collapse),
+          h: lerp(base.h, target.h, collapse)
+        };
+        opacity = 1;
+        dim = lerp(0.95, 0.8, collapse);
+      } else {
+        const cx = base.x + base.w * 0.5;
+        const cy = base.y + base.h * 0.5;
+        const vx = cx - innerWidth * 0.5;
+        const vy = cy - innerHeight * 0.5;
+        const length = Math.max(Math.hypot(vx, vy), 1);
+        const push = Math.min(innerWidth, innerHeight) * 0.2 * collapse;
+
+        rect = {
+          x: base.x + (vx / length) * push,
+          y: base.y + (vy / length) * push,
+          w: base.w * lerp(1, 0.84, collapse),
+          h: base.h * lerp(1, 0.84, collapse)
+        };
+        opacity = 1 - collapse;
+      }
+    }
+
+    drawIntroPlane(plane, rect, opacity, dim);
+  });
+
+  if (raw >= 1) {
+    state.intro.active = false;
+    state.intro.complete = true;
+    document.body.dataset.intro = "false";
+    state.trackCurrent = centeredTrackFor(0);
+    state.trackVelocity = 0;
+    state.settleTarget = null;
+    state.transition = 0;
+    state.transitionFrom = 0;
+    state.transitionTo = 0;
+    state.activeIndex = 0;
+    updateProjectTitle(0, true);
+  }
+
+  return true;
 }
 
 function focusCycleVisual(index, now) {
@@ -760,6 +931,11 @@ function focusCycleVisual(index, now) {
 function render(now) {
   const dt = Math.min((now - state.lastTime) / 1000, 0.05);
   state.lastTime = now;
+
+  if (renderIntro(now)) {
+    requestAnimationFrame(render);
+    return;
+  }
 
   if (!reducedMotion.matches && state.transition !== state.transitionTo) {
     const elapsed = clamp(
@@ -902,12 +1078,16 @@ function render(now) {
 
 requestAnimationFrame(render);
 
-function loadImageFrom(project, sourceIndex = 0) {
-  const sources = [project.image, project.proxy];
+function proxyFor(source) {
+  return `https://wsrv.nl/?url=${encodeURIComponent(source)}`;
+}
+
+function loadImageSource(source, sourceIndex = 0) {
+  const sources = [source, proxyFor(source)];
 
   return new Promise((resolve, reject) => {
     if (sourceIndex >= sources.length) {
-      reject(new Error(`Failed to load texture for ${project.title}`));
+      reject(new Error(`Failed to load texture: ${source}`));
       return;
     }
 
@@ -915,7 +1095,7 @@ function loadImageFrom(project, sourceIndex = 0) {
     image.crossOrigin = "anonymous";
     image.onload = () => resolve(image);
     image.onerror = () => {
-      loadImageFrom(project, sourceIndex + 1).then(resolve).catch(reject);
+      loadImageSource(source, sourceIndex + 1).then(resolve).catch(reject);
     };
     image.src = sources[sourceIndex];
   });
@@ -924,8 +1104,8 @@ function loadImageFrom(project, sourceIndex = 0) {
 let loadedCount = 0;
 
 Promise.all(
-  planes.map(async plane => {
-    const image = await loadImageFrom(plane.project);
+  introPlanes.map(async plane => {
+    const image = await loadImageSource(plane.source);
 
     gl.bindTexture(gl.TEXTURE_2D, plane.texture);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
@@ -943,12 +1123,26 @@ Promise.all(
 
     loadedCount += 1;
     loadingValue.textContent =
-      `${Math.round((loadedCount / planes.length) * 100)}%`;
+      `${Math.round((loadedCount / introPlanes.length) * 100)}%`;
   })
 )
   .then(() => {
+    const projectTextureMap = [INTRO_CENTER_INDEX, 6, 18];
+
+    planes.forEach((plane, index) => {
+      const sourcePlane = introPlanes[projectTextureMap[index]];
+      plane.texture = sourcePlane.texture;
+      plane.imageWidth = sourcePlane.imageWidth;
+      plane.imageHeight = sourcePlane.imageHeight;
+    });
+
     updateProjectTitle(0, true);
-    setTimeout(() => loading.classList.add("is-complete"), 180);
+    loadingValue.textContent = "100%";
+
+    setTimeout(() => {
+      loading.classList.add("is-complete");
+      state.intro.startedAt = performance.now() + 220;
+    }, 180);
   })
   .catch(() => {
     loading.hidden = true;
