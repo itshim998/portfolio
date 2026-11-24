@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#090908" />
-  <title>Camille Lab — Continuous Sliding Strip</title>
+  <title>Camille Lab — Checkpoint 2C</title>
   <meta name="robots" content="noindex,nofollow" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,34 +20,34 @@
   </div>
 
   <header class="chrome">
-    <a class="brand" href="./" aria-label="Sounak Poddar Camille interaction laboratory">
-      <span>Sounak Poddar</span>
-      <small>Interaction Lab / 02B</small>
-    </a>
-
-    <button class="mode-button" id="mode-button" type="button" aria-pressed="false">
-      <span class="mode-button__label">View all</span>
-      <span class="mode-button__mark" aria-hidden="true"></span>
-    </button>
+    <a class="brand" href="./" aria-label="Sounak Poddar, work">Sounak Poddar</a>
+    <nav class="top-nav" aria-label="Primary">
+      <a href="./" aria-current="page">Work</a>
+      <a href="#about-placeholder">About</a>
+    </nav>
   </header>
 
   <main class="ui">
-    <section class="project-label" aria-live="polite" aria-atomic="true">
-      <p id="project-index">01 / All-in-one academic workspace</p>
+    <section class="focus-title" id="focus-title" aria-live="polite" aria-atomic="true">
       <h1 id="project-title">StudentOS</h1>
-      <a id="project-link" href="https://studentos.sentiqlabs.com/" target="_blank" rel="noopener noreferrer">
-        Visit product <span aria-hidden="true">↗</span>
-      </a>
+      <span class="focus-title__counter" id="project-counter">01</span>
     </section>
 
-    <div class="strip-status" aria-hidden="true">
-      <span id="project-counter">01 / 03</span>
-      <span class="strip-status__line"></span>
-      <span>drag / scroll</span>
-    </div>
+    <button class="cross cross--previous" id="previous-project" type="button" aria-label="Previous project">
+      <span aria-hidden="true"></span>
+    </button>
+    <button class="cross cross--next" id="next-project" type="button" aria-label="Next project">
+      <span aria-hidden="true"></span>
+    </button>
 
-    <p class="gesture-hint">Drag or scroll to reveal the strip</p>
+    <button class="cross cross--center" id="open-active-project" type="button" aria-label="Open centered project">
+      <span aria-hidden="true"></span>
+    </button>
+
+    <p class="gesture-hint">Scroll or drag to view all work</p>
   </main>
+
+  <div id="about-placeholder" hidden></div>
 
   <div class="fallback" id="fallback" hidden>
     <p>WebGL could not initialize on this device.</p>
