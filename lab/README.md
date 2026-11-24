@@ -2,77 +2,71 @@
 
 This directory is the isolated implementation laboratory for the Camille-style portfolio rebuild. The production portfolio on `main` remains untouched.
 
-## Checkpoint 01 — single-plane continuity
+## Frozen homepage interaction foundation
 
-- Native WebGL renderer.
-- Existing StudentOS screenshot uploaded as a GPU texture.
-- One persistent plane transitions between fullscreen and an out-state.
-- Wheel, pointer drag, keyboard, explicit control.
-- Reduced-motion and non-WebGL fallback.
-- No Three.js or GSAP on the motion-critical path.
+Checkpoint 2D is now treated as the approved homepage interaction base.
 
-## Checkpoint 02B — continuous sliding strip
+Validated behavior includes:
 
-- Three persistent WebGL project planes.
-- OUT mode is a free horizontal strip rather than a snap-to-card carousel.
-- Drag and wheel update one continuous track position.
-- Image crop counter-moves through shader UV offset.
-- Clicking a visible plane can transition that plane into fullscreen.
+- upright WebGL textures;
+- wide landscape OUT-state geometry;
+- centered fullscreen title/counter;
+- fullscreen previous/next crosses;
+- central OUT-state cross;
+- continuous 1:1 drag;
+- velocity-based inertia;
+- long exponential coast;
+- low-energy centering;
+- elastic strip boundaries;
+- immediate grab/arrest during inertia;
+- simultaneous off-center recenter + expansion;
+- stable project state under stress.
 
-## Checkpoint 02C — geometry and interface choreography
+The final pre-freeze shader correction is also applied: crop parallax remains at the approved `-0.18` movement ratio but is clamped to `±0.045` to prevent edge-pixel smearing on landscape screenshots.
 
-- Desktop OUT-state cards use wide landscape geometry, approximately `58vw × 56vh`, constrained around a `1.66:1` aspect ratio.
-- Desktop inter-card gap is approximately `6vw`.
-- IN-state project title is centered with a superscript project number.
-- Fullscreen left/right 22px cross controls cycle projects without leaving fullscreen.
-- IN → OUT dismisses the centered title upward while the active plane contracts.
-- OUT mode uses one centered 22px cross as the active-project affordance.
-- Clicking an off-center project recenters its strip position while that same plane expands.
-- Returning to OUT keeps the selected project as the strip context.
+## Checkpoint 3A — 25-plane loader foundation
 
-## Checkpoint 02D — rendering correction and physical strip motion
+This is the first contained loader checkpoint.
 
-Implemented after direct screenshot review of Checkpoint 02C against the Camille reference.
+### Texture pipeline
 
-### Rendering correction
+- 25 logical loader media entries are created.
+- Each loader plane owns a real WebGL texture.
+- Loading progress is calculated from completed loader texture uploads rather than a fake timer.
+- Direct image loading falls back to a CORS-safe image proxy when required.
+- The three homepage project textures reuse already-loaded loader textures, avoiding a second post-loader fetch.
 
-- Removed the erroneous WebGL texture Y flip.
-- Project screenshots now upload in browser-native orientation instead of appearing vertically inverted.
+### Loader scene
 
-### Drag model
+- 25 planes are arranged as a 5 × 5 field.
+- Five vertical columns enter with alternating motion directions.
+- Loader duration is currently 5000ms, matching the recovered production timing target.
+- Plane index 12 is the central StudentOS plane.
+- The center plane is visually emphasized during the transition.
+- During the second half of the intro, surrounding planes move outward and fade.
+- The center plane expands from its grid rectangle into the exact fullscreen homepage rectangle.
+- Homepage chrome remains hidden during the loader and fades in after the handoff.
 
-- Replaced target-seeking interpolation with a position + velocity model.
-- Pointer movement remains direct while the pointer is held.
-- Pointer-down immediately catches/stops an already moving strip.
-- Pointer release converts measured pointer velocity into strip velocity.
-- Wheel / trackpad input now adds velocity impulses instead of moving a target position.
+### Handoff
 
-### Inertia
+- Loader completion resets homepage strip velocity and settle state.
+- The homepage begins in Project 01 fullscreen mode.
+- No Checkpoint 2D motion constants or interaction mechanics are replaced by the loader scene.
 
-- Strip velocity decays exponentially with a long glide tail.
-- High-speed flicks can coast beyond one card width before settling.
-- A weak centering spring is introduced only after kinetic velocity falls below a low threshold.
-- Keyboard arrows use the same low-energy centering destination rather than restoring carousel snapping.
+## Intentionally not final yet
 
-### Bounds
+Checkpoint 3A establishes loader architecture and continuity only.
 
-- Pointer dragging beyond either strip edge uses progressive non-linear resistance.
-- Released overscroll is resolved with a damped spring force rather than a hard clamp.
-- Boundary correction and free-motion friction are separate forces.
+Still to calibrate in subsequent loader checkpoints:
 
-### OUT → IN choreography
+- exact Camille loader plane dimensions and padding;
+- precise initial column offsets;
+- stagger between individual planes;
+- center-plane emphasis timing;
+- exact easing curves;
+- thumbnail/minimap emergence;
+- loader text/number typography;
+- mobile loader geometry;
+- frame-by-frame parity against Camille reference footage.
 
-- Off-center project activation still recenters and expands simultaneously.
-- Recenter motion is isolated from free-strip inertia so the selected project reaches the viewport center deterministically during expansion.
-
-## Deliberately deferred
-
-- Final numerical calibration of friction, spring strength, and drag sensitivity against a new browser audit.
-- Thumbnail rail / `#_p` chrome.
-- Custom cursor.
-- 25-plane intro/loader.
-- Project routes and project pages.
-- About page migration.
-- Final typography and polish.
-
-The acceptance criterion for 02D is that the strip feels materially more free and physical than 02C while preserving the corrected 02C geometry and transition architecture.
+The acceptance criterion for 3A is that the 25-plane sequence loads reliably, reads as one continuous WebGL scene, and hands the central project plane into the already-approved homepage without a visible scene swap.
