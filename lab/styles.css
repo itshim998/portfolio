@@ -337,3 +337,16 @@ body[data-mode="strip"] .gesture-hint { opacity: 0; }
     transition-duration: 0.01ms !important;
   }
 }
+
+
+body[data-intro="true"] .chrome,
+body[data-intro="true"] .ui {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.chrome,
+.ui {
+  transition: opacity 520ms ease, visibility 520ms;
+}
