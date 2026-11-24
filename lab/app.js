@@ -532,6 +532,8 @@ canvas.addEventListener("pointerdown", event => {
 
   state.pointerDown = true;
   state.pointerId = event.pointerId;
+  state.trackVelocity = 0;
+  state.settleTarget = null;
   state.startX = event.clientX;
   state.startY = event.clientY;
   state.dragStartCurrent = state.trackCurrent;
