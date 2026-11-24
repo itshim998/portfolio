@@ -3,7 +3,6 @@ const PROJECTS = [
     slug: "studentos",
     eyebrow: "01 / All-in-one academic workspace",
     title: "StudentOS",
-    summary: "An AI-native academic workspace that turns courses, syllabi, assignments, schedules, and study materials into a clear daily roadmap.",
     href: "https://studentos.sentiqlabs.com/",
     image: "https://i.ibb.co/jkB9vQLr/Screenshot-2026-07-14-182748.png",
     proxy: "https://wsrv.nl/?url=https%3A%2F%2Fi.ibb.co%2FjkB9vQLr%2FScreenshot-2026-07-14-182748.png"
@@ -12,7 +11,6 @@ const PROJECTS = [
     slug: "sentiq-chat",
     eyebrow: "02 / AI orchestrator",
     title: "SentIQ Chat",
-    summary: "A multimodal AI orchestrator built around conversation, memory, contextual awareness, files, tools, web research, image generation, and live voice.",
     href: "https://sentiqchat.sentiqlabs.com/",
     image: "https://i.ibb.co/nsRD4K6z/Screenshot-2026-03-15-113205.png",
     proxy: "https://wsrv.nl/?url=https%3A%2F%2Fi.ibb.co%2FnsRD4K6z%2FScreenshot-2026-03-15-113205.png"
@@ -21,7 +19,6 @@ const PROJECTS = [
     slug: "fieldline",
     eyebrow: "03 / AI for the field",
     title: "FieldLine",
-    summary: "AI for bridging the communication gap between project leadership and field workers in large infrastructure projects, with progress tracking and anomaly detection.",
     href: "https://fieldline.sentiqlabs.com/",
     image: "https://i.ibb.co/CKyJjqjk/Screenshot-2026-10-11-185504.png",
     proxy: "https://wsrv.nl/?url=https%3A%2F%2Fi.ibb.co%2FCKyJjqjk%2FScreenshot-2026-10-11-185504.png"
@@ -34,12 +31,9 @@ const loadingValue = document.getElementById("loading-value");
 const fallback = document.getElementById("fallback");
 const modeButton = document.getElementById("mode-button");
 const modeLabel = modeButton.querySelector(".mode-button__label");
-const previousProject = document.getElementById("previous-project");
-const nextProject = document.getElementById("next-project");
-const projectCopy = document.querySelector(".project-copy");
+const projectLabel = document.querySelector(".project-label");
 const projectIndex = document.getElementById("project-index");
 const projectTitle = document.getElementById("project-title");
-const projectSummary = document.getElementById("project-summary");
 const projectLink = document.getElementById("project-link");
 const projectCounter = document.getElementById("project-counter");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
@@ -196,17 +190,19 @@ const state = {
   transitionFrom: 0,
   transitionTo: 0,
   transitionStartedAt: performance.now(),
-  transitionDuration: 1120,
+  transitionDuration: 1050,
   activeIndex: 0,
-  galleryCurrent: 0,
-  galleryTarget: 0,
-  dragOffset: 0,
+  trackCurrent: 0,
+  trackTarget: 0,
   pointerDown: false,
   pointerId: null,
   startX: 0,
   startY: 0,
-  dragDistance: 0,
+  dragStartTarget: 0,
+  dragDistanceX: 0,
+  dragDistanceY: 0,
   pointerMoved: false,
+  pointerHistory: [],
   lastTime: performance.now(),
   renderedRects: []
 };
@@ -216,8 +212,7 @@ const planes = PROJECTS.map((project, index) => ({
   index,
   texture: createPlaceholderTexture(index),
   imageWidth: 1600,
-  imageHeight: 900,
-  loaded: false
+  imageHeight: 900
 }));
 
 function createPlaceholderTexture(index) {
@@ -244,39 +239,62 @@ function createPlaceholderTexture(index) {
   return texture;
 }
 
-function focusRect() {
-  return { x: 0, y: 0, w: innerWidth, h: innerHeight };
-}
-
-function galleryMetrics() {
+function stripMetrics() {
   if (innerWidth <= 780) {
-    const w = innerWidth * 0.72;
-    const h = Math.min(innerHeight * 0.34, w * 0.72);
+    const w = Math.min(innerWidth * 0.66, innerHeight * 0.38);
+    const h = Math.min(innerHeight * 0.53, w * 1.48);
     return {
       w,
       h,
-      gap: Math.max(22, innerWidth * 0.055),
+      gap: Math.max(24, innerWidth * 0.055),
       centerX: innerWidth * 0.5,
-      centerY: 105 + h * 0.5
+      centerY: innerHeight * 0.46
     };
   }
 
-  const w = Math.min(innerWidth * 0.42, 760);
-  const h = Math.min(innerHeight * 0.61, w * 0.64);
+  const vmin = Math.min(innerWidth, innerHeight) / 100;
+  const w = 40 * vmin;
+  const h = 56 * vmin;
 
   return {
     w,
     h,
-    gap: Math.max(26, innerWidth * 0.024),
-    centerX: innerWidth * 0.72,
+    gap: 4 * vmin,
+    centerX: innerWidth * 0.5,
     centerY: innerHeight * 0.5
   };
 }
 
-function overviewRectFor(index, galleryPosition) {
-  const metrics = galleryMetrics();
-  const offset = index - galleryPosition;
-  const x = metrics.centerX - metrics.w * 0.5 + offset * (metrics.w + metrics.gap);
+function maxTrack() {
+  const metrics = stripMetrics();
+  return Math.max(0, (PROJECTS.length - 1) * (metrics.w + metrics.gap));
+}
+
+function focusRect() {
+  return { x: 0, y: 0, w: innerWidth, h: innerHeight };
+}
+
+function hiddenFocusRect(index) {
+  const direction = index < state.activeIndex ? -1 : 1;
+  const w = innerWidth * 0.28;
+  const h = innerHeight * 0.5;
+
+  return {
+    x: direction < 0 ? -w - 100 : innerWidth + 100,
+    y: innerHeight * 0.5 - h * 0.5,
+    w,
+    h
+  };
+}
+
+function stripRect(index, trackPosition) {
+  const metrics = stripMetrics();
+  const spacing = metrics.w + metrics.gap;
+  const x =
+    metrics.centerX -
+    metrics.w * 0.5 +
+    index * spacing -
+    trackPosition;
 
   return {
     x,
@@ -286,157 +304,150 @@ function overviewRectFor(index, galleryPosition) {
   };
 }
 
-function focusHiddenRect(index) {
-  const direction = index < state.activeIndex ? -1 : 1;
-  const w = innerWidth * 0.24;
-  const h = innerHeight * 0.45;
+function rectForPlane(index, trackPosition) {
+  const from =
+    index === state.activeIndex
+      ? focusRect()
+      : hiddenFocusRect(index);
 
-  return {
-    x: direction < 0 ? -w - 80 : innerWidth + 80,
-    y: innerHeight * 0.5 - h * 0.5,
-    w,
-    h
-  };
-}
-
-function rectForPlane(index, galleryPosition) {
-  const overview = overviewRectFor(index, galleryPosition);
-  const focus = index === state.activeIndex ? focusRect() : focusHiddenRect(index);
+  const to = stripRect(index, trackPosition);
   const t = state.transition;
 
   return {
-    x: lerp(focus.x, overview.x, t),
-    y: lerp(focus.y, overview.y, t),
-    w: lerp(focus.w, overview.w, t),
-    h: lerp(focus.h, overview.h, t)
+    x: lerp(from.x, to.x, t),
+    y: lerp(from.y, to.y, t),
+    w: lerp(from.w, to.w, t),
+    h: lerp(from.h, to.h, t)
   };
 }
 
-function updateProjectCopy(index, immediate = false) {
+function setTrackTarget(value) {
+  state.trackTarget = clamp(value, 0, maxTrack());
+}
+
+function nearestProjectIndex(trackPosition) {
+  const metrics = stripMetrics();
+  const spacing = metrics.w + metrics.gap;
+  return clamp(Math.round(trackPosition / Math.max(spacing, 1)), 0, PROJECTS.length - 1);
+}
+
+function updateProjectLabel(index, immediate = false) {
   const project = PROJECTS[index];
   if (!project) return;
 
   const apply = () => {
     projectIndex.textContent = project.eyebrow;
     projectTitle.textContent = project.title;
-    projectSummary.textContent = project.summary;
     projectLink.href = project.href;
     projectCounter.textContent =
       `${String(index + 1).padStart(2, "0")} / ${String(PROJECTS.length).padStart(2, "0")}`;
-    previousProject.disabled = index === 0;
-    nextProject.disabled = index === PROJECTS.length - 1;
   };
 
-  if (immediate || reducedMotion.matches || state.mode !== "overview") {
+  if (immediate || reducedMotion.matches) {
     apply();
     return;
   }
 
-  projectCopy.classList.add("is-changing");
+  projectLabel.classList.add("is-changing");
   setTimeout(() => {
     apply();
-    requestAnimationFrame(() => projectCopy.classList.remove("is-changing"));
-  }, 170);
+    requestAnimationFrame(() => projectLabel.classList.remove("is-changing"));
+  }, 135);
 }
 
-function setActiveIndex(index) {
+function setActiveIndex(index, immediate = false) {
   const next = clamp(index, 0, PROJECTS.length - 1);
-  if (next === state.activeIndex && state.galleryTarget === next) return;
+  if (next === state.activeIndex) return;
 
   state.activeIndex = next;
-  state.galleryTarget = next;
-  updateProjectCopy(next);
+  updateProjectLabel(next, immediate);
 }
 
-function stepProject(direction) {
-  if (state.mode !== "overview") {
-    setMode("overview");
-    return;
+function setMode(nextMode, selectedIndex = state.activeIndex) {
+  if (nextMode === state.mode && selectedIndex === state.activeIndex) return;
+
+  if (nextMode === "focus") {
+    setActiveIndex(selectedIndex);
+    const metrics = stripMetrics();
+    const spacing = metrics.w + metrics.gap;
+    state.trackCurrent = selectedIndex * spacing;
+    state.trackTarget = state.trackCurrent;
   }
-
-  setActiveIndex(state.activeIndex + direction);
-}
-
-function setMode(nextMode) {
-  if (nextMode === state.mode) return;
 
   state.mode = nextMode;
   state.transitionFrom = state.transition;
-  state.transitionTo = nextMode === "overview" ? 1 : 0;
+  state.transitionTo = nextMode === "strip" ? 1 : 0;
   state.transitionStartedAt = performance.now();
 
-  if (nextMode === "overview") {
-    state.galleryCurrent = state.activeIndex;
-    state.galleryTarget = state.activeIndex;
+  if (nextMode === "strip") {
+    const metrics = stripMetrics();
+    const spacing = metrics.w + metrics.gap;
+    state.trackCurrent = state.activeIndex * spacing;
+    state.trackTarget = state.trackCurrent;
   }
 
   document.body.dataset.mode = nextMode;
-  modeButton.setAttribute("aria-pressed", String(nextMode === "overview"));
-  modeLabel.textContent = nextMode === "overview" ? "Focus" : "Overview";
+  modeButton.setAttribute("aria-pressed", String(nextMode === "strip"));
+  modeLabel.textContent = nextMode === "strip" ? "Close" : "View all";
 
   if (reducedMotion.matches) {
     state.transition = state.transitionTo;
   }
 }
 
-function toggleMode() {
-  setMode(state.mode === "overview" ? "focus" : "overview");
-}
-
-modeButton.addEventListener("click", toggleMode);
-previousProject.addEventListener("click", () => stepProject(-1));
-nextProject.addEventListener("click", () => stepProject(1));
+modeButton.addEventListener("click", () => {
+  setMode(state.mode === "strip" ? "focus" : "strip");
+});
 
 addEventListener("keydown", event => {
   if (state.mode === "focus") {
     if (["ArrowDown", "ArrowRight", " "].includes(event.key)) {
       event.preventDefault();
-      setMode("overview");
+      setMode("strip");
     }
     return;
   }
 
+  const metrics = stripMetrics();
+  const spacing = metrics.w + metrics.gap;
+
   if (event.key === "ArrowRight" || event.key === "ArrowDown") {
     event.preventDefault();
-    stepProject(1);
+    setTrackTarget(state.trackTarget + spacing * 0.72);
   } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
     event.preventDefault();
-    stepProject(-1);
+    setTrackTarget(state.trackTarget - spacing * 0.72);
   } else if (event.key === "Enter" || event.key === " ") {
     event.preventDefault();
-    setMode("focus");
+    setMode("focus", state.activeIndex);
   } else if (event.key === "Escape") {
-    setMode("focus");
+    setMode("focus", state.activeIndex);
   }
 });
 
-let wheelAccumulator = 0;
-let wheelResetTimer = 0;
-let wheelLocked = false;
+let wheelVelocity = 0;
+let wheelIdleTimer = 0;
 
 addEventListener("wheel", event => {
-  const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY)
-    ? event.deltaX
-    : event.deltaY;
+  const dominant =
+    Math.abs(event.deltaX) > Math.abs(event.deltaY)
+      ? event.deltaX
+      : event.deltaY;
 
-  clearTimeout(wheelResetTimer);
-  wheelResetTimer = setTimeout(() => {
-    wheelAccumulator = 0;
-    wheelLocked = false;
-  }, 150);
-
-  wheelAccumulator += delta;
-
-  if (!wheelLocked && Math.abs(wheelAccumulator) > 34) {
-    if (state.mode === "focus") {
-      if (wheelAccumulator > 0) setMode("overview");
-    } else {
-      stepProject(wheelAccumulator > 0 ? 1 : -1);
-    }
-
-    wheelAccumulator = 0;
-    wheelLocked = true;
+  if (state.mode === "focus") {
+    if (dominant > 3) setMode("strip");
+    event.preventDefault();
+    return;
   }
+
+  const factor = event.deltaMode === 1 ? 24 : event.deltaMode === 2 ? 600 : 1;
+  wheelVelocity = dominant * factor;
+  setTrackTarget(state.trackTarget + wheelVelocity * 0.9);
+
+  clearTimeout(wheelIdleTimer);
+  wheelIdleTimer = setTimeout(() => {
+    wheelVelocity = 0;
+  }, 90);
 
   event.preventDefault();
 }, { passive: false });
@@ -448,9 +459,11 @@ canvas.addEventListener("pointerdown", event => {
   state.pointerId = event.pointerId;
   state.startX = event.clientX;
   state.startY = event.clientY;
-  state.dragDistance = 0;
+  state.dragStartTarget = state.trackTarget;
+  state.dragDistanceX = 0;
+  state.dragDistanceY = 0;
   state.pointerMoved = false;
-  state.dragOffset = 0;
+  state.pointerHistory = [{ x: event.clientX, t: performance.now() }];
   canvas.classList.add("is-grabbing");
 
   try {
@@ -463,38 +476,69 @@ canvas.addEventListener("pointermove", event => {
 
   const dx = event.clientX - state.startX;
   const dy = event.clientY - state.startY;
-  state.dragDistance = Math.abs(dx) >= Math.abs(dy) ? dx : dy;
+
+  state.dragDistanceX = dx;
+  state.dragDistanceY = dy;
 
   if (Math.hypot(dx, dy) > 5) {
     state.pointerMoved = true;
   }
 
-  if (state.mode === "overview") {
-    const metrics = galleryMetrics();
-    state.dragOffset = -dx / Math.max(metrics.w + metrics.gap, 1);
+  if (state.mode === "focus") {
+    if (Math.abs(dx) > 18 || Math.abs(dy) > 18) {
+      setMode("strip");
+      state.dragStartTarget = state.trackTarget;
+      state.startX = event.clientX;
+      state.startY = event.clientY;
+      state.dragDistanceX = 0;
+      state.dragDistanceY = 0;
+    }
+    return;
   }
+
+  const now = performance.now();
+  state.pointerHistory.push({ x: event.clientX, t: now });
+  while (
+    state.pointerHistory.length > 1 &&
+    now - state.pointerHistory[0].t > 120
+  ) {
+    state.pointerHistory.shift();
+  }
+
+  const raw = state.dragStartTarget - dx;
+  const max = maxTrack();
+
+  if (raw < 0) {
+    state.trackTarget = raw * 0.28;
+  } else if (raw > max) {
+    state.trackTarget = max + (raw - max) * 0.28;
+  } else {
+    state.trackTarget = raw;
+  }
+
+  state.trackCurrent = state.trackTarget;
 });
 
 function hitTestProject(x, y) {
-  let best = null;
-
-  for (const item of state.renderedRects) {
+  for (let i = state.renderedRects.length - 1; i >= 0; i -= 1) {
+    const item = state.renderedRects[i];
     const rect = item.rect;
+
     if (
+      item.opacity > 0.2 &&
       x >= rect.x &&
       x <= rect.x + rect.w &&
       y >= rect.y &&
-      y <= rect.y + rect.h &&
-      item.opacity > 0.25
+      y <= rect.y + rect.h
     ) {
-      best = item.index;
+      return item.index;
     }
   }
 
-  return best;
+  return null;
 }
 
-function endPointer(event) {
+function finishPointer(event) {
   if (!state.pointerDown || event.pointerId !== state.pointerId) return;
 
   state.pointerDown = false;
@@ -504,42 +548,34 @@ function endPointer(event) {
     canvas.releasePointerCapture(event.pointerId);
   } catch (_) {}
 
+  if (state.mode !== "strip") return;
+
   if (!state.pointerMoved) {
-    if (state.mode === "overview") {
-      const hit = hitTestProject(event.clientX, event.clientY);
-      if (hit !== null) {
-        if (hit === state.activeIndex) {
-          setMode("focus");
-        } else {
-          setActiveIndex(hit);
-        }
-      }
+    const hit = hitTestProject(event.clientX, event.clientY);
+    if (hit !== null) {
+      setMode("focus", hit);
     }
-    state.dragOffset = 0;
     return;
   }
 
-  if (state.mode === "focus") {
-    if (Math.abs(state.dragDistance) > 30) {
-      setMode("overview");
-    }
-    state.dragOffset = 0;
-    return;
-  }
+  const now = performance.now();
+  const oldest = state.pointerHistory[0] || { x: event.clientX, t: now };
+  const dt = Math.max(now - oldest.t, 1);
+  const vx = (event.clientX - oldest.x) / dt;
 
-  if (Math.abs(state.dragDistance) > 42) {
-    stepProject(state.dragDistance < 0 ? 1 : -1);
-  }
-
-  state.dragOffset = 0;
+  state.trackTarget = clamp(
+    state.trackTarget - vx * 260,
+    0,
+    maxTrack()
+  );
 }
 
-canvas.addEventListener("pointerup", endPointer);
+canvas.addEventListener("pointerup", finishPointer);
 canvas.addEventListener("pointercancel", event => {
   if (!state.pointerDown || event.pointerId !== state.pointerId) return;
   state.pointerDown = false;
-  state.dragOffset = 0;
   canvas.classList.remove("is-grabbing");
+  state.trackTarget = clamp(state.trackTarget, 0, maxTrack());
 });
 
 function resize() {
@@ -555,18 +591,38 @@ function resize() {
   canvas.style.width = `${innerWidth}px`;
   canvas.style.height = `${innerHeight}px`;
   gl.viewport(0, 0, width, height);
+
+  if (state.mode === "strip") {
+    state.trackTarget = clamp(state.trackTarget, 0, maxTrack());
+    state.trackCurrent = clamp(state.trackCurrent, 0, maxTrack());
+  } else {
+    const metrics = stripMetrics();
+    const spacing = metrics.w + metrics.gap;
+    state.trackTarget = state.activeIndex * spacing;
+    state.trackCurrent = state.trackTarget;
+  }
 }
 
 addEventListener("resize", resize, { passive: true });
 resize();
 
-function drawPlane(plane, rect, opacity, galleryPosition) {
+function drawPlane(plane, rect, opacity) {
   if (rect.w <= 1 || rect.h <= 1 || opacity <= 0.001) return;
 
   const dpr = canvas.width / innerWidth;
-  const offsetFromCenter = plane.index - galleryPosition;
-  const parallaxX = clamp(offsetFromCenter * -0.028, -0.055, 0.055);
-  const activeBoost = plane.index === state.activeIndex ? 1 : 0.82;
+  const center = rect.x + rect.w * 0.5;
+  const normalizedFromCenter =
+    (center - innerWidth * 0.5) / Math.max(innerWidth, 1);
+
+  const cropParallax =
+    clamp(normalizedFromCenter * -0.22, -0.11, 0.11) * state.transition;
+
+  const distanceToCenter = Math.abs(normalizedFromCenter);
+  const dim = lerp(
+    0.78,
+    clamp(1 - distanceToCenter * 0.25, 0.76, 0.96),
+    state.transition
+  );
 
   gl.bindTexture(gl.TEXTURE_2D, plane.texture);
   gl.uniform2f(uniforms.viewport, canvas.width, canvas.height);
@@ -579,8 +635,8 @@ function drawPlane(plane, rect, opacity, galleryPosition) {
   );
   gl.uniform2f(uniforms.planeSize, rect.w * dpr, rect.h * dpr);
   gl.uniform2f(uniforms.imageSize, plane.imageWidth, plane.imageHeight);
-  gl.uniform2f(uniforms.uvOffset, parallaxX, 0);
-  gl.uniform1f(uniforms.dim, lerp(0.76, activeBoost, state.transition));
+  gl.uniform2f(uniforms.uvOffset, cropParallax, 0);
+  gl.uniform1f(uniforms.dim, dim);
   gl.uniform1f(uniforms.opacity, opacity);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
@@ -595,27 +651,31 @@ function render(now) {
       0,
       1
     );
-    const eased = easeInOutQuart(elapsed);
-    state.transition = lerp(state.transitionFrom, state.transitionTo, eased);
+    state.transition = lerp(
+      state.transitionFrom,
+      state.transitionTo,
+      easeInOutQuart(elapsed)
+    );
 
     if (elapsed === 1) {
       state.transition = state.transitionTo;
     }
   }
 
-  if (reducedMotion.matches) {
-    state.galleryCurrent = state.galleryTarget;
-  } else if (!state.pointerDown || state.mode !== "overview") {
-    state.galleryCurrent = damp(
-      state.galleryCurrent,
-      state.galleryTarget,
-      10.5,
-      dt
-    );
+  if (state.mode === "strip" && !state.pointerDown) {
+    const target = clamp(state.trackTarget, 0, maxTrack());
+    state.trackTarget = target;
+    state.trackCurrent = reducedMotion.matches
+      ? target
+      : damp(state.trackCurrent, target, 8.5, dt);
   }
 
-  const galleryPosition =
-    state.galleryCurrent + (state.mode === "overview" ? state.dragOffset : 0);
+  if (state.mode === "strip") {
+    const nearest = nearestProjectIndex(state.trackCurrent);
+    if (nearest !== state.activeIndex) {
+      setActiveIndex(nearest);
+    }
+  }
 
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.useProgram(program);
@@ -623,11 +683,14 @@ function render(now) {
   state.renderedRects = [];
 
   planes.forEach(plane => {
-    const rect = rectForPlane(plane.index, galleryPosition);
-    const distance = Math.abs(plane.index - galleryPosition);
-    const overviewOpacity = clamp(1 - Math.max(0, distance - 1.15) * 0.55, 0.18, 1);
+    const rect = rectForPlane(plane.index, state.trackCurrent);
+    const visible =
+      rect.x + rect.w > -rect.w * 0.4 &&
+      rect.x < innerWidth + rect.w * 0.4;
+
     const focusOpacity = plane.index === state.activeIndex ? 1 : 0;
-    const opacity = lerp(focusOpacity, overviewOpacity, state.transition);
+    const stripOpacity = visible ? 1 : 0;
+    const opacity = lerp(focusOpacity, stripOpacity, state.transition);
 
     state.renderedRects.push({
       index: plane.index,
@@ -635,7 +698,7 @@ function render(now) {
       opacity
     });
 
-    drawPlane(plane, rect, opacity, galleryPosition);
+    drawPlane(plane, rect, opacity);
   });
 
   requestAnimationFrame(render);
@@ -654,12 +717,10 @@ function loadImageFrom(project, sourceIndex = 0) {
 
     const image = new Image();
     image.crossOrigin = "anonymous";
-
     image.onload = () => resolve(image);
     image.onerror = () => {
       loadImageFrom(project, sourceIndex + 1).then(resolve).catch(reject);
     };
-
     image.src = sources[sourceIndex];
   });
 }
@@ -683,7 +744,6 @@ Promise.all(
 
     plane.imageWidth = image.naturalWidth || plane.imageWidth;
     plane.imageHeight = image.naturalHeight || plane.imageHeight;
-    plane.loaded = true;
 
     loadedCount += 1;
     loadingValue.textContent =
@@ -691,7 +751,7 @@ Promise.all(
   })
 )
   .then(() => {
-    updateProjectCopy(0, true);
+    updateProjectLabel(0, true);
     setTimeout(() => loading.classList.add("is-complete"), 180);
   })
   .catch(() => {
