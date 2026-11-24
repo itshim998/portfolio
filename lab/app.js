@@ -950,7 +950,7 @@ function drawHomeThumbnails(now, duringIntro = false) {
 
       const elapsed = now - state.intro.startedAt;
       const local = clamp(
-        (elapsed - (3200 + 50 * index)) / 1500,
+        (elapsed - (3700 + 50 * index)) / 1200,
         0,
         1
       );
@@ -982,7 +982,21 @@ function renderIntro(now) {
 
   const raw = clamp((now - startedAt) / state.intro.duration, 0, 1);
   const phaseIn = loaderEaseIn(clamp(raw / 0.65, 0, 1));
-  const phaseOut = loaderEaseOut(clamp((raw - 0.4) / 0.6, 0, 1));
+  const phaseOutBase = loaderEaseOut(clamp((raw - 0.4) / 0.6, 0, 1));
+  const tailStart = 0.84;
+  const tailProgress = clamp(
+    (phaseOutBase - tailStart) / (1 - tailStart),
+    0,
+    1
+  );
+  const phaseOut =
+    phaseOutBase <= tailStart
+      ? phaseOutBase
+      : lerp(
+          tailStart,
+          1,
+          easeOutCubic(tailProgress)
+        );
 
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.useProgram(program);
@@ -1281,8 +1295,11 @@ Promise.all(
 
     setTimeout(() => {
       loading.classList.add("is-complete");
-      state.intro.startedAt = performance.now() + 220;
-    }, 180);
+
+      setTimeout(() => {
+        state.intro.startedAt = performance.now();
+      }, reducedMotion.matches ? 0 : 260);
+    }, 80);
   })
   .catch(() => {
     loading.hidden = true;
