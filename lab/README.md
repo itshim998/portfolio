@@ -18,60 +18,61 @@ This directory is the isolated implementation laboratory for the Camille-style p
 - Drag and wheel update one continuous track position.
 - Image crop counter-moves through shader UV offset.
 - Clicking a visible plane can transition that plane into fullscreen.
-- The third-party SlidingImages clone was used only as a behavioral reference.
 
-## Checkpoint 02C — Camille geometry and interface choreography
+## Checkpoint 02C — geometry and interface choreography
 
-Implemented after browser comparison against the original Camille Mormal homepage at 1440 × 900.
+- Desktop OUT-state cards use wide landscape geometry, approximately `58vw × 56vh`, constrained around a `1.66:1` aspect ratio.
+- Desktop inter-card gap is approximately `6vw`.
+- IN-state project title is centered with a superscript project number.
+- Fullscreen left/right 22px cross controls cycle projects without leaving fullscreen.
+- IN → OUT dismisses the centered title upward while the active plane contracts.
+- OUT mode uses one centered 22px cross as the active-project affordance.
+- Clicking an off-center project recenters its strip position while that same plane expands.
+- Returning to OUT keeps the selected project as the strip context.
 
-### Geometry
+## Checkpoint 02D — rendering correction and physical strip motion
 
-- Desktop OUT-state cards are now approximately `58vw × 56vh`.
-- Card width is constrained to approximately a `1.66:1` landscape aspect ratio.
-- Desktop gap is approximately `6vw`.
-- Cards remain vertically centered.
+Implemented after direct screenshot review of Checkpoint 02C against the Camille reference.
 
-### IN state
+### Rendering correction
 
-- Project title is centered in the viewport rather than anchored bottom-left.
-- A small superscript project counter sits beside the title.
-- Left and right 22px cross controls cycle projects without leaving fullscreen.
-- Fullscreen project cycling uses a short WebGL slide/cross-fade rather than switching DOM images.
+- Removed the erroneous WebGL texture Y flip.
+- Project screenshots now upload in browser-native orientation instead of appearing vertically inverted.
 
-### IN → OUT
+### Drag model
 
-- Centered title moves upward and fades as the active plane contracts.
-- Fullscreen left/right crosses disappear with the title.
-- The explicit `View all / Close` mode button has been removed.
-- The strip contains no persistent project-title block.
+- Replaced target-seeking interpolation with a position + velocity model.
+- Pointer movement remains direct while the pointer is held.
+- Pointer-down immediately catches/stops an already moving strip.
+- Pointer release converts measured pointer velocity into strip velocity.
+- Wheel / trackpad input now adds velocity impulses instead of moving a target position.
 
-### OUT state
+### Inertia
 
-- A single 22px cross appears at the exact viewport center as the active-project affordance.
-- Nearest-center project state is inferred from track position.
-- Clicking the center cross opens the active project.
+- Strip velocity decays exponentially with a long glide tail.
+- High-speed flicks can coast beyond one card width before settling.
+- A weak centering spring is introduced only after kinetic velocity falls below a low threshold.
+- Keyboard arrows use the same low-energy centering destination rather than restoring carousel snapping.
 
-### OUT → IN
+### Bounds
 
-- Clicking any visible off-center plane selects it.
-- Its track position recenters toward the viewport while the same plane expands simultaneously.
-- Neighboring planes leave the viewport during the same transition.
-- Returning to OUT targets the currently selected project, preserving project context rather than resetting to Project 01.
+- Pointer dragging beyond either strip edge uses progressive non-linear resistance.
+- Released overscroll is resolved with a damped spring force rather than a hard clamp.
+- Boundary correction and free-motion friction are separate forces.
 
-## Intentionally deferred to Checkpoint 02D
+### OUT → IN choreography
 
-- Long-tail velocity/friction model.
-- Low-energy centering behavior.
-- Elastic/rubber-band boundary spring.
-- Final drag sensitivity.
-- Final parallax calibration.
+- Off-center project activation still recenters and expands simultaneously.
+- Recenter motion is isolated from free-strip inertia so the selected project reaches the viewport center deterministically during expansion.
 
-## Still deferred
+## Deliberately deferred
 
+- Final numerical calibration of friction, spring strength, and drag sensitivity against a new browser audit.
+- Thumbnail rail / `#_p` chrome.
+- Custom cursor.
 - 25-plane intro/loader.
-- Project route transitions.
-- Individual project pages.
+- Project routes and project pages.
 - About page migration.
-- Final typography and visual polish.
+- Final typography and polish.
 
-The acceptance criterion for 02C is geometry and interaction choreography. Physics tuning remains intentionally separate.
+The acceptance criterion for 02D is that the strip feels materially more free and physical than 02C while preserving the corrected 02C geometry and transition architecture.
