@@ -1,4 +1,7 @@
-const IMAGE_URL = "https://i.ibb.co/jkB9vQLr/Screenshot-2026-07-14-182748.png";
+const IMAGE_URLS = [
+  "https://i.ibb.co/jkB9vQLr/Screenshot-2026-07-14-182748.png",
+  "https://wsrv.nl/?url=https%3A%2F%2Fi.ibb.co%2FjkB9vQLr%2FScreenshot-2026-07-14-182748.png"
+];
 
 const canvas = document.getElementById("experience");
 const loading = document.getElementById("loading");
@@ -389,18 +392,23 @@ function render(now) {
 
 requestAnimationFrame(render);
 
-const image = new Image();
-image.crossOrigin = "anonymous";
-
 let displayedProgress = 0;
 const progressTimer = setInterval(() => {
-  displayedProgress = Math.min(displayedProgress + Math.max(1, Math.ceil((92 - displayedProgress) * 0.13)), 92);
+  displayedProgress = Math.min(
+    displayedProgress + Math.max(1, Math.ceil((92 - displayedProgress) * 0.13)),
+    92
+  );
   loadingValue.textContent = `${displayedProgress}%`;
 }, 55);
 
-image.onload = () => {
+function showFallback() {
   clearInterval(progressTimer);
+  loading.hidden = true;
+  canvas.hidden = true;
+  fallback.hidden = false;
+}
 
+function commitTexture(image) {
   state.imageWidth = image.naturalWidth || state.imageWidth;
   state.imageHeight = image.naturalHeight || state.imageHeight;
 
@@ -415,6 +423,7 @@ image.onload = () => {
     image
   );
 
+  clearInterval(progressTimer);
   loadingValue.textContent = "100%";
 
   setTimeout(() => {
@@ -425,13 +434,30 @@ image.onload = () => {
     state.mode = "focus";
     state.startedAt = performance.now();
   }, 180);
-};
+}
 
-image.onerror = () => {
-  clearInterval(progressTimer);
-  loading.hidden = true;
-  canvas.hidden = true;
-  fallback.hidden = false;
-};
+function loadTexture(index = 0) {
+  if (index >= IMAGE_URLS.length) {
+    showFallback();
+    return;
+  }
 
-image.src = IMAGE_URL;
+  const image = new Image();
+  image.crossOrigin = "anonymous";
+
+  image.onload = () => {
+    try {
+      commitTexture(image);
+    } catch (_) {
+      loadTexture(index + 1);
+    }
+  };
+
+  image.onerror = () => {
+    loadTexture(index + 1);
+  };
+
+  image.src = IMAGE_URLS[index];
+}
+
+loadTexture();
