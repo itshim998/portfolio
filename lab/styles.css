@@ -789,13 +789,11 @@ body.is-footer-expanding .project-story__next button {
 
 
 /* Performance isolation: project DOM must not compete with the WebGL intro/home. */
-body[data-intro="true"] .project-route,
-body[data-route="home"] .project-route {
+body[data-intro="true"] .project-route {
   display: none;
 }
 
-body[data-route="project"] .project-route {
-  display: block;
+.project-route {
   contain: layout paint style;
 }
 
