@@ -135,6 +135,7 @@ const aboutScrollContent = document.getElementById("about-scroll-content");
 const aboutLeftTrack = document.getElementById("about-left-track");
 const aboutLeftPreview = document.getElementById("about-left-preview");
 const aboutRouteProgress = document.getElementById("about-route-progress");
+const aboutRevealElements = [...document.querySelectorAll(".about-reveal")];
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
 document.body.dataset.mode = "focus";
@@ -604,6 +605,52 @@ function updateProjectScrollVisuals(dt) {
   }
 }
 
+function aboutElementTop(element) {
+  let top = 0;
+  let node = element;
+
+  while (node && node !== aboutScrollContent) {
+    top += node.offsetTop || 0;
+    node = node.offsetParent;
+  }
+
+  return top;
+}
+
+function refreshAboutRevealThresholds() {
+  state.about.revealThresholds = aboutRevealElements.map(element => {
+    const top = aboutElementTop(element);
+    return top < innerHeight ? -1 : top - innerHeight * 0.9;
+  });
+}
+
+function resetAboutReveals() {
+  state.about.revealed.clear();
+
+  aboutRevealElements.forEach((element, index) => {
+    element.classList.remove("is-revealed");
+    element.style.removeProperty("transition-delay");
+
+    const threshold = state.about.revealThresholds[index];
+    if (threshold === -1) {
+      element.style.transitionDelay =
+        reducedMotion.matches ? "0ms" : `${700 + index * 200}ms`;
+    }
+  });
+}
+
+function updateAboutReveals() {
+  aboutRevealElements.forEach((element, index) => {
+    if (state.about.revealed.has(index)) return;
+
+    const threshold = state.about.revealThresholds[index] ?? 0;
+    if (state.about.scrollCurrent > threshold) {
+      state.about.revealed.add(index);
+      element.classList.add("is-revealed");
+    }
+  });
+}
+
 function updateAboutScrollMax() {
   if (!aboutScrollContent) return;
 
@@ -624,18 +671,27 @@ function updateAboutScrollMax() {
   );
 
   if (aboutLeftTrack) {
+    const trackTop = aboutLeftTrack.getBoundingClientRect().top;
+    const trackHeight = aboutLeftTrack.offsetHeight;
+    const visibleArea =
+      innerHeight < trackTop + trackHeight
+        ? innerHeight - trackTop
+        : trackHeight;
+
     state.about.leftMax = Math.max(
       0,
-      aboutLeftTrack.scrollHeight - innerHeight
+      trackHeight - visibleArea
     );
+
+    if (aboutLeftPreview) {
+      state.about.previewMax = Math.max(
+        0,
+        visibleArea - aboutLeftPreview.offsetHeight
+      );
+    }
   }
 
-  if (aboutLeftPreview) {
-    state.about.previewMax = Math.max(
-      0,
-      innerHeight - aboutLeftPreview.offsetHeight - 220
-    );
-  }
+  refreshAboutRevealThresholds();
 }
 
 function setAboutScrollTarget(value) {
@@ -673,6 +729,7 @@ function updateAboutScrollVisuals(dt) {
   }
 
   aboutRouteProgress.style.transform = `scaleY(${progress})`;
+  updateAboutReveals();
 }
 
 function startAboutRoute({ instant = false } = {}) {
@@ -688,13 +745,22 @@ function startAboutRoute({ instant = false } = {}) {
   aboutLeftTrack.style.transform = "translate3d(0, 0, 0)";
   aboutLeftPreview.style.transform = "translate3d(0, 0, 0)";
   aboutRouteProgress.style.transform = "scaleY(0)";
+  aboutRoute.classList.remove("is-about-ready");
 
   document.body.dataset.route = "about";
   aboutRoute.setAttribute("aria-hidden", "false");
   projectRoute.setAttribute("aria-hidden", "true");
   syncPrimaryNav("about");
 
-  requestAnimationFrame(updateAboutScrollMax);
+  requestAnimationFrame(() => {
+    updateAboutScrollMax();
+    resetAboutReveals();
+
+    requestAnimationFrame(() => {
+      aboutRoute.classList.add("is-about-ready");
+      updateAboutReveals();
+    });
+  });
 }
 
 function navigateAbout({ replace = false } = {}) {
@@ -790,6 +856,7 @@ function startHomeRoute({ instant = false } = {}) {
     state.about.scrollTarget = 0;
     document.body.dataset.route = "home";
     aboutRoute.setAttribute("aria-hidden", "true");
+    aboutRoute.classList.remove("is-about-ready");
     projectRoute.setAttribute("aria-hidden", "true");
     syncPrimaryNav("home");
     return;
@@ -942,7 +1009,9 @@ const state = {
     scrollTarget: 0,
     scrollMax: 0,
     leftMax: 0,
-    previewMax: 0
+    previewMax: 0,
+    revealThresholds: [],
+    revealed: new Set()
   },
   route: {
     type: "home",
@@ -1545,6 +1614,7 @@ function resize() {
     updateProjectScrollMax();
   } else if (state.route.type === "about") {
     updateAboutScrollMax();
+    updateAboutReveals();
   }
 
   if (state.mode === "focus") {
