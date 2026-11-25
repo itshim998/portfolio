@@ -721,3 +721,68 @@ body.is-project-swapping .project-route__status {
 .project-route__scroll {
   z-index: 2;
 }
+
+
+/* Checkpoint 4C — WebGL next-project footer expansion */
+.project-story {
+  background: transparent;
+}
+
+.project-story__next {
+  position: relative;
+  min-height: max(760px, 92vh);
+  align-content: start;
+  overflow: visible;
+}
+
+.project-story__next-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.project-story__next-expand {
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.04em;
+  color: rgba(244, 242, 236, 0.62);
+}
+
+.project-story__next-preview {
+  width: min(350px, 42vw);
+  aspect-ratio: 7 / 10;
+  margin: clamp(46px, 7vh, 82px) auto clamp(54px, 8vh, 94px);
+  pointer-events: none;
+}
+
+.project-story__next button,
+.project-story__next-head,
+.project-story__next-hint {
+  position: relative;
+  z-index: 4;
+  mix-blend-mode: difference;
+}
+
+.project-story__next-hint {
+  margin: 16px 0 0;
+  font-family: var(--mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.72);
+}
+
+body.is-footer-expanding .project-story__next button {
+  opacity: calc(1 - var(--footer-expand, 0));
+}
+
+@media (max-width: 780px) {
+  .project-story__next {
+    min-height: max(660px, 88vh);
+  }
+
+  .project-story__next-preview {
+    width: min(300px, 68vw);
+  }
+}
