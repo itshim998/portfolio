@@ -2,135 +2,129 @@
 
 This directory is the isolated implementation laboratory for the Camille-style portfolio rebuild. Production `main` remains untouched.
 
-## Frozen motion foundations
+## Frozen desktop motion stack
 
-The following systems have already passed manual/browser validation and are not to be retuned during ordinary bug fixing:
+The following systems are considered frozen unless a reproducible regression appears:
 
-- Checkpoint 2D homepage fullscreen ↔ strip motion, direct drag, inertia, elastic boundaries, cycling and crop parallax;
-- Checkpoints 3A–3C 25-plane desktop loader choreography and center-plane handoff;
-- post-4C loader performance isolation/caching;
-- Checkpoints 4A–4C persistent WebGL routing, virtual project scroll, hero parallax, footer overscroll/deadzone, 350×500-style next-project preview, quadratic expansion and fullscreen-before-route-commit handoff.
+- Checkpoint 2D homepage fullscreen ↔ strip interaction;
+- Checkpoints 3A–3C desktop loader choreography;
+- loader performance isolation/caching;
+- Checkpoints 4A–4D persistent project routing, virtual project scroll, hero parallax, footer overscroll expansion, project-to-project continuity, history/state cleanup and deep-scroll Back continuity.
 
-## Checkpoint 4D — work-page state / continuity cleanup
+## Checkpoint 5A — About route foundation
 
-4D responds to the work-page browser audit without changing the approved WebGL motion math.
+5A starts the next major section of the rebuild: the About page.
 
-### 1. Project identity and history consistency
+The reference About implementation is DOM-led rather than another project WebGL scene. Its defining behavior is a split page with:
 
-Home → project navigation is now intentionally single-shot:
+- a left column / preview area;
+- a right vertical content stream;
+- remapped left-column motion based on total page scroll;
+- an independently counter-moving preview element;
+- staged section reveals later in the scroll.
 
-- `navigateToProject()` only accepts a request while route state is genuinely `home`;
-- project entry is ignored during focus cycling, recentering, route transitions, project swaps and footer commits;
-- fullscreen pointer release resolves the actual rendered plane under the pointer and only opens it when it equals the current active project;
-- this prevents a second project navigation from being injected after the first home → project transition has already begun.
+5A implements the first three structural pieces and deliberately defers final reveal choreography.
 
-The expected history chain is therefore:
+### Route model
 
-`Home → StudentOS → SentIQ Chat → FieldLine`
+The lab now supports:
 
-with three browser Back actions returning to Home.
+- `#/` — Work / Home;
+- `#/project/<slug>` — project routes;
+- `#/about` — About.
 
-Project-to-project navigation remains owned by the footer expansion/history system, not by the homepage navigation helper.
+About uses the same History API / hash-adapter model as the project routes.
 
-### 2. Deterministic project metadata hydration
+A direct `#/about` reload is remembered during the loader and activated after the accepted loader finishes.
 
-A shared `resetProjectRouteChrome()` clears stale inline state for:
+Primary navigation updates `aria-current` between Work and About.
 
-- route metadata opacity/transform;
-- project-story opacity;
-- route status/hint opacity;
-- progress-line opacity.
+### Persistent canvas boundary
 
-It is executed whenever new project metadata is hydrated and after route handoffs.
+About does not create another WebGL renderer.
 
-This prevents metadata that faded during one project from remaining stuck at `opacity: 0` after:
+The existing canvas/context remains mounted and simply clears to the site background while About is active.
 
-- a footer expansion;
-- a chained footer expansion;
-- browser Back/Forward project traversal.
+This keeps the renderer persistent while respecting the reference site's DOM-led About architecture.
 
-### 3. In-page Back semantics
+### Independent About virtual scroll
 
-The visible project `Back` control no longer calls `history.back()`.
+About owns its own state:
 
-It always performs an explicit project → homepage route transition while keeping the active project selected.
+- `state.about.scrollTarget`;
+- `state.about.scrollCurrent`;
+- `state.about.scrollMax`;
+- `state.about.leftMax`;
+- `state.about.previewMax`.
 
-Browser Back/Forward remains untouched and is still responsible for traversing the actual recorded route history.
+Wheel, keyboard and touch input are routed to this state only while the About route is active.
 
-Escape follows the same semantic home-return behavior as the visible Back control.
+The damping factor is independent from project scroll and therefore cannot modify the frozen project physics.
 
-### 4. Deep-scroll Back continuity
+### Split-scroll architecture
 
-The project root is no longer hidden at the instant a deep-scroll return starts.
+Desktop layout uses:
 
-Instead:
+- 38vw fixed left window;
+- 62vw right content stream;
+- right column translated by About virtual scroll;
+- left track remapped from 0 → its own maximum travel using normalized About scroll progress;
+- left preview counter-translated downward across its own available vertical range.
 
-- current normal project-scroll position is captured;
-- the persistent WebGL hero begins returning from that position;
-- project story DOM remains mounted and opaque while the hero is still fully offscreen;
-- story fade begins only after exit progress reaches 42%;
-- story opacity reaches zero around 72% exit progress, when the returning hero is already visibly occupying the viewport;
-- floating route chrome hides immediately;
-- the route DOM is finally hidden only after the project → home WebGL transition completes.
+This reproduces the architectural idea recovered from Camille's About `Preview.loop()`: the left wrapper and preview do not simply scroll 1:1 with the right content.
 
-This specifically removes the prior pure-black gap between story removal and hero re-entry.
+### Migrated portfolio content
 
-### 5. Hero metadata / scroll-hint timing
+5A moves the existing portfolio's main non-project material into the About route:
 
-Project hero metadata now fades across the first 180px of normal project scroll and reaches zero before story content can collide with it.
+1. Capabilities
+   - Programming and systems thinking;
+   - Core AI integration;
+   - Applied AI;
+   - Speaking, performance and leadership.
 
-The persistent `Scroll to explore` hint fades across the first 72px and is effectively absent throughout the story/footer.
+2. Experience
+   - Edunet Foundation / IBM SkillsBuild AI internship;
+   - Vault of Codes AI internship.
 
-Both values are UI calibration only; virtual-scroll damping and hero motion remain unchanged.
+3. Beyond AI/ML
+   - Theatre;
+   - Reading;
+   - Writing;
+   - Visual design;
+   - existing Macbeth, Wattpad-cover and graphics imagery.
 
-### 6. Footer label visibility
+4. Contact
+   - email;
+   - LinkedIn.
 
-Normal project scrolling no longer blindly ends at `projectScrollContent.scrollHeight`.
+### Performance isolation
 
-The regular scroll boundary is derived from the actual next-project footer position:
+The About route is completely removed from layout during the loader.
 
-- desktop footer heading stop target: ~60px below viewport top;
-- mobile target: ~42px.
+Its transform compositor hints are enabled only while `data-route="about"` is active.
 
-The existing extra `1.5 × viewportHeight` footer overscroll and 15% expansion deadzone begin only after this calibrated normal stop.
+This preserves the loader-performance boundary established after 4C.
 
-The footer expansion curve, preview geometry, texture scale relaxation and automatic route handoff remain unchanged.
+## 5A acceptance criterion
 
-## 4D acceptance sequence
+At desktop size:
 
-Primary state test:
+1. Work → About changes to `#/about` without reloading or recreating WebGL.
+2. About → Work returns to the same homepage state.
+3. browser Back/Forward between Work and About works.
+4. direct reload on `#/about` runs the loader, then lands on About.
+5. right-column scrolling is smooth.
+6. left column moves at a different remapped rate rather than scrolling 1:1.
+7. the left image visibly counter-moves within that column.
+8. Capabilities, Experience, Beyond and Contact all appear in the right stream.
+9. the loader remains smooth.
 
-`Home → StudentOS → SentIQ Chat → FieldLine → browser Back → browser Back → browser Back → Home`
+## Deferred to 5B
 
-Expected:
-
-- centered homepage click opens StudentOS, never SentIQ Chat;
-- no duplicate intermediate history entry;
-- project metadata is visible at the top of every project;
-- each browser Back lands on the expected previous route;
-- third Back returns to Home.
-
-Deep-scroll return test:
-
-- enter StudentOS or FieldLine;
-- scroll roughly 1500px into the story;
-- use the visible project Back;
-- story stays rendered until the returning hero is already visible;
-- no pure-black intermediate frame;
-- destination is Home with that project active.
-
-UI test:
-
-- metadata is fully gone by ~180–200px project scroll;
-- scroll hint is gone almost immediately after scrolling starts;
-- at normal footer rest, `NEXT PROJECT · 0%` remains visibly below the top edge.
-
-## Performance boundary
-
-The prior loader regression fix remains intact:
-
-- project route DOM is removed from layout during the intro;
-- static loader/thumbnail geometry is cached;
-- inactive project compositor hints remain disabled.
-
-No 4D change touches loader duration/easing or homepage physics.
+- browser calibration against Camille's actual About page;
+- scroll-triggered line/row reveal choreography;
+- exact left-column dimensions and preview geometry;
+- final About typography/spacing;
+- richer Beyond media treatment;
+- mobile-specific About geometry.
