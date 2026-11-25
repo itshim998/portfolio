@@ -606,15 +606,10 @@ function updateProjectScrollVisuals(dt) {
 }
 
 function aboutElementTop(element) {
-  let top = 0;
-  let node = element;
+  const rect = element.getBoundingClientRect();
+  const routeRect = aboutScrollContent.getBoundingClientRect();
 
-  while (node && node !== aboutScrollContent) {
-    top += node.offsetTop || 0;
-    node = node.offsetParent;
-  }
-
-  return top;
+  return rect.top - routeRect.top;
 }
 
 function refreshAboutRevealThresholds() {
@@ -651,54 +646,92 @@ function updateAboutReveals() {
   });
 }
 
-function updateAboutScrollMax() {
+function updateAboutScrollMax({ preserveProgress = true } = {}) {
   if (!aboutScrollContent) return;
 
-  state.about.scrollMax = Math.max(
+  const previousMax = state.about.scrollMax;
+  const previousProgress =
+    preserveProgress && previousMax > 0
+      ? clamp(state.about.scrollCurrent / previousMax, 0, 1)
+      : 0;
+
+  // Measure right-stream height with its virtual-scroll transform neutralized.
+  aboutScrollContent.style.transform = "translate3d(0, 0, 0)";
+
+  const nextScrollMax = Math.max(
     0,
     aboutScrollContent.scrollHeight - innerHeight
   );
 
-  state.about.scrollTarget = clamp(
-    state.about.scrollTarget,
-    0,
-    state.about.scrollMax
-  );
-  state.about.scrollCurrent = clamp(
-    state.about.scrollCurrent,
-    0,
-    state.about.scrollMax
-  );
+  state.about.scrollMax = nextScrollMax;
+
+  if (preserveProgress && previousMax > 0) {
+    state.about.scrollCurrent = nextScrollMax * previousProgress;
+    state.about.scrollTarget = state.about.scrollCurrent;
+  } else {
+    state.about.scrollCurrent = clamp(
+      state.about.scrollCurrent,
+      0,
+      nextScrollMax
+    );
+    state.about.scrollTarget = clamp(
+      state.about.scrollTarget,
+      0,
+      nextScrollMax
+    );
+  }
+
+  const progress =
+    nextScrollMax > 0
+      ? clamp(state.about.scrollCurrent / nextScrollMax, 0, 1)
+      : 0;
+
+  aboutScrollContent.style.transform =
+    `translate3d(0, ${-state.about.scrollCurrent}px, 0)`;
 
   if (aboutLeftTrack) {
-    const progress =
-      state.about.scrollMax > 0
-        ? clamp(state.about.scrollCurrent / state.about.scrollMax, 0, 1)
-        : 0;
-
     aboutLeftTrack.style.transform = "translate3d(0, 0, 0)";
+
     if (aboutLeftPreview) {
       aboutLeftPreview.style.transform = "translate3d(0, 0, 0)";
     }
 
     const trackStyle = getComputedStyle(aboutLeftTrack);
     const contentTop = parseFloat(trackStyle.paddingTop) || 0;
-    const trackHeight = aboutLeftTrack.offsetHeight;
-    const visibleArea =
-      innerHeight < contentTop + trackHeight
-        ? innerHeight - contentTop
-        : trackHeight;
+    const safeTop = innerWidth <= 780 ? 72 : 90;
 
-    state.about.leftMax = Math.max(
+    const children = [...aboutLeftTrack.children];
+    const contentBottom = children.reduce(
+      (bottom, child) =>
+        Math.max(bottom, child.offsetTop + child.offsetHeight),
+      contentTop
+    );
+    const contentHeight = Math.max(0, contentBottom - contentTop);
+    const visibleArea = Math.max(
       0,
-      trackHeight - visibleArea
+      Math.min(contentHeight, innerHeight - contentTop)
+    );
+
+    const rawLeftMax = Math.max(
+      0,
+      contentHeight - visibleArea
+    );
+    const safeTravel = Math.max(
+      0,
+      contentTop - safeTop
+    );
+
+    state.about.leftMax = Math.min(
+      rawLeftMax,
+      safeTravel
     );
 
     if (aboutLeftPreview) {
       state.about.previewMax = Math.max(
         0,
-        visibleArea - aboutLeftPreview.offsetHeight
+        innerHeight - contentTop - aboutLeftPreview.offsetHeight
       );
+
       aboutLeftPreview.style.transform =
         `translate3d(0, ${state.about.previewMax * progress}px, 0)`;
     }
@@ -769,7 +802,7 @@ function startAboutRoute({ instant = false } = {}) {
   syncPrimaryNav("about");
 
   requestAnimationFrame(() => {
-    updateAboutScrollMax();
+    updateAboutScrollMax({ preserveProgress: false });
     resetAboutReveals();
 
     requestAnimationFrame(() => {
@@ -1629,7 +1662,7 @@ function resize() {
   if (state.route.type === "project") {
     updateProjectScrollMax();
   } else if (state.route.type === "about") {
-    updateAboutScrollMax();
+    updateAboutScrollMax({ preserveProgress: true });
     updateAboutReveals();
   }
 
