@@ -150,3 +150,18 @@ A successful pass should confirm:
 - mobile-specific work-page geometry;
 - custom cursor;
 - About-page migration.
+
+
+## Performance regression fix after 4C
+
+A loader smoothness regression was reported after the project-page system grew substantially.
+
+The loader choreography itself had not changed from the accepted 3C implementation. The fix therefore isolates later project-page work from the intro rather than retuning motion:
+
+- the heavy project-route DOM is removed from layout during `data-intro="true"`;
+- project virtual-scroll layers no longer request compositor promotion while inactive;
+- the 25 static loader layouts are cached and recalculated only on resize;
+- homepage thumbnail geometry used during the intro is also cached;
+- loader duration, easing windows, center zoom, final expansion tail, and homepage physics remain unchanged.
+
+This establishes a performance boundary: future route/page features should not add layout, compositing, or per-frame calculation cost to the frozen loader.
