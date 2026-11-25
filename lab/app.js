@@ -2,28 +2,68 @@ const PROJECTS = [
   {
     slug: "studentos",
     title: "StudentOS",
-    summary: "All-in-one academic workspace.",
+    summary: "An AI-native academic workspace that turns courses, syllabi, assignments, schedules, and study materials into a clear solid roadmap broken into daily TO-DO lists.",
+    purpose: "Reduce the 'Analysis Paralysis' scenarios of student life by bringing their entire academic context, scehdules, materials, and AI-driven assistance grounded to their academic story into one coherent environment.",
+    engineering: "Lifecycle-driven onboarding, academic context retrieval, adaptive planning, Google Classroom integration, AI orchestration, and multi-tenant data architecture.",
+    state: "The product is already live. The first version is stable. Further versions are being actively worked upon.",
     href: "https://studentos.sentiqlabs.com/",
     image: "https://i.ibb.co/jkB9vQLr/Screenshot-2026-07-14-182748.png",
-    proxy: "https://wsrv.nl/?url=https%3A%2F%2Fi.ibb.co%2FjkB9vQLr%2FScreenshot-2026-07-14-182748.png"
+    proxy: "https://wsrv.nl/?url=https%3A%2F%2Fi.ibb.co%2FjkB9vQLr%2FScreenshot-2026-07-14-182748.png",
+    media: [
+      {
+        src: "https://i.ibb.co/jkB9vQLr/Screenshot-2026-07-14-182748.png",
+        alt: "StudentOS academic workspace interface",
+        caption: "StudentOS academic workspace interface"
+      }
+    ]
   },
   {
     slug: "sentiq-chat",
     title: "SentIQ Chat",
-    summary: "AI orchestration interface for focused, multi-model work.",
+    summary: "A multimodal, multi-model, and multi-tool AI Orchestrator built around conversation with memory & contextual awareness capable of file understanding and generation, chart & image generation, web search, deep research, live speech-speech conversation.",
+    purpose: "Bring several applied AI models, their capabilities and tools into one.",
+    engineering: "Orchestration, tool designing and routing, streaming, memory, db and auth management, file understanding, prompt design, and overall system behaviour.",
+    state: "The product is actively evolving through ongoing feature and systems work.",
     href: "https://sentiqchat.sentiqlabs.com/",
     image: "https://i.ibb.co/nsRD4K6z/Screenshot-2026-03-15-113205.png",
-    proxy: "https://wsrv.nl/?url=https%3A%2F%2Fi.ibb.co%2FnsRD4K6z%2FScreenshot-2026-03-15-113205.png"
+    proxy: "https://wsrv.nl/?url=https%3A%2F%2Fi.ibb.co%2FnsRD4K6z%2FScreenshot-2026-03-15-113205.png",
+    media: [
+      {
+        src: "https://i.ibb.co/nsRD4K6z/Screenshot-2026-03-15-113205.png",
+        alt: "Earlier SentIQGPT interface, predecessor to SentIQ Chat",
+        caption: "Earlier SentIQGPT interface, predecessor to SentIQ Chat"
+      }
+    ]
   },
   {
     slug: "fieldline",
     title: "FieldLine",
-    summary: "AI support designed for work in the field.",
+    summary: "AI for bridging the communication gap effectively between the project lead and the field workers in large infrastructure projects. Aids project lead to manage the overall project effectively, while also guiding the execution team on the field.",
+    purpose: "Connects project schedules with on-site reports and work updates, helping teams see what is completed, delayed, or at risk, while autonomously updating project status, and warning managers / admin only when any kind of anomalities are detected.",
+    engineering: "Core AI + Applied AI : Houses machine learning models trained specifically for anomaly detection (statistical) and progress classification (logistic regression) in the progresses reported by the field workers, while appiled AI is used in usual AI response generaton, image recognition, while also allowing workers to report in their native language through speech to speech.",
+    state: "FieldLine v1 is stable and has been deployed. Initially developed for SIH 2026. Qualified in Round 1. Round 2 is under evaluation.",
     href: "https://fieldline.sentiqlabs.com/",
     image: "https://i.ibb.co/CKyJjqjk/Screenshot-2026-10-11-185504.png",
-    proxy: "https://wsrv.nl/?url=https%3A%2F%2Fi.ibb.co%2FCKyJjqjk%2FScreenshot-2026-10-11-185504.png"
+    proxy: "https://wsrv.nl/?url=https%3A%2F%2Fi.ibb.co%2FCKyJjqjk%2FScreenshot-2026-10-11-185504.png",
+    media: [
+      {
+        src: "https://i.ibb.co/CKyJjqjk/Screenshot-2026-10-11-185504.png",
+        alt: "FieldLine field operations task dashboard and safety briefing board",
+        caption: "Field operations task dashboard and safety briefing board"
+      },
+      {
+        src: "https://i.ibb.co/27zhVNC9/Screenshot-2026-10-11-184535.png",
+        alt: "FieldLine refinery expansion project overview and admin control room",
+        caption: "Project overview and admin control room"
+      },
+      {
+        src: "https://i.ibb.co/FkNm4g4z/Screenshot-2026-10-11-185804.png",
+        alt: "FieldLine activity delay tracking and schedule variance table",
+        caption: "Activity delay tracking and schedule variance table"
+      }
+    ]
   }
-];
+]
 
 const INTRO_CENTER_INDEX = 12;
 
@@ -71,6 +111,18 @@ const routeProjectIndex = document.getElementById("route-project-index");
 const routeProjectTitle = document.getElementById("route-project-title");
 const routeProjectSummary = document.getElementById("route-project-summary");
 const routeProjectLink = document.getElementById("route-project-link");
+const projectRouteMeta = document.getElementById("project-route-meta");
+const projectScrollContent = document.getElementById("project-scroll-content");
+const routeProjectLongSummary = document.getElementById("route-project-long-summary");
+const routeProjectPurpose = document.getElementById("route-project-purpose");
+const routeProjectEngineering = document.getElementById("route-project-engineering");
+const routeProjectState = document.getElementById("route-project-state");
+const routeProjectMediaPrimary = document.getElementById("route-project-media-primary");
+const routeProjectMediaCaption = document.getElementById("route-project-media-caption");
+const routeProjectMediaGrid = document.getElementById("route-project-media-grid");
+const routeNextProject = document.getElementById("route-next-project");
+const routeNextTitle = document.getElementById("route-next-title");
+const projectRouteProgress = document.getElementById("project-route-progress");
 const homeBrand = document.getElementById("home-brand");
 const homeLink = document.getElementById("home-link");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
@@ -291,8 +343,130 @@ function updateProjectRouteMeta(index) {
   routeProjectIndex.textContent = String(index + 1).padStart(2, "0");
   routeProjectTitle.textContent = project.title;
   routeProjectSummary.textContent = project.summary;
+  routeProjectLongSummary.textContent = project.summary;
+  routeProjectPurpose.textContent = project.purpose;
+  routeProjectEngineering.textContent = project.engineering;
+  routeProjectState.textContent = project.state;
   routeProjectLink.href = project.href;
   routeProjectLink.setAttribute("aria-label", `Visit ${project.title} live project`);
+
+  const primaryMedia = project.media[0];
+  routeProjectMediaPrimary.src = primaryMedia.src;
+  routeProjectMediaPrimary.alt = primaryMedia.alt;
+  routeProjectMediaCaption.textContent = primaryMedia.caption;
+
+  routeProjectMediaGrid.replaceChildren();
+  project.media.slice(1).forEach(media => {
+    const figure = document.createElement("figure");
+    figure.className = "project-story__media-card";
+
+    const image = document.createElement("img");
+    image.src = media.src;
+    image.alt = media.alt;
+    image.loading = "lazy";
+    image.decoding = "async";
+
+    const caption = document.createElement("figcaption");
+    caption.textContent = media.caption;
+
+    figure.append(image, caption);
+    routeProjectMediaGrid.appendChild(figure);
+  });
+
+  routeProjectMediaGrid.hidden = project.media.length <= 1;
+
+  const nextIndex = (index + 1) % PROJECTS.length;
+  routeNextProject.dataset.projectIndex = String(nextIndex);
+  routeNextTitle.textContent = PROJECTS[nextIndex].title;
+
+  requestAnimationFrame(updateProjectScrollMax);
+}
+
+function updateProjectScrollMax() {
+  if (!projectScrollContent) return;
+  state.route.scrollMax = Math.max(
+    0,
+    projectScrollContent.scrollHeight + innerHeight * 0.15
+  );
+  state.route.scrollTarget = clamp(
+    state.route.scrollTarget,
+    0,
+    state.route.scrollMax
+  );
+  state.route.scrollCurrent = clamp(
+    state.route.scrollCurrent,
+    0,
+    state.route.scrollMax
+  );
+}
+
+function setProjectScrollTarget(value) {
+  state.route.scrollTarget = clamp(
+    value,
+    0,
+    state.route.scrollMax
+  );
+}
+
+function updateProjectScrollVisuals(dt) {
+  if (state.route.type !== "project" || state.route.swap.active) return;
+
+  state.route.scrollCurrent = reducedMotion.matches
+    ? state.route.scrollTarget
+    : damp(state.route.scrollCurrent, state.route.scrollTarget, 7.25, dt);
+
+  const scroll = state.route.scrollCurrent;
+  projectScrollContent.style.transform =
+    `translate3d(0, ${-scroll}px, 0)`;
+
+  const progress =
+    state.route.scrollMax > 0
+      ? clamp(scroll / state.route.scrollMax, 0, 1)
+      : 0;
+
+  projectRouteProgress.style.transform = `scaleY(${progress})`;
+
+  if (!state.route.transitioning) {
+    const metaFade = 1 - clamp(scroll / Math.max(innerHeight * 0.48, 1), 0, 1);
+    if (scroll > 0.5) {
+      projectRouteMeta.style.opacity = String(metaFade);
+      projectRouteMeta.style.transform =
+        `translateY(${lerp(0, -28, 1 - metaFade)}px)`;
+    } else {
+      projectRouteMeta.style.removeProperty("opacity");
+      projectRouteMeta.style.removeProperty("transform");
+    }
+  }
+}
+
+function startProjectSwap(index, { instant = false } = {}) {
+  const next = clamp(index, 0, PROJECTS.length - 1);
+  const from = state.route.index ?? state.activeIndex;
+
+  if (next === from) return;
+
+  state.route.swap = {
+    active: !instant && !reducedMotion.matches,
+    fromIndex: from,
+    toIndex: next,
+    startedAt: performance.now(),
+    duration: instant || reducedMotion.matches ? 1 : 1290,
+    progress: instant || reducedMotion.matches ? 1 : 0
+  };
+
+  document.body.classList.add("is-project-swapping");
+  state.route.scrollTarget = 0;
+
+  if (instant || reducedMotion.matches) {
+    state.route.index = next;
+    state.activeIndex = next;
+    state.trackCurrent = centeredTrackFor(next);
+    state.route.scrollCurrent = 0;
+    updateProjectRouteMeta(next);
+    document.body.classList.remove("is-project-swapping");
+  } else {
+    updateProjectRouteMeta(next);
+  }
 }
 
 function startProjectRoute(index, { instant = false } = {}) {
@@ -312,6 +486,13 @@ function startProjectRoute(index, { instant = false } = {}) {
 
   state.route.type = "project";
   state.route.index = next;
+  state.route.scrollCurrent = 0;
+  state.route.scrollTarget = 0;
+  state.route.swap.active = false;
+  projectScrollContent.style.transform = "translate3d(0, 0, 0)";
+  projectRouteProgress.style.transform = "scaleY(0)";
+  projectRouteMeta.style.removeProperty("opacity");
+  projectRouteMeta.style.removeProperty("transform");
   state.route.direction = 1;
   state.route.startedAt = performance.now();
   state.route.duration = instant || reducedMotion.matches ? 1 : 1290;
@@ -347,14 +528,19 @@ function startHomeRoute({ instant = false } = {}) {
 }
 
 function navigateToProject(index, { replace = false } = {}) {
-  if (state.intro.active || state.route.type === "project") return;
+  if (state.intro.active) return;
   const project = PROJECTS[index];
   if (!project) return;
 
   const url = `#/project/${encodeURIComponent(project.slug)}`;
   const method = replace ? "replaceState" : "pushState";
   history[method]({ labRoute: "project", slug: project.slug }, "", url);
-  startProjectRoute(index);
+
+  if (state.route.type === "project") {
+    startProjectSwap(index);
+  } else {
+    startProjectRoute(index);
+  }
 }
 
 function navigateHome({ replace = false, instant = false } = {}) {
@@ -371,7 +557,15 @@ function syncRouteFromLocation({ instant = false } = {}) {
       state.route.pendingInitialIndex = projectIndex;
       return;
     }
-    startProjectRoute(projectIndex, { instant });
+    if (
+      state.route.type === "project" &&
+      state.route.index !== null &&
+      state.route.index !== projectIndex
+    ) {
+      startProjectSwap(projectIndex, { instant });
+    } else {
+      startProjectRoute(projectIndex, { instant });
+    }
     return;
   }
 
@@ -433,7 +627,18 @@ const state = {
     startedAt: 0,
     duration: 1290,
     progress: 0,
-    pendingInitialIndex: null
+    pendingInitialIndex: null,
+    scrollCurrent: 0,
+    scrollTarget: 0,
+    scrollMax: 0,
+    swap: {
+      active: false,
+      fromIndex: 0,
+      toIndex: 0,
+      startedAt: 0,
+      duration: 1290,
+      progress: 0
+    }
   }
 };
 
@@ -691,6 +896,26 @@ nextProject.addEventListener("click", () => cycleFocus(1));
 openActiveProject.addEventListener("click", () => setMode("focus", state.activeIndex));
 
 addEventListener("keydown", event => {
+  if (state.route.type === "project") {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      navigateHome();
+    } else if (event.key === "ArrowDown" || event.key === "PageDown" || event.key === " ") {
+      event.preventDefault();
+      setProjectScrollTarget(state.route.scrollTarget + innerHeight * 0.72);
+    } else if (event.key === "ArrowUp" || event.key === "PageUp") {
+      event.preventDefault();
+      setProjectScrollTarget(state.route.scrollTarget - innerHeight * 0.72);
+    } else if (event.key === "Home") {
+      event.preventDefault();
+      setProjectScrollTarget(0);
+    } else if (event.key === "End") {
+      event.preventDefault();
+      setProjectScrollTarget(state.route.scrollMax);
+    }
+    return;
+  }
+
   if (state.mode === "focus") {
     if (event.key === "ArrowLeft") {
       event.preventDefault();
@@ -731,6 +956,16 @@ addEventListener("keydown", event => {
 
 addEventListener("wheel", event => {
   if (state.route.type === "project") {
+    const dominantProject =
+      Math.abs(event.deltaY) >= Math.abs(event.deltaX)
+        ? event.deltaY
+        : event.deltaX;
+    const projectFactor =
+      event.deltaMode === 1 ? 24 : event.deltaMode === 2 ? innerHeight : 1;
+
+    setProjectScrollTarget(
+      state.route.scrollTarget + dominantProject * projectFactor * 0.95
+    );
     event.preventDefault();
     return;
   }
@@ -909,6 +1144,10 @@ function resize() {
   canvas.style.width = `${innerWidth}px`;
   canvas.style.height = `${innerHeight}px`;
   gl.viewport(0, 0, width, height);
+
+  if (state.route.type === "project") {
+    updateProjectScrollMax();
+  }
 
   if (state.mode === "focus") {
     state.trackCurrent = centeredTrackFor(state.activeIndex);
@@ -1193,7 +1432,89 @@ function renderIntro(now) {
   return true;
 }
 
-function drawProjectRouteHero(now) {
+function drawRoutePlane(plane, rect, uvY, textureScale, dim, opacity = 1) {
+  if (!plane || opacity <= 0.001) return;
+
+  const dpr = canvas.width / innerWidth;
+
+  gl.bindTexture(gl.TEXTURE_2D, plane.texture);
+  gl.uniform2f(uniforms.viewport, canvas.width, canvas.height);
+  gl.uniform4f(
+    uniforms.rect,
+    rect.x * dpr,
+    rect.y * dpr,
+    rect.w * dpr,
+    rect.h * dpr
+  );
+  gl.uniform2f(uniforms.planeSize, rect.w * dpr, rect.h * dpr);
+  gl.uniform2f(uniforms.imageSize, plane.imageWidth, plane.imageHeight);
+  gl.uniform2f(uniforms.uvOffset, 0, uvY);
+  gl.uniform1f(uniforms.textureScale, textureScale);
+  gl.uniform1f(uniforms.dim, dim);
+  gl.uniform1f(uniforms.opacity, opacity);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+}
+
+function drawProjectRouteHero(now, dt) {
+  if (state.route.swap.active) {
+    const swap = state.route.swap;
+    const raw = clamp(
+      (now - swap.startedAt) / swap.duration,
+      0,
+      1
+    );
+    const eased = projectRouteEase(raw);
+    swap.progress = eased;
+
+    const fromPlane = planes[swap.fromIndex];
+    const toPlane = planes[swap.toIndex];
+
+    drawRoutePlane(
+      fromPlane,
+      {
+        x: 0,
+        y: lerp(-state.route.scrollCurrent, -(innerHeight + 2), eased),
+        w: innerWidth,
+        h: innerHeight
+      },
+      lerp(-0.014, -0.04, eased),
+      1.04,
+      0.9,
+      1
+    );
+
+    drawRoutePlane(
+      toPlane,
+      {
+        x: 0,
+        y: lerp(innerHeight + 2, 0, eased),
+        w: innerWidth,
+        h: innerHeight
+      },
+      lerp(0.035, -0.014, eased),
+      1.04,
+      0.9,
+      1
+    );
+
+    if (raw >= 1) {
+      state.route.swap.active = false;
+      state.route.index = swap.toIndex;
+      state.activeIndex = swap.toIndex;
+      state.trackCurrent = centeredTrackFor(swap.toIndex);
+      state.route.scrollCurrent = 0;
+      state.route.scrollTarget = 0;
+      projectScrollContent.style.transform = "translate3d(0, 0, 0)";
+      projectRouteProgress.style.transform = "scaleY(0)";
+      projectRouteMeta.style.removeProperty("opacity");
+      projectRouteMeta.style.removeProperty("transform");
+      document.body.classList.remove("is-project-swapping");
+      updateProjectScrollMax();
+    }
+
+    return;
+  }
+
   const index = state.route.index ?? state.activeIndex;
   const plane = planes[index];
   if (!plane) return;
@@ -1218,38 +1539,46 @@ function drawProjectRouteHero(now) {
         state.route.type = "home";
         state.route.index = null;
         state.route.progress = 0;
+        state.route.scrollCurrent = 0;
+        state.route.scrollTarget = 0;
         document.body.dataset.route = "home";
         document.body.classList.remove("is-project-exiting");
         projectRoute.setAttribute("aria-hidden", "true");
+        projectScrollContent.style.transform = "translate3d(0, 0, 0)";
+        projectRouteProgress.style.transform = "scaleY(0)";
       } else {
         state.route.progress = 1;
+        updateProjectScrollMax();
       }
     }
   }
 
-  const p = state.route.progress;
-  const rect = focusRect();
-  const dpr = canvas.width / innerWidth;
-  const routeUvY = lerp(0, -0.014, p);
-  const routeTextureScale = lerp(1, 1.04, p);
-  const routeDim = lerp(0.8, 0.9, p);
+  updateProjectScrollVisuals(dt);
 
-  gl.bindTexture(gl.TEXTURE_2D, plane.texture);
-  gl.uniform2f(uniforms.viewport, canvas.width, canvas.height);
-  gl.uniform4f(
-    uniforms.rect,
-    rect.x * dpr,
-    rect.y * dpr,
-    rect.w * dpr,
-    rect.h * dpr
+  const routeP = state.route.progress;
+  const scrollP = clamp(
+    state.route.scrollCurrent / Math.max(innerHeight, 1),
+    0,
+    1
   );
-  gl.uniform2f(uniforms.planeSize, rect.w * dpr, rect.h * dpr);
-  gl.uniform2f(uniforms.imageSize, plane.imageWidth, plane.imageHeight);
-  gl.uniform2f(uniforms.uvOffset, 0, routeUvY);
-  gl.uniform1f(uniforms.textureScale, routeTextureScale);
-  gl.uniform1f(uniforms.dim, routeDim);
-  gl.uniform1f(uniforms.opacity, 1);
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  const heroY = -state.route.scrollCurrent;
+  const routeUvY = lerp(0, -0.014, routeP) + lerp(0, -0.022, scrollP);
+  const routeTextureScale = lerp(1, 1.04, routeP) + lerp(0, 0.035, scrollP);
+  const routeDim = lerp(0.8, 0.9, routeP);
+
+  drawRoutePlane(
+    plane,
+    {
+      x: 0,
+      y: heroY,
+      w: innerWidth,
+      h: innerHeight
+    },
+    routeUvY,
+    routeTextureScale,
+    routeDim,
+    1
+  );
 }
 
 function focusCycleVisual(index, now) {
@@ -1302,7 +1631,7 @@ function render(now) {
   if (state.route.type === "project" || state.route.transitioning) {
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.useProgram(program);
-    drawProjectRouteHero(now);
+    drawProjectRouteHero(now, dt);
     requestAnimationFrame(render);
     return;
   }
@@ -1450,6 +1779,11 @@ function render(now) {
 
 requestAnimationFrame(render);
 
+routeNextProject.addEventListener("click", () => {
+  const index = Number(routeNextProject.dataset.projectIndex);
+  if (Number.isInteger(index)) navigateToProject(index);
+});
+
 projectBack.addEventListener("click", () => {
   if (history.state && history.state.labRoute === "project") {
     history.back();
@@ -1474,14 +1808,20 @@ addEventListener("hashchange", () => {
   const projectIndex = routeIndexFromLocation();
 
   const alreadyTargeting =
-    state.route.transitioning &&
     (
-      (projectIndex === null && state.route.direction < 0) ||
+      state.route.transitioning &&
       (
-        projectIndex !== null &&
-        state.route.direction > 0 &&
-        state.route.index === projectIndex
+        (projectIndex === null && state.route.direction < 0) ||
+        (
+          projectIndex !== null &&
+          state.route.direction > 0 &&
+          state.route.index === projectIndex
+        )
       )
+    ) ||
+    (
+      state.route.swap.active &&
+      projectIndex === state.route.swap.toIndex
     );
 
   if (alreadyTargeting) return;
