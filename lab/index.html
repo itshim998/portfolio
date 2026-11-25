@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#090908" />
-  <title>Camille Lab — Checkpoint 4A Persistent Route Handoff</title>
+  <title>Camille Lab — Checkpoint 4B Project Motion Shell</title>
   <meta name="robots" content="noindex,nofollow" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -50,14 +50,57 @@
   <section class="project-route" id="project-route" aria-hidden="true">
     <button class="project-route__back" id="project-back" type="button" aria-label="Back to work">Back</button>
 
-    <div class="project-route__meta">
+    <div class="project-route__meta" id="project-route-meta">
       <span class="project-route__index" id="route-project-index">01</span>
       <h2 class="project-route__title" id="route-project-title">StudentOS</h2>
-      <p class="project-route__summary" id="route-project-summary">All-in-one academic workspace.</p>
+      <p class="project-route__summary" id="route-project-summary">An AI-native academic workspace.</p>
       <a class="project-route__visit" id="route-project-link" href="https://studentos.sentiqlabs.com/" target="_blank" rel="noreferrer">Visit live project ↗</a>
     </div>
 
-    <p class="project-route__status">Persistent WebGL project hero · route proof</p>
+    <div class="project-route__scroll" id="project-scroll-content">
+      <article class="project-story">
+        <header class="project-story__intro">
+          <p class="project-story__kicker">Project note</p>
+          <p class="project-story__lead" id="route-project-long-summary"></p>
+        </header>
+
+        <div class="project-story__notes">
+          <section class="project-story__note">
+            <span>Purpose</span>
+            <p id="route-project-purpose"></p>
+          </section>
+          <section class="project-story__note">
+            <span>Engineering POV</span>
+            <p id="route-project-engineering"></p>
+          </section>
+          <section class="project-story__note">
+            <span>Current state</span>
+            <p id="route-project-state"></p>
+          </section>
+        </div>
+
+        <figure class="project-story__media project-story__media--primary">
+          <img id="route-project-media-primary" alt="" decoding="async" />
+          <figcaption id="route-project-media-caption"></figcaption>
+        </figure>
+
+        <div class="project-story__media-grid" id="route-project-media-grid"></div>
+
+        <footer class="project-story__next">
+          <span class="project-story__next-label">Next project</span>
+          <button id="route-next-project" type="button">
+            <span id="route-next-title">SentIQ Chat</span>
+            <span aria-hidden="true">↗</span>
+          </button>
+        </footer>
+      </article>
+    </div>
+
+    <div class="project-route__progress" aria-hidden="true">
+      <span id="project-route-progress"></span>
+    </div>
+
+    <p class="project-route__status">Scroll to explore · persistent WebGL hero</p>
   </section>
 
   <div id="about-placeholder" hidden></div>
