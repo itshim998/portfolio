@@ -6,7 +6,7 @@ This directory is the isolated implementation laboratory for the Camille-style p
 
 ### Homepage interaction engine — Checkpoint 2D
 
-The homepage motion engine is treated as frozen:
+The homepage motion engine remains frozen:
 
 - upright WebGL textures;
 - landscape OUT-state geometry;
@@ -25,7 +25,7 @@ The homepage motion engine is treated as frozen:
 
 ### Loader — Checkpoints 3A → 3C
 
-The desktop loader is also treated as frozen:
+The desktop loader remains frozen:
 
 - real 25-texture GPU loading pipeline;
 - five alternating vertical columns;
@@ -37,72 +37,122 @@ The desktop loader is also treated as frozen:
 - tightened final expansion tail;
 - compact preloader percentage that clears before visible column entry.
 
-## Checkpoint 4A — persistent route + same-plane project hero proof
+### Persistent routing — Checkpoint 4A
 
-4A introduces the first client-side route transition without building the full project page yet.
+The route foundation remains intact:
 
-### Lab routing model
+- hash-backed lab routes;
+- slug-based internal route state;
+- browser Back/Forward support;
+- deep-link state survives the loader;
+- one persistent canvas and WebGL context;
+- active homepage plane becomes the project hero;
+- no route-specific texture reload;
+- reversible home ↔ project crop/depth transition.
 
-- Project routes use hash URLs so they can reload safely on raw.githack without server rewrite support:
-  - `#/project/studentos`
-  - `#/project/sentiq-chat`
-  - `#/project/fieldline`
-- Route state itself is slug-based and is not coupled to hash parsing, so production clean URLs can replace the lab adapter later.
-- History uses `pushState` and responds to browser back/forward.
-- A direct project hash on reload is remembered while the loader runs and is applied after the loader completes.
+## Checkpoint 4B — project-page motion shell
 
-### Same WebGL object
+4B builds the first actual project-page experience on top of 4A.
 
-- The project hero uses the existing `planes[activeIndex]` object.
-- No second WebGL context is created.
-- No route-specific duplicate texture is loaded.
-- No canvas is replaced.
-- The active homepage texture therefore survives the route mutation and becomes the project hero.
+### Source content
 
-### Home → project transition
+Project copy is taken from the original portfolio rather than placeholder case-study text.
 
-- Clicking the fullscreen hero with no drag opens the active project.
-- Pressing Enter in fullscreen does the same.
-- Project route transition duration is 1290ms.
-- Easing is `cubic-bezier(0.64, 0, 0.12, 1)`, matching the recovered Camille work-transition family.
-- The plane remains fullscreen while a subtle depth/crop treatment establishes the project state:
-  - vertical UV shift: `0 → -0.014`;
-  - texture scale: `1 → 1.04`;
-  - image brightness multiplier: `0.8 → 0.9`.
-- The small texture zoom guarantees the UV shift remains inside available crop margin and does not produce CLAMP_TO_EDGE smearing.
-- Homepage chrome fades away while project metadata/back controls enter.
+Each project carries:
 
-### Project → home transition
+- original summary;
+- Purpose;
+- Engineering POV;
+- Current state;
+- existing live-project URL;
+- existing portfolio media.
 
-- Project Back uses browser history when the route was created inside the lab.
-- Direct deep links fall back to replacing the hash with `#/`.
-- Escape also returns home.
-- Route crop/zoom reverses to the exact homepage hero state before the renderer resumes the homepage branch.
-- Route UI begins fading immediately on exit.
-- Popstate/hashchange handling is guarded against duplicate transition restarts.
+FieldLine uses all three existing screenshots. StudentOS and SentIQ Chat retain their currently available single project screenshot.
 
-### Current project route shell
+### Virtual project scroll
 
-The first project screen intentionally contains only enough UI to prove persistent routing:
+The page keeps the global document fixed and uses project-specific virtual scrolling:
 
-- back control;
-- project number;
-- project title;
-- one-line summary;
-- external live-project link;
-- persistent fullscreen WebGL hero.
+- `scrollTarget` receives wheel, keyboard, and touch input;
+- `scrollCurrent` damps toward the target;
+- the project story begins exactly one viewport below the hero;
+- the DOM story translates upward from the same virtual scroll value;
+- a fixed right-edge progress line reflects normalized project progress;
+- project scroll range is recalculated when lazy media finishes loading.
 
-There is no project scrolling/content system yet.
+Keyboard support includes:
 
-## Next milestone — Checkpoint 4B
+- Arrow Up / Down;
+- Page Up / Down;
+- Space;
+- Home;
+- End;
+- Escape to return home.
 
-Build the actual project-page motion/content shell on top of the proven persistent route:
+### Persistent hero scroll behavior
 
-- project hero scroll progression;
-- hero texture parallax;
-- content sections below the fold;
-- persistent back navigation;
-- secondary project media;
-- route-to-route project transitions.
+The project hero remains the exact same WebGL plane selected on the homepage.
 
-The 4A acceptance criterion is routing continuity, not final project-page design.
+During project scrolling:
+
+- the full-screen hero translates upward with virtual scroll;
+- texture Y offset adds a restrained scroll parallax component;
+- texture scale increases slightly to preserve safe crop margin;
+- homepage/project route continuity remains in the original WebGL context;
+- project metadata fades and lifts as the user scrolls away from the hero.
+
+### Project story shell
+
+Below the hero the first case-study layout now contains:
+
+- large summary statement;
+- Purpose / Engineering POV / Current state columns;
+- primary project media;
+- additional media grid when additional screenshots exist;
+- next-project footer.
+
+The story/media layer uses normal compositing. Only floating route chrome retains difference blending, so screenshots remain color-accurate.
+
+### Project → project transition
+
+The bottom `Next project` control now changes routes without returning through the homepage.
+
+The transition:
+
+- uses the same 1290ms `cubic-bezier(0.64, 0, 0.12, 1)` family;
+- sends the previous project hero upward;
+- brings the next project's existing WebGL plane upward from below;
+- gives both planes additional crop margin while crossing the viewport;
+- updates URL/history through the existing route system;
+- resets the new project virtual scroll to its hero;
+- preserves Back/Forward navigation between projects.
+
+### Deep-scroll Back behavior
+
+Returning home from anywhere in a project no longer requires being at scroll zero.
+
+The exit captures the current virtual scroll position and animates the persistent hero back into its exact homepage position while route content fades, avoiding a last-frame hero jump.
+
+## 4B acceptance criterion
+
+Checkpoint 4B is about motion-shell integrity, not final editorial design.
+
+A successful pass should confirm:
+
+1. project scrolling feels smooth and independent of the homepage strip;
+2. the WebGL hero visibly moves with project scroll instead of being replaced;
+3. Purpose / Engineering / Current-state content is readable below the fold;
+4. FieldLine secondary screenshots appear in the media sequence;
+5. Back works both near the hero and deep in the case study;
+6. Next project performs a direct persistent-plane project → project transition;
+7. browser Back/Forward remains coherent across home and multiple project routes.
+
+## Deferred after 4B
+
+- frame-by-frame browser calibration against Camille's actual work pages;
+- final project-page typography and spacing;
+- richer secondary WebGL media choreography;
+- footer expansion/progress behavior;
+- mobile-specific work-page calibration;
+- custom cursor;
+- About-page migration.
