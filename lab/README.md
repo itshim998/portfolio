@@ -25,122 +25,143 @@ The following systems are considered frozen unless a reproducible regression app
 
 ## Checkpoint 5B — About choreography calibration
 
-5B calibrates the desktop About page from the recovered reference implementation without modifying the frozen homepage/project motion systems.
+5B calibrated:
 
-### Recovered desktop geometry
+- right stream start at `calc(50% - 64px)`;
+- right stream width around `50.1042vw`;
+- miniature left information system;
+- small top-left preview geometry;
+- 1500ms long-rise reveal motion;
+- 110% right-side reveal offset;
+- 80px left-side rise;
+- staged hero/left entry timing;
+- independent About scroll physics;
+- preview counter-motion;
+- reveal-state permanence.
 
-The reference desktop CSS uses:
+The browser audit granted a conditional GO. It explicitly froze:
 
-- right stream start: `calc(50% - 64px)`;
-- right stream width: `50.1042vw`;
-- right section width: `90%`;
-- standard section top spacing: `14.5833vw`;
-- first section top spacing: `17.7083vw`.
+- right-stream geometry;
+- About scroll physics;
+- hero reveal motion;
+- section reveal duration/easing;
+- reveal-state permanence;
+- preview counter-motion range;
+- SPA routing and single-canvas persistence.
 
-The left side is not a conventional 38/62 panel.
+## Checkpoint 5C — desktop About corrective freeze
 
-Its reference geometry is:
+5C implements only the three browser-audit corrections and deliberately leaves the approved 5B systems unchanged.
 
-- small text wrapper x: `calc(40px + 3.2813vw)`;
-- text wrapper width: `9.6354vw`;
-- text wrapper top padding: `15.3446vw`;
-- preview x: `40px`;
-- preview y: `15.3446vw`;
-- preview width: `15vw`;
-- preview height: `19.2308vh`;
-- preview border: ~1.34px at low opacity.
+### 1. Hollow preview / unobstructed index
 
-At 1440×900 this places the preview at roughly 216×173px rather than the portrait approximation used in 5A.
+The 5B preview geometry and travel remain in place, but the desktop preview is now a transparent bordered frame.
 
-### Independent preview motion
+Its raster image is hidden on desktop.
 
-The preview has been moved out of the moving left text wrapper.
+Layering is explicit:
 
-This matches the recovered structure:
+- preview frame: lower layer;
+- miniature left text/index: upper layer.
 
-- left wrapper translates upward according to remapped About progress;
-- preview is positioned independently;
-- preview translates downward across its own available vertical range.
+This preserves the reference-like hollow indicator behavior while ensuring:
 
-The resize calculation now also follows the source behavior:
+- `ABOUT / SOUNAK PODDAR` remains readable;
+- index items 01–04 remain readable;
+- the preview frame can counter-move without covering content.
 
-1. temporarily reset wrapper/preview transforms;
-2. measure content height / visible area;
-3. calculate maximum wrapper travel;
-4. calculate maximum preview counter-travel;
-5. restore the current normalized scroll position.
+### 2. Left track no longer collides with chrome
 
-This prevents resize-at-scroll-position geometry drift.
+The artificial `min-height: 142vh` introduced during 5B calibration is removed.
 
-### Left-side entrance choreography
+Left travel is now based on the actual content bounds.
 
-Recovered reference timing:
+The calculation:
 
-- left sections: 1500ms;
-- first section extra delay: 200ms;
-- following sections: ~50ms stagger;
-- initial Y offset: 80px;
-- target opacity: ~0.85;
-- preview opacity begins ~500ms after route-show timing.
+1. measures the natural left-content height;
+2. compares it with the visible region below its top origin;
+3. produces zero travel when the information stack fits;
+4. additionally clamps any necessary travel to a desktop 90px top safe-zone.
 
-The lab reproduces that sequence for the left intro/index and preview.
+At 1440×900 the current miniature content fits in the available area, so the expected left-track travel is effectively:
 
-### Right-side reveal choreography
+`0px → 0px`.
 
-The reference About scroll FX uses:
+This matches the browser audit observation that Camille's left text system remains stationed while only the indicator frame moves.
 
-- reveal duration: 1500ms;
-- initial vertical offset: 110%;
-- ease family: `o6`;
-- reveal threshold: element top minus `0.9 × viewportHeight`;
-- above-fold elements reveal immediately after route entry but receive staged delays;
-- first above-fold delay: ~700ms;
-- subsequent delay: +200ms per trigger.
+### 3. Preview counter-motion remains frozen
 
-5B reproduces the same trigger model.
+The audit approved the existing preview travel of roughly 432px at a 900px viewport height.
 
-Current right-side reveal targets include:
+5C therefore decouples preview travel from left-track content height.
 
-- About hero kicker;
-- About hero statement;
-- each section heading;
-- capability rows;
-- experience rows;
-- Beyond cards;
-- Contact block.
+Desktop preview travel targets:
 
-Elements reveal once and remain visible for the rest of the route session.
+`0.48 × viewportHeight`
 
-### Typography/spacing calibration
+subject to a bottom safety clamp.
 
-The main desktop type scales now follow the recovered CSS family more closely:
+At 900px height this is approximately:
 
-- right large text: ~2.8125vw / 3.6458vw;
-- section headings: ~2.2917vw / 2.7604vw;
-- secondary text: ~1.25vw / 1.6667vw;
-- left miniature text: ~0.5409vw / 0.7011vw.
+`432px`.
 
-These values preserve the user's portfolio content while moving the page closer to Camille's compact About composition.
+### 4. Resize synchronization
 
-## 5B acceptance criterion
+About resize handling now preserves normalized page progress rather than preserving an absolute virtual-scroll pixel value.
 
-At 1440×900 desktop:
+On resize:
 
-1. About no longer reads as a wide 38/62 split panel.
-2. Right content begins near the visual midpoint.
-3. Left text is intentionally small and narrow.
-4. The small bordered preview sits near the top-left and is approximately 216×173px.
-5. Left wrapper and preview visibly move in opposite/remapped directions.
-6. About hero text enters after the route transition rather than already sitting fully visible.
-7. Offscreen section headings/rows rise into view when they approach ~90% viewport height.
-8. reveal motion is slow/smooth (~1500ms), not quick IntersectionObserver-style popping.
-9. Work ↔ About history remains correct.
-10. loader and frozen project/home motion remain unchanged.
+1. capture current normalized progress from the previous scroll range;
+2. neutralize the right-stream transform before measurement;
+3. calculate the new virtual scroll maximum;
+4. remap the captured normalized progress onto the new maximum;
+5. set both `scrollCurrent` and `scrollTarget` to the remapped position;
+6. recompute left/preview travel;
+7. reapply transforms;
+8. refresh reveal thresholds.
 
-## Deferred after 5B
+Therefore a resize/restoration cycle should return to the same relative document position instead of permanently drifting.
 
-- dedicated browser fidelity audit against Camille's live About page;
-- any narrow timing/geometry corrections found by that audit;
-- mobile-specific About architecture;
-- custom cursor;
-- final production integration/cleanup.
+### 5. Reveal threshold correction
+
+5B's threshold formula was conceptually correct, but its layout-position measurement was not transform-safe.
+
+5C now measures each reveal element relative to the transformed About content container:
+
+`element.getBoundingClientRect().top - aboutScrollContent.getBoundingClientRect().top`.
+
+That produces the element's stable virtual-document position regardless of current scroll transform.
+
+The trigger remains:
+
+`elementTop - 0.9 × viewportHeight`.
+
+At 1440×900, a below-fold section should therefore begin revealing when its top approaches approximately 810px in the viewport.
+
+The approved motion itself remains untouched:
+
+- ~110% starting Y;
+- ~1500ms transform duration;
+- same easing;
+- reveal once, then remain visible.
+
+## 5C acceptance criteria
+
+At 1440×900:
+
+1. all miniature left text/index items are visible at scroll 0;
+2. the moving preview is a hollow frame and never obscures the index;
+3. the left text track remains below the fixed brand throughout 0–100% scroll;
+4. the left text remains present at full scroll;
+5. preview counter-motion remains roughly 0 → +432px;
+6. Experience/Beyond/Contact begin revealing as they approach the bottom ~10% of the viewport;
+7. reveal duration/easing remains identical to 5B;
+8. resizing 1440×900 → 1200×760 → 1440×900 around 50% progress restores the same normalized About position without permanent transform drift;
+9. Work ↔ About history remains correct;
+10. loader, homepage and project motion remain unchanged.
+
+## Desktop About freeze
+
+Once 5C is manually accepted, the desktop About system is frozen together with the previously frozen desktop Home, Loader, Routing and Work-page systems.
+
+The next development phase is mobile-specific geometry and interaction adaptation.
