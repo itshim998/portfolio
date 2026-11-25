@@ -1455,3 +1455,23 @@ body[data-route="about"] .about-reveal {
     transition-delay: 0ms !important;
   }
 }
+
+
+/* Checkpoint 5C — desktop About corrective freeze */
+@media (min-width: 781px) {
+  .about-route__left-track {
+    min-height: 0;
+    height: auto;
+    z-index: 2;
+  }
+
+  .about-route__preview {
+    z-index: 1;
+    background: transparent;
+  }
+
+  .about-route__preview img {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
