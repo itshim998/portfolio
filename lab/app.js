@@ -797,6 +797,9 @@ const introPlanes = INTRO_MEDIA.map((source, index) => ({
   imageHeight: 900
 }));
 
+let introLayoutCache = [];
+let thumbnailMetricCache = [];
+
 function createPlaceholderTexture(index) {
   const texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -1273,6 +1276,11 @@ canvas.addEventListener("pointercancel", event => {
   state.settleTarget = null;
 });
 
+function refreshStaticLayoutCaches() {
+  introLayoutCache = introPlanes.map((_, index) => loaderLayout(index));
+  thumbnailMetricCache = planes.map((_, index) => thumbnailMetrics(index));
+}
+
 function resize() {
   const dpr = Math.min(devicePixelRatio || 1, innerWidth <= 780 ? 2 : 1.5);
   const width = Math.round(innerWidth * dpr);
@@ -1286,6 +1294,7 @@ function resize() {
   canvas.style.width = `${innerWidth}px`;
   canvas.style.height = `${innerHeight}px`;
   gl.viewport(0, 0, width, height);
+  refreshStaticLayoutCaches();
 
   if (state.route.type === "project") {
     updateProjectScrollMax();
@@ -1467,7 +1476,8 @@ function thumbnailMetrics(index) {
 
 function drawHomeThumbnails(now, duringIntro = false) {
   planes.forEach((plane, index) => {
-    const target = thumbnailMetrics(index);
+    const target =
+      thumbnailMetricCache[index] || thumbnailMetrics(index);
     let yOffset = state.transition * target.startOffsetY;
     let opacity = 1;
 
@@ -1528,7 +1538,8 @@ function renderIntro(now) {
   gl.useProgram(program);
 
   introPlanes.forEach((plane, index) => {
-    const layout = loaderLayout(index);
+    const layout =
+      introLayoutCache[index] || loaderLayout(index);
     const grid = layout.grid;
     const final = layout.final;
 
