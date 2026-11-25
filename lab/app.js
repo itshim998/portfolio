@@ -671,11 +671,22 @@ function updateAboutScrollMax() {
   );
 
   if (aboutLeftTrack) {
-    const trackTop = aboutLeftTrack.getBoundingClientRect().top;
+    const progress =
+      state.about.scrollMax > 0
+        ? clamp(state.about.scrollCurrent / state.about.scrollMax, 0, 1)
+        : 0;
+
+    aboutLeftTrack.style.transform = "translate3d(0, 0, 0)";
+    if (aboutLeftPreview) {
+      aboutLeftPreview.style.transform = "translate3d(0, 0, 0)";
+    }
+
+    const trackStyle = getComputedStyle(aboutLeftTrack);
+    const contentTop = parseFloat(trackStyle.paddingTop) || 0;
     const trackHeight = aboutLeftTrack.offsetHeight;
     const visibleArea =
-      innerHeight < trackTop + trackHeight
-        ? innerHeight - trackTop
+      innerHeight < contentTop + trackHeight
+        ? innerHeight - contentTop
         : trackHeight;
 
     state.about.leftMax = Math.max(
@@ -688,7 +699,12 @@ function updateAboutScrollMax() {
         0,
         visibleArea - aboutLeftPreview.offsetHeight
       );
+      aboutLeftPreview.style.transform =
+        `translate3d(0, ${state.about.previewMax * progress}px, 0)`;
     }
+
+    aboutLeftTrack.style.transform =
+      `translate3d(0, ${-state.about.leftMax * progress}px, 0)`;
   }
 
   refreshAboutRevealThresholds();
