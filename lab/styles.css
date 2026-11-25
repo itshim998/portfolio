@@ -474,3 +474,12 @@ body[data-route="home"] .project-route {
   .project-route__meta { left: 16px; bottom: 56px; width: calc(100vw - 32px); }
   .project-route__status { right: 16px; bottom: 18px; }
 }
+
+
+body.is-project-exiting .project-route {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 260ms ease,
+    visibility 0s linear 260ms;
+}
