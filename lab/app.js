@@ -129,11 +129,18 @@ const projectRouteStatus = document.getElementById("project-route-status");
 const projectRouteProgress = document.getElementById("project-route-progress");
 const homeBrand = document.getElementById("home-brand");
 const homeLink = document.getElementById("home-link");
+const aboutLink = document.getElementById("about-link");
+const aboutRoute = document.getElementById("about-route");
+const aboutScrollContent = document.getElementById("about-scroll-content");
+const aboutLeftTrack = document.getElementById("about-left-track");
+const aboutLeftPreview = document.getElementById("about-left-preview");
+const aboutRouteProgress = document.getElementById("about-route-progress");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
 document.body.dataset.mode = "focus";
 document.body.dataset.intro = "true";
 document.body.dataset.route = "home";
+syncPrimaryNav("home");
 
 const gl = canvas.getContext("webgl", {
   alpha: false,
@@ -338,6 +345,23 @@ function routeIndexFromLocation() {
   const slug = decodeURIComponent(match[1]);
   const index = PROJECTS.findIndex(project => project.slug === slug);
   return index >= 0 ? index : null;
+}
+
+function isAboutLocation() {
+  return /^#\/about(?:[/?#]|$)/.test(location.hash);
+}
+
+function syncPrimaryNav(routeType) {
+  if (routeType === "home") {
+    homeLink.setAttribute("aria-current", "page");
+    aboutLink.removeAttribute("aria-current");
+  } else if (routeType === "about") {
+    aboutLink.setAttribute("aria-current", "page");
+    homeLink.removeAttribute("aria-current");
+  } else {
+    homeLink.removeAttribute("aria-current");
+    aboutLink.removeAttribute("aria-current");
+  }
 }
 
 function resetProjectRouteChrome() {
@@ -580,6 +604,111 @@ function updateProjectScrollVisuals(dt) {
   }
 }
 
+function updateAboutScrollMax() {
+  if (!aboutScrollContent) return;
+
+  state.about.scrollMax = Math.max(
+    0,
+    aboutScrollContent.scrollHeight - innerHeight
+  );
+
+  state.about.scrollTarget = clamp(
+    state.about.scrollTarget,
+    0,
+    state.about.scrollMax
+  );
+  state.about.scrollCurrent = clamp(
+    state.about.scrollCurrent,
+    0,
+    state.about.scrollMax
+  );
+
+  if (aboutLeftTrack) {
+    state.about.leftMax = Math.max(
+      0,
+      aboutLeftTrack.scrollHeight - innerHeight
+    );
+  }
+
+  if (aboutLeftPreview) {
+    state.about.previewMax = Math.max(
+      0,
+      innerHeight - aboutLeftPreview.offsetHeight - 220
+    );
+  }
+}
+
+function setAboutScrollTarget(value) {
+  state.about.scrollTarget = clamp(
+    value,
+    0,
+    state.about.scrollMax
+  );
+}
+
+function updateAboutScrollVisuals(dt) {
+  if (state.route.type !== "about") return;
+
+  state.about.scrollCurrent = reducedMotion.matches
+    ? state.about.scrollTarget
+    : damp(state.about.scrollCurrent, state.about.scrollTarget, 7.1, dt);
+
+  const scroll = state.about.scrollCurrent;
+  const progress =
+    state.about.scrollMax > 0
+      ? clamp(scroll / state.about.scrollMax, 0, 1)
+      : 0;
+
+  aboutScrollContent.style.transform =
+    `translate3d(0, ${-scroll}px, 0)`;
+
+  if (aboutLeftTrack) {
+    aboutLeftTrack.style.transform =
+      `translate3d(0, ${-state.about.leftMax * progress}px, 0)`;
+  }
+
+  if (aboutLeftPreview) {
+    aboutLeftPreview.style.transform =
+      `translate3d(0, ${state.about.previewMax * progress}px, 0)`;
+  }
+
+  aboutRouteProgress.style.transform = `scaleY(${progress})`;
+}
+
+function startAboutRoute({ instant = false } = {}) {
+  if (state.route.type === "project") return;
+
+  state.route.type = "about";
+  state.route.index = null;
+  state.route.transitioning = false;
+  state.about.scrollCurrent = 0;
+  state.about.scrollTarget = 0;
+
+  aboutScrollContent.style.transform = "translate3d(0, 0, 0)";
+  aboutLeftTrack.style.transform = "translate3d(0, 0, 0)";
+  aboutLeftPreview.style.transform = "translate3d(0, 0, 0)";
+  aboutRouteProgress.style.transform = "scaleY(0)";
+
+  document.body.dataset.route = "about";
+  aboutRoute.setAttribute("aria-hidden", "false");
+  projectRoute.setAttribute("aria-hidden", "true");
+  syncPrimaryNav("about");
+
+  requestAnimationFrame(updateAboutScrollMax);
+}
+
+function navigateAbout({ replace = false } = {}) {
+  if (
+    state.intro.active ||
+    state.route.type === "project" ||
+    state.route.transitioning
+  ) return;
+
+  const method = replace ? "replaceState" : "pushState";
+  history[method]({ labRoute: "about" }, "", "#/about");
+  startAboutRoute();
+}
+
 function startProjectSwap(index, { instant = false } = {}) {
   const next = clamp(index, 0, PROJECTS.length - 1);
   const from = state.route.index ?? state.activeIndex;
@@ -650,12 +779,27 @@ function startProjectRoute(index, { instant = false } = {}) {
   document.body.dataset.mode = "focus";
   document.body.dataset.route = "project";
   projectRoute.setAttribute("aria-hidden", "false");
+  aboutRoute.setAttribute("aria-hidden", "true");
+  syncPrimaryNav("project");
 }
 
 function startHomeRoute({ instant = false } = {}) {
+  if (state.route.type === "about") {
+    state.route.type = "home";
+    state.about.scrollCurrent = 0;
+    state.about.scrollTarget = 0;
+    document.body.dataset.route = "home";
+    aboutRoute.setAttribute("aria-hidden", "true");
+    projectRoute.setAttribute("aria-hidden", "true");
+    syncPrimaryNav("home");
+    return;
+  }
+
   if (state.route.type !== "project") {
     document.body.dataset.route = "home";
     projectRoute.setAttribute("aria-hidden", "true");
+    aboutRoute.setAttribute("aria-hidden", "true");
+    syncPrimaryNav("home");
     return;
   }
 
@@ -677,6 +821,7 @@ function startHomeRoute({ instant = false } = {}) {
     state.route.index = null;
     state.route.progress = 0;
     document.body.dataset.route = "home";
+    syncPrimaryNav("home");
     document.body.classList.remove("is-project-exiting");
     projectRoute.setAttribute("aria-hidden", "true");
   }
@@ -710,11 +855,23 @@ function navigateHome({ replace = false, instant = false } = {}) {
 }
 
 function syncRouteFromLocation({ instant = false } = {}) {
+  if (isAboutLocation()) {
+    if (state.intro.active) {
+      state.route.pendingAbout = true;
+      state.route.pendingInitialIndex = null;
+      return;
+    }
+
+    startAboutRoute({ instant });
+    return;
+  }
+
   const projectIndex = routeIndexFromLocation();
 
   if (projectIndex !== null) {
     if (state.intro.active) {
       state.route.pendingInitialIndex = projectIndex;
+      state.route.pendingAbout = false;
       return;
     }
     if (
@@ -730,6 +887,7 @@ function syncRouteFromLocation({ instant = false } = {}) {
   }
 
   state.route.pendingInitialIndex = null;
+  state.route.pendingAbout = false;
   startHomeRoute({ instant });
 }
 
@@ -779,6 +937,13 @@ const state = {
     duration: 5000,
     complete: false
   },
+  about: {
+    scrollCurrent: 0,
+    scrollTarget: 0,
+    scrollMax: 0,
+    leftMax: 0,
+    previewMax: 0
+  },
   route: {
     type: "home",
     index: null,
@@ -788,6 +953,7 @@ const state = {
     duration: 1290,
     progress: 0,
     pendingInitialIndex: null,
+    pendingAbout: false,
     scrollCurrent: 0,
     scrollTarget: 0,
     scrollMax: 0,
@@ -810,6 +976,7 @@ const state = {
 };
 
 state.route.pendingInitialIndex = routeIndexFromLocation();
+state.route.pendingAbout = isAboutLocation();
 
 const planes = PROJECTS.map((project, index) => ({
   project,
@@ -1066,6 +1233,26 @@ nextProject.addEventListener("click", () => cycleFocus(1));
 openActiveProject.addEventListener("click", () => setMode("focus", state.activeIndex));
 
 addEventListener("keydown", event => {
+  if (state.route.type === "about") {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      navigateHome();
+    } else if (event.key === "ArrowDown" || event.key === "PageDown" || event.key === " ") {
+      event.preventDefault();
+      setAboutScrollTarget(state.about.scrollTarget + innerHeight * 0.72);
+    } else if (event.key === "ArrowUp" || event.key === "PageUp") {
+      event.preventDefault();
+      setAboutScrollTarget(state.about.scrollTarget - innerHeight * 0.72);
+    } else if (event.key === "Home") {
+      event.preventDefault();
+      setAboutScrollTarget(0);
+    } else if (event.key === "End") {
+      event.preventDefault();
+      setAboutScrollTarget(state.about.scrollMax);
+    }
+    return;
+  }
+
   if (state.route.type === "project") {
     if (event.key === "Escape") {
       event.preventDefault();
@@ -1127,6 +1314,21 @@ addEventListener("keydown", event => {
 });
 
 addEventListener("wheel", event => {
+  if (state.route.type === "about") {
+    const dominantAbout =
+      Math.abs(event.deltaY) >= Math.abs(event.deltaX)
+        ? event.deltaY
+        : event.deltaX;
+    const aboutFactor =
+      event.deltaMode === 1 ? 24 : event.deltaMode === 2 ? innerHeight : 1;
+
+    setAboutScrollTarget(
+      state.about.scrollTarget + dominantAbout * aboutFactor * 0.95
+    );
+    event.preventDefault();
+    return;
+  }
+
   if (state.route.type === "project") {
     if (state.route.swap.active || state.route.transitioning) {
       event.preventDefault();
@@ -1341,6 +1543,8 @@ function resize() {
 
   if (state.route.type === "project") {
     updateProjectScrollMax();
+  } else if (state.route.type === "about") {
+    updateAboutScrollMax();
   }
 
   if (state.mode === "focus") {
@@ -1618,7 +1822,10 @@ function renderIntro(now) {
     state.activeIndex = 0;
     updateProjectTitle(0, true);
 
-    if (state.route.pendingInitialIndex !== null) {
+    if (state.route.pendingAbout) {
+      state.route.pendingAbout = false;
+      startAboutRoute({ instant: true });
+    } else if (state.route.pendingInitialIndex !== null) {
       const pendingIndex = state.route.pendingInitialIndex;
       state.route.pendingInitialIndex = null;
       startProjectRoute(pendingIndex, { instant: true });
@@ -1751,6 +1958,7 @@ function drawProjectRouteHero(now, dt) {
         document.body.classList.remove("is-footer-expanding");
         document.body.style.removeProperty("--footer-expand");
         document.body.dataset.route = "home";
+        syncPrimaryNav("home");
         document.body.classList.remove("is-project-exiting");
         projectRoute.setAttribute("aria-hidden", "true");
         resetProjectRouteChrome();
@@ -1886,6 +2094,13 @@ function render(now) {
   state.lastTime = now;
 
   if (renderIntro(now)) {
+    requestAnimationFrame(render);
+    return;
+  }
+
+  if (state.route.type === "about") {
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    updateAboutScrollVisuals(dt);
     requestAnimationFrame(render);
     return;
   }
@@ -2041,6 +2256,31 @@ function render(now) {
 
 requestAnimationFrame(render);
 
+let aboutTouchY = null;
+
+aboutRoute.addEventListener("touchstart", event => {
+  if (state.route.type !== "about" || event.touches.length !== 1) return;
+  aboutTouchY = event.touches[0].clientY;
+}, { passive: true });
+
+aboutRoute.addEventListener("touchmove", event => {
+  if (
+    aboutTouchY === null ||
+    state.route.type !== "about" ||
+    event.touches.length !== 1
+  ) return;
+
+  const y = event.touches[0].clientY;
+  const delta = aboutTouchY - y;
+  aboutTouchY = y;
+  setAboutScrollTarget(state.about.scrollTarget + delta);
+  event.preventDefault();
+}, { passive: false });
+
+aboutRoute.addEventListener("touchend", () => {
+  aboutTouchY = null;
+}, { passive: true });
+
 let projectTouchY = null;
 
 projectRoute.addEventListener("touchstart", event => {
@@ -2098,6 +2338,12 @@ for (const link of [homeBrand, homeLink]) {
   });
 }
 
+aboutLink.addEventListener("click", event => {
+  event.preventDefault();
+  if (state.route.type === "about") return;
+  navigateAbout();
+});
+
 addEventListener("popstate", () => {
   syncRouteFromLocation();
 });
@@ -2124,10 +2370,13 @@ addEventListener("hashchange", () => {
 
   if (alreadyTargeting) return;
 
+  const aboutTarget = isAboutLocation();
   const routeMatches =
-    projectIndex !== null
-      ? state.route.type === "project" && state.route.index === projectIndex
-      : state.route.type === "home";
+    aboutTarget
+      ? state.route.type === "about"
+      : projectIndex !== null
+        ? state.route.type === "project" && state.route.index === projectIndex
+        : state.route.type === "home";
 
   if (!routeMatches) syncRouteFromLocation();
 });
