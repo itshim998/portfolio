@@ -841,3 +841,345 @@ body.is-project-exiting .project-route__progress {
 .project-story__next {
   scroll-margin-top: 60px;
 }
+
+
+/* Checkpoint 5A — About route split-scroll foundation */
+.about-route {
+  position: fixed;
+  z-index: 24;
+  inset: 0;
+  overflow: hidden;
+  background: #090908;
+  color: #f4f2ec;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 520ms cubic-bezier(.64,0,.12,1),
+    visibility 0s linear 520ms;
+  contain: layout paint style;
+}
+
+body[data-route="about"] .about-route {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 620ms cubic-bezier(.64,0,.12,1),
+    visibility 0s linear 0s;
+}
+
+body[data-route="about"] .ui,
+body[data-route="about"] .project-route {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+body[data-route="about"] .chrome {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+body[data-intro="true"] .about-route {
+  display: none;
+}
+
+.about-route__left {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 38vw;
+  height: 100%;
+  overflow: hidden;
+  border-right: 1px solid rgba(244,242,236,.16);
+}
+
+.about-route__left-track {
+  min-height: 152vh;
+  padding: 110px clamp(24px,4vw,58px) 74px;
+  will-change: auto;
+}
+
+body[data-route="about"] .about-route__left-track {
+  will-change: transform;
+}
+
+.about-route__left-intro {
+  max-width: 26rem;
+}
+
+.about-route__eyebrow,
+.about-route__index,
+.about-section__kicker,
+.about-section__head > span,
+.about-beyond article > span,
+.about-section--contact > span,
+.about-route__status {
+  font-family: var(--mono);
+  font-size: .55rem;
+  letter-spacing: .055em;
+  text-transform: uppercase;
+}
+
+.about-route__left-intro p {
+  margin: 24px 0 0;
+  font-size: clamp(1.45rem,2.25vw,2.8rem);
+  line-height: 1.08;
+  letter-spacing: -.04em;
+}
+
+.about-route__preview {
+  width: min(310px, 72%);
+  aspect-ratio: 7 / 10;
+  margin: clamp(70px,11vh,120px) auto 0;
+  overflow: hidden;
+  will-change: auto;
+}
+
+body[data-route="about"] .about-route__preview {
+  will-change: transform;
+}
+
+.about-route__preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about-route__index {
+  display: grid;
+  gap: 16px;
+  margin: clamp(64px,11vh,120px) 0 0;
+  padding: 0;
+  list-style: none;
+  color: rgba(244,242,236,.68);
+}
+
+.about-route__index li {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(244,242,236,.14);
+}
+
+.about-route__right {
+  position: absolute;
+  left: 38vw;
+  top: 0;
+  width: 62vw;
+  min-height: 100%;
+  padding: 108px clamp(28px,4.2vw,64px) 120px;
+  will-change: auto;
+}
+
+body[data-route="about"] .about-route__right {
+  will-change: transform;
+}
+
+.about-section {
+  padding: clamp(86px,12vh,138px) 0;
+  border-top: 1px solid rgba(244,242,236,.17);
+}
+
+.about-section--hero {
+  min-height: 86vh;
+  display: grid;
+  align-content: end;
+  border-top: 0;
+  padding-top: 0;
+}
+
+.about-section--hero h1 {
+  max-width: 15ch;
+  margin: 22px 0 0;
+  font-size: clamp(3.4rem,6.8vw,7.8rem);
+  line-height: .9;
+  letter-spacing: -.075em;
+  font-weight: 500;
+}
+
+.about-section__head {
+  display: grid;
+  grid-template-columns: minmax(110px,.6fr) minmax(0,2fr);
+  gap: clamp(26px,4vw,70px);
+  align-items: start;
+  margin-bottom: clamp(52px,8vh,90px);
+}
+
+.about-section__head h2,
+.about-section--contact h2 {
+  margin: 0;
+  font-size: clamp(2.4rem,4.8vw,5.6rem);
+  line-height: .92;
+  letter-spacing: -.06em;
+  font-weight: 500;
+}
+
+.about-section__lead {
+  max-width: 48rem;
+  margin: 0 0 70px auto;
+  font-size: clamp(1.25rem,2vw,2.2rem);
+  line-height: 1.22;
+}
+
+.about-list {
+  border-top: 1px solid rgba(244,242,236,.17);
+}
+
+.about-list__row {
+  display: grid;
+  grid-template-columns: minmax(70px,.35fr) minmax(0,2fr);
+  gap: 26px;
+  padding: 26px 0 38px;
+  border-bottom: 1px solid rgba(244,242,236,.17);
+}
+
+.about-list__row > span,
+.about-list__row small {
+  font-family: var(--mono);
+  font-size: .56rem;
+  line-height: 1.45;
+  letter-spacing: .04em;
+  color: rgba(244,242,236,.58);
+}
+
+.about-list__row h3 {
+  margin: 0;
+  font-size: clamp(1.25rem,2vw,2rem);
+  font-weight: 500;
+  letter-spacing: -.035em;
+}
+
+.about-list__row p {
+  max-width: 48rem;
+  margin: 15px 0 12px;
+  font-size: .95rem;
+  line-height: 1.55;
+  color: rgba(244,242,236,.78);
+}
+
+.about-beyond {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 34px 28px;
+}
+
+.about-beyond article {
+  min-height: 430px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid rgba(244,242,236,.17);
+}
+
+.about-beyond img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  margin-bottom: 18px;
+}
+
+.about-beyond__text {
+  display: grid;
+  align-content: end;
+  min-height: 430px;
+}
+
+.about-beyond h3 {
+  margin: 20px 0 12px;
+  font-size: clamp(1.5rem,2.5vw,2.8rem);
+  line-height: 1;
+  letter-spacing: -.05em;
+  font-weight: 500;
+}
+
+.about-beyond p {
+  max-width: 34rem;
+  margin: 0;
+  line-height: 1.5;
+  color: rgba(244,242,236,.76);
+}
+
+.about-section--contact {
+  min-height: 78vh;
+  display: grid;
+  align-content: end;
+}
+
+.about-section--contact h2 {
+  margin-top: 24px;
+  font-size: clamp(4rem,9vw,10rem);
+}
+
+.about-contact__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 30px;
+  margin-top: 42px;
+}
+
+.about-contact__links a {
+  color: inherit;
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: .65rem;
+  text-transform: uppercase;
+  letter-spacing: .045em;
+}
+
+.about-route__progress {
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  right: 0;
+  width: 2px;
+  height: 100%;
+  background: rgba(244,242,236,.12);
+}
+
+.about-route__progress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: scaleY(0);
+  transform-origin: 50% 0%;
+  background: #f4f2ec;
+}
+
+.about-route__status {
+  position: absolute;
+  z-index: 5;
+  right: clamp(24px,3vw,46px);
+  bottom: 28px;
+  margin: 0;
+  mix-blend-mode: difference;
+}
+
+@media (max-width: 780px) {
+  .about-route__left {
+    display: none;
+  }
+
+  .about-route__right {
+    left: 0;
+    width: 100%;
+    padding: 92px 16px 100px;
+  }
+
+  .about-section--hero h1 {
+    font-size: clamp(3rem,15vw,5.4rem);
+  }
+
+  .about-section__head,
+  .about-list__row,
+  .about-beyond {
+    grid-template-columns: 1fr;
+  }
+
+  .about-list__row {
+    gap: 14px;
+  }
+}
