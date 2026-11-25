@@ -456,6 +456,7 @@ function commitFooterAdvance(index) {
   const project = PROJECTS[next];
   if (!project) return;
 
+  state.route.footerCommitScheduled = false;
   state.route.footerCommitting = true;
   document.body.classList.add("is-project-swapping");
 
@@ -472,6 +473,7 @@ function commitFooterAdvance(index) {
   state.route.scrollTarget = 0;
   state.route.footerExpand = 0;
   state.route.footerAdvanceArmed = false;
+  state.route.footerCommitScheduled = false;
   state.route.progress = 1;
 
   projectScrollContent.style.transform = "translate3d(0, 0, 0)";
@@ -542,11 +544,15 @@ function updateProjectScrollVisuals(dt) {
 
   if (
     scroll >= state.route.scrollMax - 2 &&
+    !state.route.footerCommitScheduled &&
     !state.route.footerCommitting
   ) {
     const next = Number(routeNextProject.dataset.projectIndex);
     if (Number.isInteger(next)) {
-      commitFooterAdvance(next);
+      state.route.footerCommitScheduled = true;
+      requestAnimationFrame(() => {
+        commitFooterAdvance(next);
+      });
     }
   }
 }
@@ -602,6 +608,7 @@ function startProjectRoute(index, { instant = false } = {}) {
   state.route.scrollTarget = 0;
   state.route.footerExpand = 0;
   state.route.footerAdvanceArmed = false;
+  state.route.footerCommitScheduled = false;
   state.route.footerCommitting = false;
   state.route.swap.active = false;
   routeNextExpand.textContent = "0";
@@ -758,6 +765,7 @@ const state = {
     footerStep: 0,
     footerExpand: 0,
     footerAdvanceArmed: false,
+    footerCommitScheduled: false,
     footerCommitting: false,
     exitScrollFrom: 0,
     swap: {
@@ -1640,6 +1648,7 @@ function drawProjectRouteHero(now, dt) {
       state.route.scrollTarget = 0;
       state.route.footerExpand = 0;
       state.route.footerAdvanceArmed = false;
+      state.route.footerCommitScheduled = false;
       routeNextExpand.textContent = "0";
       document.body.classList.remove("is-footer-expanding");
       document.body.style.removeProperty("--footer-expand");
@@ -1683,6 +1692,7 @@ function drawProjectRouteHero(now, dt) {
         state.route.exitScrollFrom = 0;
         state.route.footerExpand = 0;
         state.route.footerAdvanceArmed = false;
+        state.route.footerCommitScheduled = false;
         routeNextExpand.textContent = "0";
         document.body.classList.remove("is-footer-expanding");
         document.body.style.removeProperty("--footer-expand");
@@ -1708,7 +1718,10 @@ function drawProjectRouteHero(now, dt) {
   const effectiveScroll =
     state.route.transitioning && state.route.direction < 0
       ? lerp(state.route.exitScrollFrom, 0, exitProgress)
-      : state.route.scrollCurrent;
+      : Math.min(
+          state.route.scrollCurrent,
+          state.route.scrollStepMax
+        );
   const scrollP = clamp(
     effectiveScroll / Math.max(innerHeight, 1),
     0,
