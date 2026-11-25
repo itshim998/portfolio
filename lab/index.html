@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#090908" />
-  <title>Camille Lab — Checkpoint 3C Loader Final</title>
+  <title>Camille Lab — Checkpoint 4A Persistent Route Handoff</title>
   <meta name="robots" content="noindex,nofollow" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,9 +20,9 @@
   </div>
 
   <header class="chrome">
-    <a class="brand" href="./" aria-label="Sounak Poddar, work">Sounak Poddar</a>
+    <a class="brand" id="home-brand" href="#/" aria-label="Sounak Poddar, work">Sounak Poddar</a>
     <nav class="top-nav" aria-label="Primary">
-      <a href="./" aria-current="page">Work</a>
+      <a id="home-link" href="#/" aria-current="page">Work</a>
       <a href="#about-placeholder">About</a>
     </nav>
   </header>
@@ -44,8 +44,21 @@
       <span aria-hidden="true"></span>
     </button>
 
-    <p class="gesture-hint">Scroll or drag to view all work</p>
+    <p class="gesture-hint"><span class="gesture-hint__focus">Click to enter project · scroll or drag to view all work</span><span class="gesture-hint__strip">Drag or scroll</span></p>
   </main>
+
+  <section class="project-route" id="project-route" aria-hidden="true">
+    <button class="project-route__back" id="project-back" type="button" aria-label="Back to work">Back</button>
+
+    <div class="project-route__meta">
+      <span class="project-route__index" id="route-project-index">01</span>
+      <h2 class="project-route__title" id="route-project-title">StudentOS</h2>
+      <p class="project-route__summary" id="route-project-summary">All-in-one academic workspace.</p>
+      <a class="project-route__visit" id="route-project-link" href="https://studentos.sentiqlabs.com/" target="_blank" rel="noreferrer">Visit live project ↗</a>
+    </div>
+
+    <p class="project-route__status">Persistent WebGL project hero · route proof</p>
+  </section>
 
   <div id="about-placeholder" hidden></div>
 
