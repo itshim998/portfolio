@@ -296,6 +296,7 @@ function updateProjectRouteMeta(index) {
 }
 
 function startProjectRoute(index, { instant = false } = {}) {
+  document.body.classList.remove("is-project-exiting");
   const next = clamp(index, 0, PROJECTS.length - 1);
   setActiveIndex(next, true);
   updateProjectRouteMeta(next);
@@ -329,6 +330,7 @@ function startHomeRoute({ instant = false } = {}) {
     return;
   }
 
+  document.body.classList.add("is-project-exiting");
   state.route.direction = -1;
   state.route.startedAt = performance.now();
   state.route.duration = instant || reducedMotion.matches ? 1 : 900;
@@ -339,6 +341,7 @@ function startHomeRoute({ instant = false } = {}) {
     state.route.index = null;
     state.route.progress = 0;
     document.body.dataset.route = "home";
+    document.body.classList.remove("is-project-exiting");
     projectRoute.setAttribute("aria-hidden", "true");
   }
 }
@@ -1216,6 +1219,7 @@ function drawProjectRouteHero(now) {
         state.route.index = null;
         state.route.progress = 0;
         document.body.dataset.route = "home";
+        document.body.classList.remove("is-project-exiting");
         projectRoute.setAttribute("aria-hidden", "true");
       } else {
         state.route.progress = 1;
@@ -1226,7 +1230,8 @@ function drawProjectRouteHero(now) {
   const p = state.route.progress;
   const rect = focusRect();
   const dpr = canvas.width / innerWidth;
-  const routeUvY = lerp(0, -0.028, p);
+  const routeUvY = lerp(0, -0.014, p);
+  const routeTextureScale = lerp(1, 1.04, p);
   const routeDim = lerp(0.8, 0.9, p);
 
   gl.bindTexture(gl.TEXTURE_2D, plane.texture);
@@ -1241,7 +1246,7 @@ function drawProjectRouteHero(now) {
   gl.uniform2f(uniforms.planeSize, rect.w * dpr, rect.h * dpr);
   gl.uniform2f(uniforms.imageSize, plane.imageWidth, plane.imageHeight);
   gl.uniform2f(uniforms.uvOffset, 0, routeUvY);
-  gl.uniform1f(uniforms.textureScale, 1);
+  gl.uniform1f(uniforms.textureScale, routeTextureScale);
   gl.uniform1f(uniforms.dim, routeDim);
   gl.uniform1f(uniforms.opacity, 1);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -1467,6 +1472,20 @@ addEventListener("popstate", () => {
 
 addEventListener("hashchange", () => {
   const projectIndex = routeIndexFromLocation();
+
+  const alreadyTargeting =
+    state.route.transitioning &&
+    (
+      (projectIndex === null && state.route.direction < 0) ||
+      (
+        projectIndex !== null &&
+        state.route.direction > 0 &&
+        state.route.index === projectIndex
+      )
+    );
+
+  if (alreadyTargeting) return;
+
   const routeMatches =
     projectIndex !== null
       ? state.route.type === "project" && state.route.index === projectIndex
