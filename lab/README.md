@@ -2,84 +2,107 @@
 
 This directory is the isolated implementation laboratory for the Camille-style portfolio rebuild. The production portfolio on `main` remains untouched.
 
-## Frozen homepage interaction foundation
+## Frozen foundations
 
-Checkpoint 2D remains the approved homepage interaction base.
+### Homepage interaction engine — Checkpoint 2D
 
-Validated behavior includes:
+The homepage motion engine is treated as frozen:
 
 - upright WebGL textures;
-- wide landscape OUT-state geometry;
+- landscape OUT-state geometry;
 - centered fullscreen title/counter;
 - fullscreen previous/next crosses;
 - central OUT-state cross;
-- continuous 1:1 drag;
+- 1:1 drag;
 - velocity-based inertia;
 - long exponential coast;
 - low-energy centering;
-- elastic strip boundaries;
-- immediate grab/arrest during inertia;
-- simultaneous off-center recenter + expansion;
-- stable project state under stress;
-- final crop-parallax clamp of `±0.045`.
+- elastic boundaries;
+- immediate grab/arrest;
+- off-center recenter + expansion;
+- stable state under stress;
+- crop-parallax clamp of `±0.045`.
 
-## Checkpoint 3A — loader architecture
+### Loader — Checkpoints 3A → 3C
 
-3A established the 25-texture WebGL loader pipeline, real GPU upload progress, a persistent central StudentOS plane, and a continuous handoff into the frozen homepage engine.
+The desktop loader is also treated as frozen:
 
-## Checkpoint 3B — loader choreography calibration
-
-3B replaced the generic grid-collapse approximation with choreography translated from the recovered Camille loader mechanics:
-
-- 5000ms main intro;
-- viewport-derived 25-plane geometry;
-- alternating vertical columns;
-- 0–65% convergence via `cubic-bezier(0.8, 0, 0.1, 1)`;
-- 40–100% expansion via `cubic-bezier(0.72, 0, 0.11, 1)`;
+- real 25-texture GPU loading pipeline;
+- five alternating vertical columns;
+- recovered viewport-derived loader geometry;
+- overlapping 0–65% convergence and 40–100% expansion phases;
 - center-plane 1.5× texture zoom relaxation;
-- spatial surrounding-plane exit;
-- persistent center-plane → homepage handoff;
-- loader-linked homepage thumbnail rail.
+- continuous center-plane → fullscreen handoff;
+- delayed/staggered homepage thumbnail rail;
+- tightened final expansion tail;
+- compact preloader percentage that clears before visible column entry.
 
-A browser audit found the architecture and main choreography correct, with only three timing/presentation issues remaining.
+## Checkpoint 4A — persistent route + same-plane project hero proof
 
-## Checkpoint 3C — final loader timing polish
+4A introduces the first client-side route transition without building the full project page yet.
 
-3C addresses only those audit blockers and deliberately leaves the validated 3B structure unchanged.
+### Lab routing model
 
-### Thumbnail rail timing
+- Project routes use hash URLs so they can reload safely on raw.githack without server rewrite support:
+  - `#/project/studentos`
+  - `#/project/sentiq-chat`
+  - `#/project/fieldline`
+- Route state itself is slug-based and is not coupled to hash parsing, so production clean URLs can replace the lab adapter later.
+- History uses `pushState` and responds to browser back/forward.
+- A direct project hash on reload is remembered while the loader runs and is applied after the loader completes.
 
-- Intro rail start moved from 3200ms to 3700ms.
-- Per-project stagger remains 50ms.
-- Rise duration reduced from 1500ms to 1200ms.
-- With three current projects, the final thumbnail begins at 3800ms and reaches its resting slot at the 5000ms loader handoff.
-- This keeps the rail below or barely breaking the viewport edge while the hero still has visible black margins.
+### Same WebGL object
 
-### Final expansion tail
+- The project hero uses the existing `planes[activeIndex]` object.
+- No second WebGL context is created.
+- No route-specific duplicate texture is loaded.
+- No canvas is replaced.
+- The active homepage texture therefore survives the route mutation and becomes the project hero.
 
-- The recovered `0.40 → 1.0` expansion window and cubic-bezier remain unchanged.
-- Only the final portion of the already-eased result is remapped.
-- Values up to 0.84 are untouched.
-- The remaining 0.84 → 1.0 range uses an additional cubic ease-out, closing the last black border decisively without altering the validated middle of the intro.
-- Center-plane crop/zoom continuity remains unchanged.
+### Home → project transition
 
-### Preloader presentation
+- Clicking the fullscreen hero with no drag opens the active project.
+- Pressing Enter in fullscreen does the same.
+- Project route transition duration is 1290ms.
+- Easing is `cubic-bezier(0.64, 0, 0.12, 1)`, matching the recovered Camille work-transition family.
+- The plane remains fullscreen while a subtle depth/crop treatment establishes the project state:
+  - vertical UV shift: `0 → -0.014`;
+  - texture scale: `1 → 1.04`;
+  - image brightness multiplier: `0.8 → 0.9`.
+- The small texture zoom guarantees the UV shift remains inside available crop margin and does not produce CLAMP_TO_EDGE smearing.
+- Homepage chrome fades away while project metadata/back controls enter.
 
-- The visible `TEXTURES` eyebrow is suppressed.
-- The percentage becomes a compact ~12–14px readout rather than a large display number.
-- Loader overlay fade is shortened from 700ms to 240ms.
-- The WebGL intro begins only after the preloader fade has cleared, preventing loading typography from overlapping the first visible column entry.
+### Project → home transition
 
-## Freeze boundary after 3C
+- Project Back uses browser history when the route was created inside the lab.
+- Direct deep links fall back to replacing the hash with `#/`.
+- Escape also returns home.
+- Route crop/zoom reverses to the exact homepage hero state before the renderer resumes the homepage branch.
+- Route UI begins fading immediately on exit.
+- Popstate/hashchange handling is guarded against duplicate transition restarts.
 
-Unless a new browser check finds a reproducible regression in these three corrections, the loader architecture and homepage motion engine should now be treated as frozen.
+### Current project route shell
 
-The next major milestone is persistent client-side routing and same-plane homepage → project-hero transition work.
+The first project screen intentionally contains only enough UI to prove persistent routing:
 
-Still deferred:
+- back control;
+- project number;
+- project title;
+- one-line summary;
+- external live-project link;
+- persistent fullscreen WebGL hero.
 
-- mobile-specific loader calibration;
-- custom cursor;
-- real project detail pages;
-- About page migration;
-- final typography and visual polish.
+There is no project scrolling/content system yet.
+
+## Next milestone — Checkpoint 4B
+
+Build the actual project-page motion/content shell on top of the proven persistent route:
+
+- project hero scroll progression;
+- hero texture parallax;
+- content sections below the fold;
+- persistent back navigation;
+- secondary project media;
+- route-to-route project transitions.
+
+The 4A acceptance criterion is routing continuity, not final project-page design.
