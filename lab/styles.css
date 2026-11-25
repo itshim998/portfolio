@@ -812,3 +812,32 @@ body[data-route="project"] .project-route__scroll {
 body[data-route="project"] .project-route__progress span {
   will-change: transform;
 }
+
+
+/* Checkpoint 4D — state/continuity cleanup */
+body.is-project-exiting[data-route="project"] .project-route {
+  opacity: 1;
+  visibility: visible;
+  transition: none;
+}
+
+body.is-project-exiting .project-route__back,
+body.is-project-exiting .project-route__meta,
+body.is-project-exiting .project-route__status,
+body.is-project-exiting .project-route__progress {
+  opacity: 0 !important;
+  pointer-events: none;
+  transition: opacity 140ms ease !important;
+}
+
+.project-route__status {
+  transition: opacity 140ms ease;
+}
+
+.project-route__scroll {
+  transition: opacity 180ms linear;
+}
+
+.project-story__next {
+  scroll-margin-top: 60px;
+}
