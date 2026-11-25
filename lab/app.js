@@ -2,6 +2,7 @@ const PROJECTS = [
   {
     slug: "studentos",
     title: "StudentOS",
+    summary: "All-in-one academic workspace.",
     href: "https://studentos.sentiqlabs.com/",
     image: "https://i.ibb.co/jkB9vQLr/Screenshot-2026-07-14-182748.png",
     proxy: "https://wsrv.nl/?url=https%3A%2F%2Fi.ibb.co%2FjkB9vQLr%2FScreenshot-2026-07-14-182748.png"
@@ -9,6 +10,7 @@ const PROJECTS = [
   {
     slug: "sentiq-chat",
     title: "SentIQ Chat",
+    summary: "AI orchestration interface for focused, multi-model work.",
     href: "https://sentiqchat.sentiqlabs.com/",
     image: "https://i.ibb.co/nsRD4K6z/Screenshot-2026-03-15-113205.png",
     proxy: "https://wsrv.nl/?url=https%3A%2F%2Fi.ibb.co%2FnsRD4K6z%2FScreenshot-2026-03-15-113205.png"
@@ -16,6 +18,7 @@ const PROJECTS = [
   {
     slug: "fieldline",
     title: "FieldLine",
+    summary: "AI support designed for work in the field.",
     href: "https://fieldline.sentiqlabs.com/",
     image: "https://i.ibb.co/CKyJjqjk/Screenshot-2026-10-11-185504.png",
     proxy: "https://wsrv.nl/?url=https%3A%2F%2Fi.ibb.co%2FCKyJjqjk%2FScreenshot-2026-10-11-185504.png"
@@ -62,10 +65,19 @@ const projectCounter = document.getElementById("project-counter");
 const previousProject = document.getElementById("previous-project");
 const nextProject = document.getElementById("next-project");
 const openActiveProject = document.getElementById("open-active-project");
+const projectRoute = document.getElementById("project-route");
+const projectBack = document.getElementById("project-back");
+const routeProjectIndex = document.getElementById("route-project-index");
+const routeProjectTitle = document.getElementById("route-project-title");
+const routeProjectSummary = document.getElementById("route-project-summary");
+const routeProjectLink = document.getElementById("route-project-link");
+const homeBrand = document.getElementById("home-brand");
+const homeLink = document.getElementById("home-link");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
 document.body.dataset.mode = "focus";
 document.body.dataset.intro = "true";
+document.body.dataset.route = "home";
 
 const gl = canvas.getContext("webgl", {
   alpha: false,
@@ -262,6 +274,107 @@ function cubicBezier(x1, y1, x2, y2) {
 
 const loaderEaseIn = cubicBezier(0.8, 0, 0.1, 1);
 const loaderEaseOut = cubicBezier(0.72, 0, 0.11, 1);
+const projectRouteEase = cubicBezier(0.64, 0, 0.12, 1);
+
+function routeIndexFromLocation() {
+  const match = location.hash.match(/^#\/project\/([^/?#]+)/);
+  if (!match) return null;
+  const slug = decodeURIComponent(match[1]);
+  const index = PROJECTS.findIndex(project => project.slug === slug);
+  return index >= 0 ? index : null;
+}
+
+function updateProjectRouteMeta(index) {
+  const project = PROJECTS[index];
+  if (!project) return;
+
+  routeProjectIndex.textContent = String(index + 1).padStart(2, "0");
+  routeProjectTitle.textContent = project.title;
+  routeProjectSummary.textContent = project.summary;
+  routeProjectLink.href = project.href;
+  routeProjectLink.setAttribute("aria-label", `Visit ${project.title} live project`);
+}
+
+function startProjectRoute(index, { instant = false } = {}) {
+  const next = clamp(index, 0, PROJECTS.length - 1);
+  setActiveIndex(next, true);
+  updateProjectRouteMeta(next);
+
+  state.mode = "focus";
+  state.transition = 0;
+  state.transitionFrom = 0;
+  state.transitionTo = 0;
+  state.trackCurrent = centeredTrackFor(next);
+  state.trackVelocity = 0;
+  state.settleTarget = null;
+  state.recenter.active = false;
+
+  state.route.type = "project";
+  state.route.index = next;
+  state.route.direction = 1;
+  state.route.startedAt = performance.now();
+  state.route.duration = instant || reducedMotion.matches ? 1 : 1290;
+  state.route.progress = instant || reducedMotion.matches ? 1 : 0;
+  state.route.transitioning = !instant && !reducedMotion.matches;
+
+  document.body.dataset.mode = "focus";
+  document.body.dataset.route = "project";
+  projectRoute.setAttribute("aria-hidden", "false");
+}
+
+function startHomeRoute({ instant = false } = {}) {
+  if (state.route.type !== "project") {
+    document.body.dataset.route = "home";
+    projectRoute.setAttribute("aria-hidden", "true");
+    return;
+  }
+
+  state.route.direction = -1;
+  state.route.startedAt = performance.now();
+  state.route.duration = instant || reducedMotion.matches ? 1 : 900;
+  state.route.transitioning = !instant && !reducedMotion.matches;
+
+  if (instant || reducedMotion.matches) {
+    state.route.type = "home";
+    state.route.index = null;
+    state.route.progress = 0;
+    document.body.dataset.route = "home";
+    projectRoute.setAttribute("aria-hidden", "true");
+  }
+}
+
+function navigateToProject(index, { replace = false } = {}) {
+  if (state.intro.active || state.route.type === "project") return;
+  const project = PROJECTS[index];
+  if (!project) return;
+
+  const url = `#/project/${encodeURIComponent(project.slug)}`;
+  const method = replace ? "replaceState" : "pushState";
+  history[method]({ labRoute: "project", slug: project.slug }, "", url);
+  startProjectRoute(index);
+}
+
+function navigateHome({ replace = false, instant = false } = {}) {
+  const method = replace ? "replaceState" : "pushState";
+  history[method]({ labRoute: "home" }, "", "#/");
+  startHomeRoute({ instant });
+}
+
+function syncRouteFromLocation({ instant = false } = {}) {
+  const projectIndex = routeIndexFromLocation();
+
+  if (projectIndex !== null) {
+    if (state.intro.active) {
+      state.route.pendingInitialIndex = projectIndex;
+      return;
+    }
+    startProjectRoute(projectIndex, { instant });
+    return;
+  }
+
+  state.route.pendingInitialIndex = null;
+  startHomeRoute({ instant });
+}
 
 const state = {
   mode: "focus",
@@ -308,8 +421,20 @@ const state = {
     startedAt: null,
     duration: 5000,
     complete: false
+  },
+  route: {
+    type: "home",
+    index: null,
+    transitioning: false,
+    direction: 1,
+    startedAt: 0,
+    duration: 1290,
+    progress: 0,
+    pendingInitialIndex: null
   }
 };
+
+state.route.pendingInitialIndex = routeIndexFromLocation();
 
 const planes = PROJECTS.map((project, index) => ({
   project,
@@ -570,9 +695,15 @@ addEventListener("keydown", event => {
     } else if (event.key === "ArrowRight") {
       event.preventDefault();
       cycleFocus(1);
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      if (state.route.type === "home") navigateToProject(state.activeIndex);
     } else if (event.key === "ArrowDown" || event.key === " ") {
       event.preventDefault();
-      setMode("strip");
+      if (state.route.type === "home") setMode("strip");
+    } else if (event.key === "Escape" && state.route.type === "project") {
+      event.preventDefault();
+      navigateHome();
     }
     return;
   }
@@ -596,6 +727,11 @@ addEventListener("keydown", event => {
 });
 
 addEventListener("wheel", event => {
+  if (state.route.type === "project") {
+    event.preventDefault();
+    return;
+  }
+
   const dominant =
     Math.abs(event.deltaX) > Math.abs(event.deltaY)
       ? event.deltaX
@@ -621,6 +757,7 @@ addEventListener("wheel", event => {
 }, { passive: false });
 
 canvas.addEventListener("pointerdown", event => {
+  if (state.route.type === "project") return;
   if (event.pointerType === "mouse" && event.button !== 0) return;
 
   state.pointerDown = true;
@@ -721,6 +858,11 @@ function finishPointer(event) {
   try {
     canvas.releasePointerCapture(event.pointerId);
   } catch (_) {}
+
+  if (state.mode === "focus" && !state.pointerMoved && state.route.type === "home") {
+    navigateToProject(state.activeIndex);
+    return;
+  }
 
   if (state.mode !== "strip") return;
 
@@ -1037,9 +1179,72 @@ function renderIntro(now) {
     state.transitionTo = 0;
     state.activeIndex = 0;
     updateProjectTitle(0, true);
+
+    if (state.route.pendingInitialIndex !== null) {
+      const pendingIndex = state.route.pendingInitialIndex;
+      state.route.pendingInitialIndex = null;
+      startProjectRoute(pendingIndex, { instant: true });
+    }
   }
 
   return true;
+}
+
+function drawProjectRouteHero(now) {
+  const index = state.route.index ?? state.activeIndex;
+  const plane = planes[index];
+  if (!plane) return;
+
+  if (state.route.transitioning) {
+    const elapsed = clamp(
+      (now - state.route.startedAt) / state.route.duration,
+      0,
+      1
+    );
+    const eased = projectRouteEase(elapsed);
+
+    state.route.progress =
+      state.route.direction > 0
+        ? eased
+        : 1 - eased;
+
+    if (elapsed >= 1) {
+      state.route.transitioning = false;
+
+      if (state.route.direction < 0) {
+        state.route.type = "home";
+        state.route.index = null;
+        state.route.progress = 0;
+        document.body.dataset.route = "home";
+        projectRoute.setAttribute("aria-hidden", "true");
+      } else {
+        state.route.progress = 1;
+      }
+    }
+  }
+
+  const p = state.route.progress;
+  const rect = focusRect();
+  const dpr = canvas.width / innerWidth;
+  const routeUvY = lerp(0, -0.028, p);
+  const routeDim = lerp(0.8, 0.9, p);
+
+  gl.bindTexture(gl.TEXTURE_2D, plane.texture);
+  gl.uniform2f(uniforms.viewport, canvas.width, canvas.height);
+  gl.uniform4f(
+    uniforms.rect,
+    rect.x * dpr,
+    rect.y * dpr,
+    rect.w * dpr,
+    rect.h * dpr
+  );
+  gl.uniform2f(uniforms.planeSize, rect.w * dpr, rect.h * dpr);
+  gl.uniform2f(uniforms.imageSize, plane.imageWidth, plane.imageHeight);
+  gl.uniform2f(uniforms.uvOffset, 0, routeUvY);
+  gl.uniform1f(uniforms.textureScale, 1);
+  gl.uniform1f(uniforms.dim, routeDim);
+  gl.uniform1f(uniforms.opacity, 1);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
 
 function focusCycleVisual(index, now) {
@@ -1085,6 +1290,14 @@ function render(now) {
   state.lastTime = now;
 
   if (renderIntro(now)) {
+    requestAnimationFrame(render);
+    return;
+  }
+
+  if (state.route.type === "project" || state.route.transitioning) {
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.useProgram(program);
+    drawProjectRouteHero(now);
     requestAnimationFrame(render);
     return;
   }
@@ -1231,6 +1444,36 @@ function render(now) {
 }
 
 requestAnimationFrame(render);
+
+projectBack.addEventListener("click", () => {
+  if (history.state && history.state.labRoute === "project") {
+    history.back();
+  } else {
+    navigateHome({ replace: true });
+  }
+});
+
+for (const link of [homeBrand, homeLink]) {
+  link.addEventListener("click", event => {
+    event.preventDefault();
+    if (state.route.type === "home" && !state.route.transitioning) return;
+    navigateHome();
+  });
+}
+
+addEventListener("popstate", () => {
+  syncRouteFromLocation();
+});
+
+addEventListener("hashchange", () => {
+  const projectIndex = routeIndexFromLocation();
+  const routeMatches =
+    projectIndex !== null
+      ? state.route.type === "project" && state.route.index === projectIndex
+      : state.route.type === "home";
+
+  if (!routeMatches) syncRouteFromLocation();
+});
 
 function proxyFor(source) {
   return `https://wsrv.nl/?url=${encodeURIComponent(source)}`;
