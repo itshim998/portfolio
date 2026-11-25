@@ -727,9 +727,20 @@ function updateAboutScrollMax({ preserveProgress = true } = {}) {
     );
 
     if (aboutLeftPreview) {
-      state.about.previewMax = Math.max(
+      // 5B audit validated ~432px travel at 900px viewport height.
+      // Keep that approved range independent from the text-track height.
+      const calibratedPreviewTravel = innerHeight * 0.48;
+      const previewBottomLimit = Math.max(
         0,
-        innerHeight - contentTop - aboutLeftPreview.offsetHeight
+        innerHeight -
+          contentTop -
+          aboutLeftPreview.offsetHeight -
+          48
+      );
+
+      state.about.previewMax = Math.min(
+        calibratedPreviewTravel,
+        previewBottomLimit
       );
 
       aboutLeftPreview.style.transform =
