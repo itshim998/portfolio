@@ -786,3 +786,31 @@ body.is-footer-expanding .project-story__next button {
     width: min(300px, 68vw);
   }
 }
+
+
+/* Performance isolation: project DOM must not compete with the WebGL intro/home. */
+body[data-intro="true"] .project-route,
+body[data-route="home"] .project-route {
+  display: none;
+}
+
+body[data-route="project"] .project-route {
+  display: block;
+  contain: layout paint style;
+}
+
+.project-route__scroll {
+  will-change: auto;
+}
+
+body[data-route="project"] .project-route__scroll {
+  will-change: transform;
+}
+
+.project-route__progress span {
+  will-change: auto;
+}
+
+body[data-route="project"] .project-route__progress span {
+  will-change: transform;
+}
