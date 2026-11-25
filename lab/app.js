@@ -124,6 +124,8 @@ const routeNextProject = document.getElementById("route-next-project");
 const routeNextTitle = document.getElementById("route-next-title");
 const routeNextExpand = document.getElementById("route-next-expand");
 const routeNextPreviewAnchor = document.getElementById("route-next-preview-anchor");
+const projectNextFooter = document.getElementById("project-next-footer");
+const projectRouteStatus = document.getElementById("project-route-status");
 const projectRouteProgress = document.getElementById("project-route-progress");
 const homeBrand = document.getElementById("home-brand");
 const homeLink = document.getElementById("home-link");
@@ -338,9 +340,19 @@ function routeIndexFromLocation() {
   return index >= 0 ? index : null;
 }
 
+function resetProjectRouteChrome() {
+  projectRouteMeta.style.removeProperty("opacity");
+  projectRouteMeta.style.removeProperty("transform");
+  projectScrollContent.style.removeProperty("opacity");
+  projectRouteStatus.style.removeProperty("opacity");
+  projectRouteProgress.style.removeProperty("opacity");
+}
+
 function updateProjectRouteMeta(index) {
   const project = PROJECTS[index];
   if (!project) return;
+
+  resetProjectRouteChrome();
 
   routeProjectIndex.textContent = String(index + 1).padStart(2, "0");
   routeProjectTitle.textContent = project.title;
@@ -393,9 +405,15 @@ function updateProjectRouteMeta(index) {
 function updateProjectScrollMax() {
   if (!projectScrollContent) return;
 
+  const footerTopInset = innerWidth <= 780 ? 42 : 60;
+  const footerTop =
+    projectNextFooter
+      ? projectNextFooter.offsetTop
+      : projectScrollContent.scrollHeight - innerHeight;
+
   state.route.scrollStepMax = Math.max(
     0,
-    projectScrollContent.scrollHeight
+    innerHeight + footerTop - footerTopInset
   );
   state.route.footerStep = innerHeight * 1.5;
   state.route.scrollMax =
@@ -487,6 +505,7 @@ function commitFooterAdvance(index) {
     requestAnimationFrame(() => {
       state.route.footerCommitting = false;
       document.body.classList.remove("is-project-swapping");
+      resetProjectRouteChrome();
       updateProjectScrollMax();
     });
   });
@@ -530,15 +549,19 @@ function updateProjectScrollVisuals(dt) {
 
   if (!state.route.transitioning) {
     const metaFade =
-      1 - clamp(stepScroll / Math.max(innerHeight * 0.48, 1), 0, 1);
+      1 - clamp(stepScroll / 180, 0, 1);
+    const hintFade =
+      1 - clamp(stepScroll / 72, 0, 1);
 
     if (stepScroll > 0.5) {
       projectRouteMeta.style.opacity = String(metaFade);
       projectRouteMeta.style.transform =
         `translateY(${lerp(0, -28, 1 - metaFade)}px)`;
+      projectRouteStatus.style.opacity = String(hintFade);
     } else {
       projectRouteMeta.style.removeProperty("opacity");
       projectRouteMeta.style.removeProperty("transform");
+      projectRouteStatus.style.removeProperty("opacity");
     }
   }
 
@@ -636,6 +659,8 @@ function startHomeRoute({ instant = false } = {}) {
     return;
   }
 
+  resetProjectRouteChrome();
+  projectScrollContent.style.opacity = "1";
   document.body.classList.add("is-project-exiting");
   state.route.exitScrollFrom = Math.min(
     state.route.scrollCurrent,
@@ -658,19 +683,24 @@ function startHomeRoute({ instant = false } = {}) {
 }
 
 function navigateToProject(index, { replace = false } = {}) {
-  if (state.intro.active) return;
+  if (
+    state.intro.active ||
+    state.route.type !== "home" ||
+    state.route.transitioning ||
+    state.route.swap.active ||
+    state.route.footerCommitting ||
+    state.focusCycle.active ||
+    state.recenter.active ||
+    state.transition > 0.001
+  ) return;
+
   const project = PROJECTS[index];
   if (!project) return;
 
   const url = `#/project/${encodeURIComponent(project.slug)}`;
   const method = replace ? "replaceState" : "pushState";
   history[method]({ labRoute: "project", slug: project.slug }, "", url);
-
-  if (state.route.type === "project") {
-    startProjectSwap(index);
-  } else {
-    startProjectRoute(index);
-  }
+  startProjectRoute(index);
 }
 
 function navigateHome({ replace = false, instant = false } = {}) {
@@ -1039,7 +1069,9 @@ addEventListener("keydown", event => {
   if (state.route.type === "project") {
     if (event.key === "Escape") {
       event.preventDefault();
-      navigateHome();
+      if (!state.route.transitioning && !state.route.swap.active) {
+        navigateHome();
+      }
     } else if (event.key === "ArrowDown" || event.key === "PageDown" || event.key === " ") {
       event.preventDefault();
       setProjectScrollTarget(state.route.scrollTarget + innerHeight * 0.72);
@@ -1242,8 +1274,19 @@ function finishPointer(event) {
     canvas.releasePointerCapture(event.pointerId);
   } catch (_) {}
 
-  if (state.mode === "focus" && !state.pointerMoved && state.route.type === "home") {
-    navigateToProject(state.activeIndex);
+  if (
+    state.mode === "focus" &&
+    !state.pointerMoved &&
+    state.route.type === "home" &&
+    !state.focusCycle.active &&
+    !state.recenter.active &&
+    state.transition <= 0.001
+  ) {
+    const hit = hitTestProject(event.clientX, event.clientY);
+
+    if (hit !== null && hit === state.activeIndex) {
+      navigateToProject(hit);
+    }
     return;
   }
 
@@ -1710,6 +1753,7 @@ function drawProjectRouteHero(now, dt) {
         document.body.dataset.route = "home";
         document.body.classList.remove("is-project-exiting");
         projectRoute.setAttribute("aria-hidden", "true");
+        resetProjectRouteChrome();
         projectScrollContent.style.transform = "translate3d(0, 0, 0)";
         projectRouteProgress.style.transform = "scaleY(0)";
       } else {
@@ -1738,6 +1782,13 @@ function drawProjectRouteHero(now, dt) {
     0,
     1
   );
+
+  if (state.route.transitioning && state.route.direction < 0) {
+    const storyExitFade =
+      1 - clamp((exitProgress - 0.42) / 0.30, 0, 1);
+    projectScrollContent.style.opacity = String(storyExitFade);
+  }
+
   const heroY = -effectiveScroll;
   const routeUvY = lerp(0, -0.014, routeP) + lerp(0, -0.022, scrollP);
   const routeTextureScale = lerp(1, 1.04, routeP) + lerp(0, 0.035, scrollP);
@@ -2029,11 +2080,14 @@ routeNextProject.addEventListener("click", () => {
 });
 
 projectBack.addEventListener("click", () => {
-  if (history.state && history.state.labRoute === "project") {
-    history.back();
-  } else {
-    navigateHome({ replace: true });
-  }
+  if (
+    state.route.type !== "project" ||
+    state.route.transitioning ||
+    state.route.swap.active ||
+    state.route.footerCommitting
+  ) return;
+
+  navigateHome();
 });
 
 for (const link of [homeBrand, homeLink]) {
