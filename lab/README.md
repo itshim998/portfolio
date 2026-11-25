@@ -13,118 +13,134 @@ The following systems are considered frozen unless a reproducible regression app
 
 ## Checkpoint 5A — About route foundation
 
-5A starts the next major section of the rebuild: the About page.
+5A introduced:
 
-The reference About implementation is DOM-led rather than another project WebGL scene. Its defining behavior is a split page with:
+- `#/about` route/history/deep-link handling;
+- one persistent WebGL context with a DOM-led About page;
+- independent About virtual scroll state;
+- left/right split architecture;
+- remapped left-column motion and counter-moving preview;
+- migrated Capabilities, Experience, Beyond AI/ML and Contact content;
+- loader isolation for the About DOM.
 
-- a left column / preview area;
-- a right vertical content stream;
-- remapped left-column motion based on total page scroll;
-- an independently counter-moving preview element;
-- staged section reveals later in the scroll.
+## Checkpoint 5B — About choreography calibration
 
-5A implements the first three structural pieces and deliberately defers final reveal choreography.
+5B calibrates the desktop About page from the recovered reference implementation without modifying the frozen homepage/project motion systems.
 
-### Route model
+### Recovered desktop geometry
 
-The lab now supports:
+The reference desktop CSS uses:
 
-- `#/` — Work / Home;
-- `#/project/<slug>` — project routes;
-- `#/about` — About.
+- right stream start: `calc(50% - 64px)`;
+- right stream width: `50.1042vw`;
+- right section width: `90%`;
+- standard section top spacing: `14.5833vw`;
+- first section top spacing: `17.7083vw`.
 
-About uses the same History API / hash-adapter model as the project routes.
+The left side is not a conventional 38/62 panel.
 
-A direct `#/about` reload is remembered during the loader and activated after the accepted loader finishes.
+Its reference geometry is:
 
-Primary navigation updates `aria-current` between Work and About.
+- small text wrapper x: `calc(40px + 3.2813vw)`;
+- text wrapper width: `9.6354vw`;
+- text wrapper top padding: `15.3446vw`;
+- preview x: `40px`;
+- preview y: `15.3446vw`;
+- preview width: `15vw`;
+- preview height: `19.2308vh`;
+- preview border: ~1.34px at low opacity.
 
-### Persistent canvas boundary
+At 1440×900 this places the preview at roughly 216×173px rather than the portrait approximation used in 5A.
 
-About does not create another WebGL renderer.
+### Independent preview motion
 
-The existing canvas/context remains mounted and simply clears to the site background while About is active.
+The preview has been moved out of the moving left text wrapper.
 
-This keeps the renderer persistent while respecting the reference site's DOM-led About architecture.
+This matches the recovered structure:
 
-### Independent About virtual scroll
+- left wrapper translates upward according to remapped About progress;
+- preview is positioned independently;
+- preview translates downward across its own available vertical range.
 
-About owns its own state:
+The resize calculation now also follows the source behavior:
 
-- `state.about.scrollTarget`;
-- `state.about.scrollCurrent`;
-- `state.about.scrollMax`;
-- `state.about.leftMax`;
-- `state.about.previewMax`.
+1. temporarily reset wrapper/preview transforms;
+2. measure content height / visible area;
+3. calculate maximum wrapper travel;
+4. calculate maximum preview counter-travel;
+5. restore the current normalized scroll position.
 
-Wheel, keyboard and touch input are routed to this state only while the About route is active.
+This prevents resize-at-scroll-position geometry drift.
 
-The damping factor is independent from project scroll and therefore cannot modify the frozen project physics.
+### Left-side entrance choreography
 
-### Split-scroll architecture
+Recovered reference timing:
 
-Desktop layout uses:
+- left sections: 1500ms;
+- first section extra delay: 200ms;
+- following sections: ~50ms stagger;
+- initial Y offset: 80px;
+- target opacity: ~0.85;
+- preview opacity begins ~500ms after route-show timing.
 
-- 38vw fixed left window;
-- 62vw right content stream;
-- right column translated by About virtual scroll;
-- left track remapped from 0 → its own maximum travel using normalized About scroll progress;
-- left preview counter-translated downward across its own available vertical range.
+The lab reproduces that sequence for the left intro/index and preview.
 
-This reproduces the architectural idea recovered from Camille's About `Preview.loop()`: the left wrapper and preview do not simply scroll 1:1 with the right content.
+### Right-side reveal choreography
 
-### Migrated portfolio content
+The reference About scroll FX uses:
 
-5A moves the existing portfolio's main non-project material into the About route:
+- reveal duration: 1500ms;
+- initial vertical offset: 110%;
+- ease family: `o6`;
+- reveal threshold: element top minus `0.9 × viewportHeight`;
+- above-fold elements reveal immediately after route entry but receive staged delays;
+- first above-fold delay: ~700ms;
+- subsequent delay: +200ms per trigger.
 
-1. Capabilities
-   - Programming and systems thinking;
-   - Core AI integration;
-   - Applied AI;
-   - Speaking, performance and leadership.
+5B reproduces the same trigger model.
 
-2. Experience
-   - Edunet Foundation / IBM SkillsBuild AI internship;
-   - Vault of Codes AI internship.
+Current right-side reveal targets include:
 
-3. Beyond AI/ML
-   - Theatre;
-   - Reading;
-   - Writing;
-   - Visual design;
-   - existing Macbeth, Wattpad-cover and graphics imagery.
+- About hero kicker;
+- About hero statement;
+- each section heading;
+- capability rows;
+- experience rows;
+- Beyond cards;
+- Contact block.
 
-4. Contact
-   - email;
-   - LinkedIn.
+Elements reveal once and remain visible for the rest of the route session.
 
-### Performance isolation
+### Typography/spacing calibration
 
-The About route is completely removed from layout during the loader.
+The main desktop type scales now follow the recovered CSS family more closely:
 
-Its transform compositor hints are enabled only while `data-route="about"` is active.
+- right large text: ~2.8125vw / 3.6458vw;
+- section headings: ~2.2917vw / 2.7604vw;
+- secondary text: ~1.25vw / 1.6667vw;
+- left miniature text: ~0.5409vw / 0.7011vw.
 
-This preserves the loader-performance boundary established after 4C.
+These values preserve the user's portfolio content while moving the page closer to Camille's compact About composition.
 
-## 5A acceptance criterion
+## 5B acceptance criterion
 
-At desktop size:
+At 1440×900 desktop:
 
-1. Work → About changes to `#/about` without reloading or recreating WebGL.
-2. About → Work returns to the same homepage state.
-3. browser Back/Forward between Work and About works.
-4. direct reload on `#/about` runs the loader, then lands on About.
-5. right-column scrolling is smooth.
-6. left column moves at a different remapped rate rather than scrolling 1:1.
-7. the left image visibly counter-moves within that column.
-8. Capabilities, Experience, Beyond and Contact all appear in the right stream.
-9. the loader remains smooth.
+1. About no longer reads as a wide 38/62 split panel.
+2. Right content begins near the visual midpoint.
+3. Left text is intentionally small and narrow.
+4. The small bordered preview sits near the top-left and is approximately 216×173px.
+5. Left wrapper and preview visibly move in opposite/remapped directions.
+6. About hero text enters after the route transition rather than already sitting fully visible.
+7. Offscreen section headings/rows rise into view when they approach ~90% viewport height.
+8. reveal motion is slow/smooth (~1500ms), not quick IntersectionObserver-style popping.
+9. Work ↔ About history remains correct.
+10. loader and frozen project/home motion remain unchanged.
 
-## Deferred to 5B
+## Deferred after 5B
 
-- browser calibration against Camille's actual About page;
-- scroll-triggered line/row reveal choreography;
-- exact left-column dimensions and preview geometry;
-- final About typography/spacing;
-- richer Beyond media treatment;
-- mobile-specific About geometry.
+- dedicated browser fidelity audit against Camille's live About page;
+- any narrow timing/geometry corrections found by that audit;
+- mobile-specific About architecture;
+- custom cursor;
+- final production integration/cleanup.
