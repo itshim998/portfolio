@@ -354,6 +354,11 @@ function updateProjectRouteMeta(index) {
   routeProjectMediaPrimary.src = primaryMedia.src;
   routeProjectMediaPrimary.alt = primaryMedia.alt;
   routeProjectMediaCaption.textContent = primaryMedia.caption;
+  routeProjectMediaPrimary.addEventListener(
+    "load",
+    updateProjectScrollMax,
+    { once: true }
+  );
 
   routeProjectMediaGrid.replaceChildren();
   project.media.slice(1).forEach(media => {
@@ -365,6 +370,7 @@ function updateProjectRouteMeta(index) {
     image.alt = media.alt;
     image.loading = "lazy";
     image.decoding = "async";
+    image.addEventListener("load", updateProjectScrollMax, { once: true });
 
     const caption = document.createElement("figcaption");
     caption.textContent = media.caption;
@@ -409,7 +415,11 @@ function setProjectScrollTarget(value) {
 }
 
 function updateProjectScrollVisuals(dt) {
-  if (state.route.type !== "project" || state.route.swap.active) return;
+  if (
+    state.route.type !== "project" ||
+    state.route.swap.active ||
+    (state.route.transitioning && state.route.direction < 0)
+  ) return;
 
   state.route.scrollCurrent = reducedMotion.matches
     ? state.route.scrollTarget
@@ -512,6 +522,8 @@ function startHomeRoute({ instant = false } = {}) {
   }
 
   document.body.classList.add("is-project-exiting");
+  state.route.exitScrollFrom = state.route.scrollCurrent;
+  state.route.scrollTarget = 0;
   state.route.direction = -1;
   state.route.startedAt = performance.now();
   state.route.duration = instant || reducedMotion.matches ? 1 : 900;
@@ -631,6 +643,7 @@ const state = {
     scrollCurrent: 0,
     scrollTarget: 0,
     scrollMax: 0,
+    exitScrollFrom: 0,
     swap: {
       active: false,
       fromIndex: 0,
@@ -956,6 +969,11 @@ addEventListener("keydown", event => {
 
 addEventListener("wheel", event => {
   if (state.route.type === "project") {
+    if (state.route.swap.active || state.route.transitioning) {
+      event.preventDefault();
+      return;
+    }
+
     const dominantProject =
       Math.abs(event.deltaY) >= Math.abs(event.deltaX)
         ? event.deltaY
@@ -1477,8 +1495,8 @@ function drawProjectRouteHero(now, dt) {
         w: innerWidth,
         h: innerHeight
       },
-      lerp(-0.014, -0.04, eased),
-      1.04,
+      lerp(-0.014, -0.032, eased),
+      lerp(1.04, 1.1, eased),
       0.9,
       1
     );
@@ -1491,8 +1509,8 @@ function drawProjectRouteHero(now, dt) {
         w: innerWidth,
         h: innerHeight
       },
-      lerp(0.035, -0.014, eased),
-      1.04,
+      lerp(0.032, -0.014, eased),
+      lerp(1.1, 1.04, eased),
       0.9,
       1
     );
@@ -1541,6 +1559,7 @@ function drawProjectRouteHero(now, dt) {
         state.route.progress = 0;
         state.route.scrollCurrent = 0;
         state.route.scrollTarget = 0;
+        state.route.exitScrollFrom = 0;
         document.body.dataset.route = "home";
         document.body.classList.remove("is-project-exiting");
         projectRoute.setAttribute("aria-hidden", "true");
@@ -1556,12 +1575,20 @@ function drawProjectRouteHero(now, dt) {
   updateProjectScrollVisuals(dt);
 
   const routeP = state.route.progress;
+  const exitProgress =
+    state.route.transitioning && state.route.direction < 0
+      ? 1 - routeP
+      : 0;
+  const effectiveScroll =
+    state.route.transitioning && state.route.direction < 0
+      ? lerp(state.route.exitScrollFrom, 0, exitProgress)
+      : state.route.scrollCurrent;
   const scrollP = clamp(
-    state.route.scrollCurrent / Math.max(innerHeight, 1),
+    effectiveScroll / Math.max(innerHeight, 1),
     0,
     1
   );
-  const heroY = -state.route.scrollCurrent;
+  const heroY = -effectiveScroll;
   const routeUvY = lerp(0, -0.014, routeP) + lerp(0, -0.022, scrollP);
   const routeTextureScale = lerp(1, 1.04, routeP) + lerp(0, 0.035, scrollP);
   const routeDim = lerp(0.8, 0.9, routeP);
@@ -1778,6 +1805,39 @@ function render(now) {
 }
 
 requestAnimationFrame(render);
+
+let projectTouchY = null;
+
+projectRoute.addEventListener("touchstart", event => {
+  if (
+    state.route.type !== "project" ||
+    state.route.swap.active ||
+    state.route.transitioning ||
+    event.touches.length !== 1
+  ) return;
+
+  projectTouchY = event.touches[0].clientY;
+}, { passive: true });
+
+projectRoute.addEventListener("touchmove", event => {
+  if (
+    projectTouchY === null ||
+    state.route.type !== "project" ||
+    state.route.swap.active ||
+    state.route.transitioning ||
+    event.touches.length !== 1
+  ) return;
+
+  const y = event.touches[0].clientY;
+  const delta = projectTouchY - y;
+  projectTouchY = y;
+  setProjectScrollTarget(state.route.scrollTarget + delta);
+  event.preventDefault();
+}, { passive: false });
+
+projectRoute.addEventListener("touchend", () => {
+  projectTouchY = null;
+}, { passive: true });
 
 routeNextProject.addEventListener("click", () => {
   const index = Number(routeNextProject.dataset.projectIndex);
