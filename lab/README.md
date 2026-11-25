@@ -37,122 +37,116 @@ The desktop loader remains frozen:
 - tightened final expansion tail;
 - compact preloader percentage that clears before visible column entry.
 
-### Persistent routing — Checkpoint 4A
+### Persistent routing — Checkpoints 4A → 4B
 
-The route foundation remains intact:
+The route and work-page foundations remain intact:
 
-- hash-backed lab routes;
-- slug-based internal route state;
-- browser Back/Forward support;
-- deep-link state survives the loader;
-- one persistent canvas and WebGL context;
-- active homepage plane becomes the project hero;
-- no route-specific texture reload;
-- reversible home ↔ project crop/depth transition.
+- hash-backed lab routes with slug-based internal state;
+- browser Back/Forward and deep-link reloads;
+- one persistent canvas/WebGL context;
+- homepage plane → project hero continuity;
+- project virtual scrolling;
+- persistent WebGL hero parallax during project scroll;
+- original portfolio Purpose / Engineering POV / Current-state content;
+- secondary project media;
+- deep-scroll return-to-home continuity.
 
-## Checkpoint 4B — project-page motion shell
+## Checkpoint 4C — next-project footer expansion
 
-4B builds the first actual project-page experience on top of 4A.
+4C replaces the ordinary project-to-project footer handoff with the recovered Camille-style work-page ending.
 
-### Source content
+### Recovered production behavior
 
-Project copy is taken from the original portfolio rather than placeholder case-study text.
+The reference work-page scroll model has two distinct vertical ranges:
 
-Each project carries:
+1. **Normal page range**
+   - the project page scrolls normally;
+   - WebGL hero and DOM content are driven by the same clamped project step.
 
-- original summary;
-- Purpose;
-- Engineering POV;
-- Current state;
-- existing live-project URL;
-- existing portfolio media.
+2. **Footer expansion range**
+   - an extra `1.5 × viewportHeight` exists after the normal content limit;
+   - the DOM/content step stops advancing at the normal page maximum;
+   - only scroll current/target continue into this overscroll range;
+   - that extra range drives the next-project preview expansion.
 
-FieldLine uses all three existing screenshots. StudentOS and SentIQ Chat retain their currently available single project screenshot.
+The recovered expansion curve is gated:
 
-### Virtual project scroll
+- first 15% of footer overscroll produces no expansion;
+- remaining 15% → 100% range is normalized;
+- normalized progress uses an ease-in quadratic shape.
 
-The page keeps the global document fixed and uses project-specific virtual scrolling:
+In the lab this is implemented as:
 
-- `scrollTarget` receives wheel, keyboard, and touch input;
-- `scrollCurrent` damps toward the target;
-- the project story begins exactly one viewport below the hero;
-- the DOM story translates upward from the same virtual scroll value;
-- a fixed right-edge progress line reflects normalized project progress;
-- project scroll range is recalculated when lazy media finishes loading.
+`expand = ((clamp((normalizedOverscroll - 0.15) / 0.85, 0, 1))²)`.
 
-Keyboard support includes:
+### WebGL next-project preview
 
-- Arrow Up / Down;
-- Page Up / Down;
-- Space;
-- Home;
-- End;
-- Escape to return home.
+The next project now exists as a real WebGL plane at the project footer.
 
-### Persistent hero scroll behavior
+At the 1440×900 reference geometry:
 
-The project hero remains the exact same WebGL plane selected on the homepage.
+- preview width targets ~350px;
+- preview aspect ratio is 7:10, producing ~350×500 geometry;
+- texture crop begins around the recovered 1.25 scale treatment.
 
-During project scrolling:
+The preview anchor is DOM geometry only. The visible image itself is the already-loaded next project's WebGL plane.
 
-- the full-screen hero translates upward with virtual scroll;
-- texture Y offset adds a restrained scroll parallax component;
-- texture scale increases slightly to preserve safe crop margin;
-- homepage/project route continuity remains in the original WebGL context;
-- project metadata fades and lifts as the user scrolls away from the hero.
+### Overscroll expansion
 
-### Project story shell
+As footer expansion progresses:
 
-Below the hero the first case-study layout now contains:
+- preview x/y interpolate from the centered footer anchor to full bleed;
+- width/height interpolate to `viewport + 2px`;
+- texture scale relaxes from `1.25 → 1.04`;
+- texture Y offset moves toward the normal project-hero crop;
+- the outgoing project content stays clamped at its normal end rather than drifting with overscroll;
+- a small percentage readout exposes expansion progress for calibration.
 
-- large summary statement;
-- Purpose / Engineering POV / Current state columns;
-- primary project media;
-- additional media grid when additional screenshots exist;
-- next-project footer.
+### Automatic route handoff
 
-The story/media layer uses normal compositing. Only floating route chrome retains difference blending, so screenshots remain color-accurate.
+When scroll current reaches the end of the footer range:
 
-### Project → project transition
+- the next-project preview has reached full-screen;
+- one full animation frame is intentionally allowed to render in that state;
+- only on the following frame is route/history state committed;
+- the same now-fullscreen plane becomes the new project's hero;
+- virtual scroll resets to the top;
+- project metadata/media update;
+- the following project becomes the new footer preview.
 
-The bottom `Next project` control now changes routes without returning through the homepage.
+This avoids a one-frame texture/route pop at the handoff.
 
-The transition:
+### Footer click behavior
 
-- uses the same 1290ms `cubic-bezier(0.64, 0, 0.12, 1)` family;
-- sends the previous project hero upward;
-- brings the next project's existing WebGL plane upward from below;
-- gives both planes additional crop margin while crossing the viewport;
-- updates URL/history through the existing route system;
-- resets the new project virtual scroll to its hero;
-- preserves Back/Forward navigation between projects.
+Clicking the next-project title no longer starts an unrelated slide transition.
 
-### Deep-scroll Back behavior
+Instead it simply sets the virtual scroll target to the end of the footer expansion range. The same scroll-driven expansion runs to completion and performs the normal automatic route handoff.
 
-Returning home from anywhere in a project no longer requires being at scroll zero.
+### Browser-history behavior
 
-The exit captures the current virtual scroll position and animates the persistent hero back into its exact homepage position while route content fades, avoiding a last-frame hero jump.
+Footer expansion pushes the new project route into browser history only at the completed handoff.
 
-## 4B acceptance criterion
+Browser Back/Forward still uses the existing project-route transition system when moving through recorded project routes.
 
-Checkpoint 4B is about motion-shell integrity, not final editorial design.
+## 4C acceptance criterion
 
 A successful pass should confirm:
 
-1. project scrolling feels smooth and independent of the homepage strip;
-2. the WebGL hero visibly moves with project scroll instead of being replaced;
-3. Purpose / Engineering / Current-state content is readable below the fold;
-4. FieldLine secondary screenshots appear in the media sequence;
-5. Back works both near the hero and deep in the case study;
-6. Next project performs a direct persistent-plane project → project transition;
-7. browser Back/Forward remains coherent across home and multiple project routes.
+1. the next-project image is visible as a centered portrait-style WebGL preview near the footer;
+2. normal project content stops moving when the footer expansion range begins;
+3. continued scrolling expands that plane toward full-screen;
+4. the first ~15% of extra scroll acts as a small deadzone before visible expansion;
+5. expansion percentage reaches 100 as the plane becomes full bleed;
+6. the route/title/content switch happens only after the plane is already full-screen;
+7. clicking the next-project title produces the same expansion behavior as continued scrolling;
+8. the new project begins at its hero/top state;
+9. browser Back remains coherent afterward.
 
-## Deferred after 4B
+## Deferred after 4C
 
-- frame-by-frame browser calibration against Camille's actual work pages;
-- final project-page typography and spacing;
-- richer secondary WebGL media choreography;
-- footer expansion/progress behavior;
-- mobile-specific work-page calibration;
+- browser fidelity audit of the finished work-page motion system against Camille;
+- exact desktop footer-preview placement/typography calibration;
+- richer in-page WebGL secondary media;
+- mobile-specific work-page geometry;
 - custom cursor;
 - About-page migration.
