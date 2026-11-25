@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#090908" />
-  <title>Camille Lab — Checkpoint 4B Project Motion Shell</title>
+  <title>Camille Lab — Checkpoint 4C Footer Expansion</title>
   <meta name="robots" content="noindex,nofollow" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -87,11 +87,19 @@
         <div class="project-story__media-grid" id="route-project-media-grid"></div>
 
         <footer class="project-story__next">
-          <span class="project-story__next-label">Next project</span>
+          <div class="project-story__next-head">
+            <span class="project-story__next-label">Next project</span>
+            <span class="project-story__next-expand"><span id="route-next-expand">0</span>%</span>
+          </div>
+
+          <div class="project-story__next-preview" id="route-next-preview-anchor" aria-hidden="true"></div>
+
           <button id="route-next-project" type="button">
             <span id="route-next-title">SentIQ Chat</span>
             <span aria-hidden="true">↗</span>
           </button>
+
+          <p class="project-story__next-hint">Keep scrolling to expand</p>
         </footer>
       </article>
     </div>
