@@ -696,3 +696,28 @@ body.is-project-swapping .project-route__status {
     grid-column: auto;
   }
 }
+
+
+/* 4B layer correction: route chrome blends; story/media do not. */
+.project-route {
+  mix-blend-mode: normal;
+}
+
+.project-route__back,
+.project-route__meta,
+.project-route__status {
+  z-index: 8;
+  mix-blend-mode: difference;
+}
+
+.project-route__back {
+  z-index: 10;
+}
+
+.project-route__status {
+  z-index: 8;
+}
+
+.project-route__scroll {
+  z-index: 2;
+}
