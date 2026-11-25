@@ -483,3 +483,216 @@ body.is-project-exiting .project-route {
     opacity 260ms ease,
     visibility 0s linear 260ms;
 }
+
+
+/* Checkpoint 4B — project-page virtual scroll + story shell */
+.project-route {
+  overflow: hidden;
+  background: transparent;
+}
+
+.project-route__scroll {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: 100vh;
+  width: 100%;
+  will-change: transform;
+  pointer-events: none;
+}
+
+.project-story {
+  width: 100%;
+  padding: clamp(72px, 10vh, 120px) clamp(24px, 4.2vw, 64px) clamp(90px, 14vh, 160px);
+  background: #090908;
+  color: #f4f2ec;
+  mix-blend-mode: normal;
+}
+
+.project-story__intro {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.7fr) minmax(0, 2.1fr);
+  gap: clamp(30px, 6vw, 110px);
+  padding-bottom: clamp(76px, 12vh, 140px);
+}
+
+.project-story__kicker,
+.project-story__note span,
+.project-story__media figcaption,
+.project-story__next-label {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  line-height: 1.35;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+  color: rgba(244, 242, 236, 0.62);
+}
+
+.project-story__lead {
+  max-width: 980px;
+  margin: 0;
+  font-size: clamp(1.85rem, 3.5vw, 4.1rem);
+  line-height: 1.05;
+  letter-spacing: -0.045em;
+}
+
+.project-story__notes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid rgba(244, 242, 236, 0.2);
+  margin-bottom: clamp(90px, 14vh, 160px);
+}
+
+.project-story__note {
+  min-height: 250px;
+  padding: 20px 26px 30px 0;
+  border-bottom: 1px solid rgba(244, 242, 236, 0.2);
+}
+
+.project-story__note + .project-story__note {
+  padding-left: 26px;
+  border-left: 1px solid rgba(244, 242, 236, 0.2);
+}
+
+.project-story__note p {
+  margin: 32px 0 0;
+  max-width: 34rem;
+  font-size: clamp(0.9rem, 1.25vw, 1.08rem);
+  line-height: 1.55;
+  color: rgba(244, 242, 236, 0.86);
+}
+
+.project-story__media {
+  margin: 0 0 clamp(54px, 8vh, 92px);
+}
+
+.project-story__media img,
+.project-story__media-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #121210;
+}
+
+.project-story__media--primary img {
+  width: 100%;
+  max-height: 78vh;
+  object-fit: cover;
+}
+
+.project-story__media figcaption,
+.project-story__media-card figcaption {
+  margin-top: 12px;
+}
+
+.project-story__media-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(18px, 2.3vw, 36px);
+  margin-bottom: clamp(100px, 16vh, 180px);
+}
+
+.project-story__media-card {
+  margin: 0;
+}
+
+.project-story__media-card:nth-child(3n) {
+  grid-column: 1 / -1;
+}
+
+.project-story__next {
+  display: grid;
+  gap: 18px;
+  padding-top: 28px;
+  border-top: 1px solid rgba(244, 242, 236, 0.2);
+}
+
+.project-story__next button {
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  text-align: left;
+  font-size: clamp(3.2rem, 9vw, 9.5rem);
+  line-height: 0.86;
+  letter-spacing: -0.075em;
+}
+
+.project-route__progress {
+  position: absolute;
+  z-index: 6;
+  top: 0;
+  right: 0;
+  width: 2px;
+  height: 100%;
+  background: rgba(255,255,255,0.12);
+  opacity: 0;
+  transition: opacity 300ms ease 500ms;
+}
+
+.project-route__progress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  transform: scaleY(0);
+  transform-origin: 50% 0%;
+  will-change: transform;
+}
+
+body[data-route="project"] .project-route__progress {
+  opacity: 1;
+}
+
+body[data-route="project"] .project-route {
+  pointer-events: auto;
+}
+
+body[data-route="project"] .project-route__scroll {
+  pointer-events: auto;
+}
+
+body.is-project-swapping .project-route__meta,
+body.is-project-swapping .project-route__scroll,
+body.is-project-swapping .project-route__status {
+  opacity: 0 !important;
+  transition: opacity 220ms ease !important;
+  pointer-events: none;
+}
+
+@media (max-width: 780px) {
+  .project-story {
+    padding: 64px 16px 96px;
+  }
+
+  .project-story__intro {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .project-story__notes {
+    grid-template-columns: 1fr;
+  }
+
+  .project-story__note,
+  .project-story__note + .project-story__note {
+    min-height: auto;
+    padding: 20px 0 34px;
+    border-left: 0;
+  }
+
+  .project-story__media-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .project-story__media-card:nth-child(3n) {
+    grid-column: auto;
+  }
+}
