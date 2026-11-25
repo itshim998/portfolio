@@ -122,6 +122,8 @@ const routeProjectMediaCaption = document.getElementById("route-project-media-ca
 const routeProjectMediaGrid = document.getElementById("route-project-media-grid");
 const routeNextProject = document.getElementById("route-next-project");
 const routeNextTitle = document.getElementById("route-next-title");
+const routeNextExpand = document.getElementById("route-next-expand");
+const routeNextPreviewAnchor = document.getElementById("route-next-preview-anchor");
 const projectRouteProgress = document.getElementById("project-route-progress");
 const homeBrand = document.getElementById("home-brand");
 const homeLink = document.getElementById("home-link");
@@ -390,10 +392,15 @@ function updateProjectRouteMeta(index) {
 
 function updateProjectScrollMax() {
   if (!projectScrollContent) return;
-  state.route.scrollMax = Math.max(
+
+  state.route.scrollStepMax = Math.max(
     0,
-    projectScrollContent.scrollHeight + innerHeight * 0.15
+    projectScrollContent.scrollHeight
   );
+  state.route.footerStep = innerHeight * 1.5;
+  state.route.scrollMax =
+    state.route.scrollStepMax + state.route.footerStep;
+
   state.route.scrollTarget = clamp(
     state.route.scrollTarget,
     0,
@@ -414,6 +421,75 @@ function setProjectScrollTarget(value) {
   );
 }
 
+function footerExpansionFromScroll(scroll) {
+  if (state.route.footerStep <= 0) return 0;
+
+  const overscroll = clamp(
+    scroll - state.route.scrollStepMax,
+    0,
+    state.route.footerStep
+  );
+  const normalized = overscroll / state.route.footerStep;
+  const gated = clamp((normalized - 0.15) / 0.85, 0, 1);
+
+  return gated * gated;
+}
+
+function beginFooterAdvance(index) {
+  if (
+    state.route.type !== "project" ||
+    state.route.swap.active ||
+    state.route.transitioning ||
+    state.route.footerCommitting
+  ) return;
+
+  const next = clamp(index, 0, PROJECTS.length - 1);
+  state.route.footerAdvanceArmed = true;
+  routeNextProject.dataset.projectIndex = String(next);
+  setProjectScrollTarget(state.route.scrollMax);
+}
+
+function commitFooterAdvance(index) {
+  if (state.route.footerCommitting) return;
+
+  const next = clamp(index, 0, PROJECTS.length - 1);
+  const project = PROJECTS[next];
+  if (!project) return;
+
+  state.route.footerCommitting = true;
+  document.body.classList.add("is-project-swapping");
+
+  history.pushState(
+    { labRoute: "project", slug: project.slug },
+    "",
+    `#/project/${encodeURIComponent(project.slug)}`
+  );
+
+  state.route.index = next;
+  state.activeIndex = next;
+  state.trackCurrent = centeredTrackFor(next);
+  state.route.scrollCurrent = 0;
+  state.route.scrollTarget = 0;
+  state.route.footerExpand = 0;
+  state.route.footerAdvanceArmed = false;
+  state.route.progress = 1;
+
+  projectScrollContent.style.transform = "translate3d(0, 0, 0)";
+  projectRouteProgress.style.transform = "scaleY(0)";
+  routeNextExpand.textContent = "0";
+  document.body.style.removeProperty("--footer-expand");
+
+  updateProjectRouteMeta(next);
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      state.route.footerCommitting = false;
+      document.body.classList.remove("is-project-swapping");
+      updateProjectScrollMax();
+    });
+  });
+}
+
 function updateProjectScrollVisuals(dt) {
   if (
     state.route.type !== "project" ||
@@ -426,25 +502,51 @@ function updateProjectScrollVisuals(dt) {
     : damp(state.route.scrollCurrent, state.route.scrollTarget, 7.25, dt);
 
   const scroll = state.route.scrollCurrent;
+  const stepScroll = Math.min(scroll, state.route.scrollStepMax);
+
   projectScrollContent.style.transform =
-    `translate3d(0, ${-scroll}px, 0)`;
+    `translate3d(0, ${-stepScroll}px, 0)`;
 
   const progress =
-    state.route.scrollMax > 0
-      ? clamp(scroll / state.route.scrollMax, 0, 1)
+    state.route.scrollStepMax > 0
+      ? clamp(stepScroll / state.route.scrollStepMax, 0, 1)
       : 0;
 
   projectRouteProgress.style.transform = `scaleY(${progress})`;
 
+  state.route.footerExpand = footerExpansionFromScroll(scroll);
+  routeNextExpand.textContent =
+    String(Math.round(state.route.footerExpand * 100));
+  document.body.style.setProperty(
+    "--footer-expand",
+    state.route.footerExpand.toFixed(4)
+  );
+  document.body.classList.toggle(
+    "is-footer-expanding",
+    state.route.footerExpand > 0.001
+  );
+
   if (!state.route.transitioning) {
-    const metaFade = 1 - clamp(scroll / Math.max(innerHeight * 0.48, 1), 0, 1);
-    if (scroll > 0.5) {
+    const metaFade =
+      1 - clamp(stepScroll / Math.max(innerHeight * 0.48, 1), 0, 1);
+
+    if (stepScroll > 0.5) {
       projectRouteMeta.style.opacity = String(metaFade);
       projectRouteMeta.style.transform =
         `translateY(${lerp(0, -28, 1 - metaFade)}px)`;
     } else {
       projectRouteMeta.style.removeProperty("opacity");
       projectRouteMeta.style.removeProperty("transform");
+    }
+  }
+
+  if (
+    scroll >= state.route.scrollMax - 2 &&
+    !state.route.footerCommitting
+  ) {
+    const next = Number(routeNextProject.dataset.projectIndex);
+    if (Number.isInteger(next)) {
+      commitFooterAdvance(next);
     }
   }
 }
@@ -498,7 +600,13 @@ function startProjectRoute(index, { instant = false } = {}) {
   state.route.index = next;
   state.route.scrollCurrent = 0;
   state.route.scrollTarget = 0;
+  state.route.footerExpand = 0;
+  state.route.footerAdvanceArmed = false;
+  state.route.footerCommitting = false;
   state.route.swap.active = false;
+  routeNextExpand.textContent = "0";
+  document.body.classList.remove("is-footer-expanding");
+  document.body.style.removeProperty("--footer-expand");
   projectScrollContent.style.transform = "translate3d(0, 0, 0)";
   projectRouteProgress.style.transform = "scaleY(0)";
   projectRouteMeta.style.removeProperty("opacity");
@@ -522,7 +630,10 @@ function startHomeRoute({ instant = false } = {}) {
   }
 
   document.body.classList.add("is-project-exiting");
-  state.route.exitScrollFrom = state.route.scrollCurrent;
+  state.route.exitScrollFrom = Math.min(
+    state.route.scrollCurrent,
+    state.route.scrollStepMax
+  );
   state.route.scrollTarget = 0;
   state.route.direction = -1;
   state.route.startedAt = performance.now();
@@ -643,6 +754,11 @@ const state = {
     scrollCurrent: 0,
     scrollTarget: 0,
     scrollMax: 0,
+    scrollStepMax: 0,
+    footerStep: 0,
+    footerExpand: 0,
+    footerAdvanceArmed: false,
+    footerCommitting: false,
     exitScrollFrom: 0,
     swap: {
       active: false,
@@ -1522,6 +1638,11 @@ function drawProjectRouteHero(now, dt) {
       state.trackCurrent = centeredTrackFor(swap.toIndex);
       state.route.scrollCurrent = 0;
       state.route.scrollTarget = 0;
+      state.route.footerExpand = 0;
+      state.route.footerAdvanceArmed = false;
+      routeNextExpand.textContent = "0";
+      document.body.classList.remove("is-footer-expanding");
+      document.body.style.removeProperty("--footer-expand");
       projectScrollContent.style.transform = "translate3d(0, 0, 0)";
       projectRouteProgress.style.transform = "scaleY(0)";
       projectRouteMeta.style.removeProperty("opacity");
@@ -1560,6 +1681,11 @@ function drawProjectRouteHero(now, dt) {
         state.route.scrollCurrent = 0;
         state.route.scrollTarget = 0;
         state.route.exitScrollFrom = 0;
+        state.route.footerExpand = 0;
+        state.route.footerAdvanceArmed = false;
+        routeNextExpand.textContent = "0";
+        document.body.classList.remove("is-footer-expanding");
+        document.body.style.removeProperty("--footer-expand");
         document.body.dataset.route = "home";
         document.body.classList.remove("is-project-exiting");
         projectRoute.setAttribute("aria-hidden", "true");
@@ -1606,6 +1732,40 @@ function drawProjectRouteHero(now, dt) {
     routeDim,
     1
   );
+
+  if (
+    state.route.type === "project" &&
+    !state.route.transitioning &&
+    routeNextPreviewAnchor
+  ) {
+    const nextIndex = Number(routeNextProject.dataset.projectIndex);
+    const nextPlane = planes[nextIndex];
+
+    if (nextPlane) {
+      const anchor = routeNextPreviewAnchor.getBoundingClientRect();
+      const expand = state.route.footerExpand;
+      const target = {
+        x: -1,
+        y: -1,
+        w: innerWidth + 2,
+        h: innerHeight + 2
+      };
+
+      drawRoutePlane(
+        nextPlane,
+        {
+          x: lerp(anchor.x, target.x, expand),
+          y: lerp(anchor.y, target.y, expand),
+          w: lerp(anchor.width, target.w, expand),
+          h: lerp(anchor.height, target.h, expand)
+        },
+        lerp(0, -0.014, expand),
+        lerp(1.25, 1.04, expand),
+        0.9,
+        1
+      );
+    }
+  }
 }
 
 function focusCycleVisual(index, now) {
@@ -1841,7 +2001,7 @@ projectRoute.addEventListener("touchend", () => {
 
 routeNextProject.addEventListener("click", () => {
   const index = Number(routeNextProject.dataset.projectIndex);
-  if (Number.isInteger(index)) navigateToProject(index);
+  if (Number.isInteger(index)) beginFooterAdvance(index);
 });
 
 projectBack.addEventListener("click", () => {
